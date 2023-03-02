@@ -5,6 +5,7 @@ from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
 from tqdm import tqdm
 
+
 def get_3D_matrix(adata):
     x_max = int(adata.obs['x'].max())
     y_max = int(adata.obs['y'].max())
@@ -34,7 +35,8 @@ def convolve(array):
     output_array = np.zeros((n, m, k))
     print('Convolve each 2D layer...')
     for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
-        output_array[:, :, i] = convolve2d(array[:, :, i], kernel_A, mode='same')
+        output_array[:, :, i] = convolve2d(
+            array[:, :, i], kernel_A, mode='same')
     output_array = np.where(output_array < 0, 0, output_array)
     return output_array
 
@@ -45,6 +47,12 @@ def update_anndata(array, adata):
         x = int(spot.obs['x'])-1
         y = int(spot.obs['y'])-1
         spot.X = csr_matrix(array[x, y])
+
+
+def run_convolve(adata):
+    result = convolve(get_3D_matrix(adata))
+    update_anndata(result, adata)
+
 
 def add_position(adata, position_file):
     position_df = pd.read_csv(position_file,
@@ -63,6 +71,3 @@ def add_position(adata, position_file):
     adata.obs['fig_x'] = cell_info_df['pxl_row_in_fullres'].to_numpy()
     adata.obs['fig_y'] = cell_info_df['pxl_col_in_fullres'].to_numpy()
     adata.obsm['spatial'] = np.array([adata.obs['x'], adata.obs['y']]).T
-
-def runconvolve_convolve:
-    pass
