@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
+
+from tqdm import tqdm
 from scipy.signal import convolve
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
-from tqdm import tqdm
 
 
 def get_3D_matrix(adata):
