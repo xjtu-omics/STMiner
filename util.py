@@ -23,7 +23,7 @@ def get_3D_matrix(adata):
     return threeD_array
 
 
-def convolve(array):
+def convolve(array, big_kernel=True):
     kernel_A = np.array([[-1, -1, -1, -1, -1],
                          [-1,  2,  2,  2, -1],
                          [-1,  2,  8,  2, -1],
@@ -38,9 +38,16 @@ def convolve(array):
     # convolve each 2D layer
     output_array = np.zeros((n, m, k))
     print('Convolve each 2D layer...')
-    for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
-        output_array[:, :, i] = convolve2d(
-            array[:, :, i], kernel_A, mode='same')
+    
+    if big_kernel:
+        for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
+            output_array[:, :, i] = convolve2d(
+                array[:, :, i], kernel_A, mode='same')
+    else:
+        for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
+            output_array[:, :, i] = convolve2d(
+                array[:, :, i], kernel_B, mode='same')
+            
     output_array = np.where(output_array < 0, 0, output_array)
     return output_array
 
