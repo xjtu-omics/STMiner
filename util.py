@@ -1,9 +1,12 @@
+import anndata
 import numpy as np
 import pandas as pd
+import scanpy as sc
+import squidpy as sq
 
 from tqdm import tqdm
-from scipy.signal import convolve
 from scipy.signal import convolve2d
+from scipy.signal import convolve
 from scipy.sparse import csr_matrix
 
 
@@ -55,7 +58,7 @@ def run_convolve(adata):
     update_anndata(result, adata)
 
 
-def add_position(adata, position_file):
+def add_spatial_position(adata, position_file):
     position_df = pd.read_csv(position_file,
                               sep=',',
                               header=None,
@@ -71,4 +74,4 @@ def add_position(adata, position_file):
     # set the figure position
     adata.obs['fig_x'] = cell_info_df['pxl_row_in_fullres'].to_numpy()
     adata.obs['fig_y'] = cell_info_df['pxl_col_in_fullres'].to_numpy()
-    adata.obsm['spatial'] = np.array([adata.obs['x'], adata.obs['y']]).T
+    adata.obsm['spatial'] = np.array([cell_info_df['pxl_row_in_fullres'].to_numpy(), cell_info_df['pxl_col_in_fullres'].to_numpy()]).T
