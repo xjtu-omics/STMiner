@@ -87,15 +87,15 @@ def add_spatial_position(adata, position_file):
                                       cell_info_df['pxl_col_in_fullres'].to_numpy()]).T
 
 
-def add_image(adata, image, spatial_key='spatial', library_id='tissue', spot_diameter_fullres=89):
-    # Ref: https://squidpy.readthedocs.io/en/stable/auto_tutorials/tutorial_read_spatial.html
+def add_image(adata, image, spatial_key='spatial', library_id='tissue', tissue_hires_scalef=1, spot_diameter_fullres=89):
     # spot_diameter_fullres:
     # this is the diameter of the capture area for each observation.
     # In the case of Visium, we usually call them “spots” and this value is set to ~89.
+    # Ref: https://squidpy.readthedocs.io/en/stable/auto_tutorials/tutorial_read_spatial.html
     adata.uns[spatial_key] = {library_id: {}}
     adata.uns[spatial_key][library_id]["images"] = {}
     adata.uns[spatial_key][library_id]["images"] = {"hires": image}
-    adata.uns[spatial_key][library_id]["scalefactors"] = {"tissue_hires_scalef": 1,
+    adata.uns[spatial_key][library_id]["scalefactors"] = {"tissue_hires_scalef": tissue_hires_scalef,
                                                           "spot_diameter_fullres": spot_diameter_fullres}
 
 
