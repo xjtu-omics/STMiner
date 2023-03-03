@@ -3,8 +3,10 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import squidpy as sq
+import tifffile as tiff
 
 from tqdm import tqdm
+from PIL import Image
 from scipy.signal import convolve2d
 from scipy.signal import convolve
 from scipy.sparse import csr_matrix
@@ -90,10 +92,32 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue', spot_dia
     # spot_diameter_fullres:
     # this is the diameter of the capture area for each observation.
     # In the case of Visium, we usually call them “spots” and this value is set to ~89.
-    spatial_key = spatial_key
-    library_id = library_id
     adata.uns[spatial_key] = {library_id: {}}
     adata.uns[spatial_key][library_id]["images"] = {}
     adata.uns[spatial_key][library_id]["images"] = {"hires": image}
     adata.uns[spatial_key][library_id]["scalefactors"] = {"tissue_hires_scalef": 1,
                                                           "spot_diameter_fullres": spot_diameter_fullres}
+
+
+class TissueImage:
+    def __init__(self, img_path):
+        self.img_path = img_path
+        self.img = tiff.imread(img_path)[:, :, :3]
+
+    def rotate(self):
+        self.img = np.rot90(self.img, k=1)
+
+    def flip_lr(self):
+        self.img = np.fliplr(self.img)
+
+    def flip_ud(self):
+        self.img = np.flipud(self.img)
+
+    def get_image(self):
+        return self.img
+
+    def preview(self):
+        pil_img = Image.fromarray(self.img)
+        thumbnail_size = (self.img.shape[1]//10, self.img.shape[0]//10)
+        pil_img.thumbnail(thumbnail_size)
+        pil_img.show()
