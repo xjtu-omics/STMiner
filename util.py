@@ -38,7 +38,7 @@ def convolve(array, big_kernel=True):
     # convolve each 2D layer
     output_array = np.zeros((n, m, k))
     print('Convolve each 2D layer...')
-    
+
     if big_kernel:
         for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
             output_array[:, :, i] = convolve2d(
@@ -47,7 +47,7 @@ def convolve(array, big_kernel=True):
         for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
             output_array[:, :, i] = convolve2d(
                 array[:, :, i], kernel_B, mode='same')
-            
+
     output_array = np.where(output_array < 0, 0, output_array)
     return output_array
 
@@ -81,4 +81,19 @@ def add_spatial_position(adata, position_file):
     # set the figure position
     adata.obs['fig_x'] = cell_info_df['pxl_row_in_fullres'].to_numpy()
     adata.obs['fig_y'] = cell_info_df['pxl_col_in_fullres'].to_numpy()
-    adata.obsm['spatial'] = np.array([cell_info_df['pxl_row_in_fullres'].to_numpy(), cell_info_df['pxl_col_in_fullres'].to_numpy()]).T
+    adata.obsm['spatial'] = np.array([cell_info_df['pxl_row_in_fullres'].to_numpy(),
+                                      cell_info_df['pxl_col_in_fullres'].to_numpy()]).T
+
+
+def add_image(adata, image, spatial_key='spatial', library_id='tissue', spot_diameter_fullres=89):
+    # Ref: https://squidpy.readthedocs.io/en/stable/auto_tutorials/tutorial_read_spatial.html
+    # spot_diameter_fullres:
+    # this is the diameter of the capture area for each observation.
+    # In the case of Visium, we usually call them “spots” and this value is set to ~89.
+    spatial_key = spatial_key
+    library_id = library_id
+    adata.uns[spatial_key] = {library_id: {}}
+    adata.uns[spatial_key][library_id]["images"] = {}
+    adata.uns[spatial_key][library_id]["images"] = {"hires": image}
+    adata.uns[spatial_key][library_id]["scalefactors"] = {"tissue_hires_scalef": 1,
+                                                          "spot_diameter_fullres": spot_diameter_fullres}
