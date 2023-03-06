@@ -83,8 +83,10 @@ def add_spatial_position(adata, position_file):
     # set the figure position
     adata.obs['fig_x'] = cell_info_df['pxl_row_in_fullres'].to_numpy()
     adata.obs['fig_y'] = cell_info_df['pxl_col_in_fullres'].to_numpy()
-    adata.obsm['spatial'] = np.array([cell_info_df['pxl_row_in_fullres'].to_numpy(),
-                                      cell_info_df['pxl_col_in_fullres'].to_numpy()]).T
+    pixel_array = np.array([cell_info_df['pxl_row_in_fullres'].to_numpy(),
+                            cell_info_df['pxl_col_in_fullres'].to_numpy()]).T
+    adata.uns['spatial'] = pixel_array
+    adata.obsm['spatial'] = pixel_array
 
 
 def add_image(adata, image, spatial_key='spatial', library_id='tissue', tissue_hires_scalef=1, spot_diameter_fullres=89):
