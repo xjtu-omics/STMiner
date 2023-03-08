@@ -32,9 +32,9 @@ def convolve(array, big_kernel=True):
                          [-1,  2,  2,  2, -1],
                          [-1, -1, -1, -1, -1]])
 
-    kernel_B = np.array([[0, -1, 0],
-                         [-1, 5, -1],
-                         [0, -1, 0]])
+    kernel_laplacian = np.array([[0, -1, 0],
+                                 [-1, 5, -1],
+                                 [0, -1, 0]])
 
     n, m, k = array.shape
     # convolve each 2D layer
@@ -48,7 +48,7 @@ def convolve(array, big_kernel=True):
     else:
         for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
             output_array[:, :, i] = convolve2d(
-                array[:, :, i], kernel_B, mode='same')
+                array[:, :, i], kernel_laplacian, mode='same')
 
     output_array = np.where(output_array < 0, 0, output_array)
     return output_array
