@@ -25,30 +25,33 @@ def get_3D_matrix(adata):
     return threeD_array
 
 
-def convolve(array, big_kernel=True):
-    kernel_A = np.array([[-1, -1, -1, -1, -1],
-                         [-1,  2,  2,  2, -1],
-                         [-1,  2,  8,  2, -1],
-                         [-1,  2,  2,  2, -1],
-                         [-1, -1, -1, -1, -1]])
+def get_gaussian_kernel(size, sigma):
+    kernel = np.zeros((size, size))
+    center = size // 2
+    for i in range(size):
+        for j in range(size):
+            x = i - center
+            y = j - center
+            kernel[i, j] = np.exp(-(x**2 + y**2) / (2 * sigma**2))
 
-    kernel_laplacian = np.array([[0, -1, 0],
-                                 [-1, 5, -1],
-                                 [0, -1, 0]])
+    kernel /= kernel.sum()
+    return kernel
 
+
+def get_laplacian_kernel():
+    return np.array([[0, -1, 0],
+                     [-1, 4, -1],
+                     [0, -1, 0]])
+
+
+def convolve(array, kernel):
     n, m, k = array.shape
     # convolve each 2D layer
     output_array = np.zeros((n, m, k))
     print('Convolve each 2D layer...')
-
-    if big_kernel:
-        for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
-            output_array[:, :, i] = convolve2d(
-                array[:, :, i], kernel_A, mode='same')
-    else:
-        for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
-            output_array[:, :, i] = convolve2d(
-                array[:, :, i], kernel_laplacian, mode='same')
+    for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
+        output_array[:, :, i] = convolve2d(
+            array[:, :, i], kernel_laplacian, mode='same')
 
     output_array = np.where(output_array < 0, 0, output_array)
     return output_array
@@ -62,8 +65,12 @@ def update_anndata(array, adata):
         spot.X = csr_matrix(array[x, y])
 
 
-def run_convolve(adata):
-    result = convolve(get_3D_matrix(adata))
+def run_sharp(adata):
+    result = convolve(get_3D_matrix(adata), get_laplacian_kernel())
+    update_anndata(result, adata)
+    
+def run_gaussian(adata, shape=5, sigma=1):
+    result = convolve(get_3D_matrix(adata), get_gaussian_kernel(shape, sigma))
     update_anndata(result, adata)
 
 
