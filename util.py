@@ -24,7 +24,7 @@ def get_3D_matrix(adata):
     return threeD_array
 
 
-def get_gaussian_kernel(size, sigma):
+def get_gaussian_kernel(size=5, sigma=1):
     kernel = np.zeros((size, size))
     center = size // 2
     for i in range(size):
@@ -49,8 +49,9 @@ def convolve(array, kernel):
     output_array = np.zeros((n, m, k))
     print('Convolve each 2D layer...')
     for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
-        output_array[:, :, i] = convolve2d(
-            array[:, :, i], kernel_laplacian, mode='same')
+        output_array[:, :, i] = convolve2d(array[:, :, i],
+                                           kernel,
+                                           mode='same')
 
     output_array = np.where(output_array < 0, 0, output_array)
     return output_array
