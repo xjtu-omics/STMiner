@@ -7,8 +7,7 @@ import tifffile as tiff
 
 from tqdm import tqdm
 from PIL import Image
-from scipy.signal import convolve2d
-from scipy.signal import convolve
+from scipy.signal import convolve2d, convolve
 from scipy.sparse import csr_matrix
 
 
@@ -68,7 +67,8 @@ def update_anndata(array, adata):
 def run_sharp(adata):
     result = convolve(get_3D_matrix(adata), get_laplacian_kernel())
     update_anndata(result, adata)
-    
+
+
 def run_gaussian(adata, shape=5, sigma=1):
     result = convolve(get_3D_matrix(adata), get_gaussian_kernel(shape, sigma))
     update_anndata(result, adata)
