@@ -98,6 +98,8 @@ def add_spatial_position(adata, position_file):
 
 
 def add_image(adata, image, spatial_key='spatial', library_id='tissue', tissue_hires_scalef=1, spot_diameter_fullres=89):
+    adata: anndata
+    image: str
     # spot_diameter_fullres:
     # this is the diameter of the capture area for each observation.
     # In the case of Visium, we usually call them “spots” and this value is set to ~89.
@@ -131,3 +133,4 @@ class TissueImage:
         thumbnail_size = (self.img.shape[1]//10, self.img.shape[0]//10)
         pil_img.thumbnail(thumbnail_size)
         pil_img.show()
+        sc.pl.spatial()
