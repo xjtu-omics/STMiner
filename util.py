@@ -45,6 +45,10 @@ def get_laplacian_kernel():
                      [0, -1, 0]])
 
 
+def get_mean_filter_kernel(size=3):
+    return np.ones([size, size])*(1/size**2)
+
+
 def convolve(array, kernel):
     n, m, k = array.shape
     # convolve each 2D layer
