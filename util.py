@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 from PIL import Image
-from scipy.signal import convolve2d, convolve
+from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
 
 
@@ -41,7 +41,7 @@ def get_gaussian_kernel(size=5, sigma=1):
 
 def get_laplacian_kernel():
     return np.array([[0, -1, 0],
-                     [-1, 4, -1],
+                     [-1, 5, -1],
                      [0, -1, 0]])
 
 
