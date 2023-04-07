@@ -11,7 +11,7 @@ from tqdm import tqdm
 from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
-
+from scipy.stats import multivariate_normal
 
 def get_3D_matrix(adata):
     x_max = int(adata.obs['x'].max())
@@ -115,6 +115,21 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue', tissue_h
     adata.uns[spatial_key][library_id]["images"] = {"hires": image}
     adata.uns[spatial_key][library_id]["scalefactors"] = {"tissue_hires_scalef": tissue_hires_scalef,
                                                           "spot_diameter_fullres": spot_diameter_fullres}
+
+
+def calculate_bhattacharyya_distances(gmm1, gmm2):
+    mu1 = gmm1.means_
+    cov1 = gmm1.covariances_
+    w1 = gmm1.weights_
+    mu2 = gmm2.means_
+    cov2 = gmm2.covariances_
+    w2 = gmm2.weights_
+
+    cov = (cov1.mean(axis=0) + cov2.mean(axis=0)) / 2
+    diff_transpose_cov = (mu1.mean(axis=0) - mu2.mean(axis=0)).T.dot(np.linalg.inv(cov))
+    sqrt_bc = np.sqrt((w1 * w2).sum()) * np.exp(-1/8 * diff_transpose_cov.dot(mu1.mean(axis=0) - mu2.mean(axis=0)))
+    bd = -np.log(sqrt_bc)
+    return bd
 
 
 class TissueImage:
