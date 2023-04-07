@@ -132,6 +132,33 @@ def calculate_bhattacharyya_distances(gmm1, gmm2):
     return bd
 
 
+def gmm_bd(gmm1, gmm2):
+    """Calculate Bhattacharyya distance between two GMMs with 10 components"""
+    bd = 0
+    
+    # Calculate means and covariances of each component in the two GMMs
+    means1, covs1, weights1 = gmm1.means_, gmm1.covariances_, gmm1.weights_
+    means2, covs2, weights2 = gmm2.means_, gmm2.covariances_, gmm2.weights_
+
+    # Iterate over components in the two GMMs
+    for i in range(gmm1.weights_.size):
+        # Calculate the weighted mean and covariance for each component
+        mean1, cov1, weight1 = means1[i], covs1[i], weights1[i]
+        mean2, cov2, weight2 = means2[i], covs2[i], weights2[i]
+        w1, w2 = np.sqrt(weight1), np.sqrt(weight2)
+        cov = (cov1 + cov2) / 2
+        
+        # Calculate the first term of the Bhattacharyya distance equation
+        term1 = 1 / 8 * (mean2 - mean1).T.dot(np.linalg.inv(cov)).dot(mean2 - mean1)
+
+        # Calculate the second term of the Bhattacharyya distance equation
+        term2 = 1 / 2 * np.log(np.linalg.det(cov) / np.sqrt(np.linalg.det(cov1) * np.linalg.det(cov2)))
+
+        # Add the contribution from this component to the total Bhattacharyya distance
+        bd += w1 * w2 * np.exp(-1 * (term1 + term2))
+        
+    return -1 * np.log(bd)
+
 class TissueImage:
     def __init__(self, img_path):
         self.img_path = img_path
