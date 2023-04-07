@@ -131,33 +131,32 @@ def calculate_bhattacharyya_distances(gmm1, gmm2):
     bd = -np.log(sqrt_bc)
     return bd
 
+def bd(gmm1, gmm2):
+    # 定义两个GMM
+    gmm1_weights = gmm1.weights_
+    gmm1_means = gmm1.means_
+    gmm1_covs = gmm1.covariances_
 
-def gmm_bd(gmm1, gmm2):
-    """Calculate Bhattacharyya distance between two GMMs with 10 components"""
-    bd = 0
-    
-    # Calculate means and covariances of each component in the two GMMs
-    means1, covs1, weights1 = gmm1.means_, gmm1.covariances_, gmm1.weights_
-    means2, covs2, weights2 = gmm2.means_, gmm2.covariances_, gmm2.weights_
+    gmm2_weights = gmm.weights_
+    gmm2_means = gmm.means_
+    gmm2_covs = gmm.covariances_
+    n_components = gmm2_weights.size
+    # 计算所有组件之间的Bhattacharyya距离
+    bhat_dist = np.zeros((n_components, n_components))
+    for i in range(n_components):
+        for j in range(n_components):
+            bhat_dist[i, j] = 0.25 * (np.log(np.linalg.det(0.5*(gmm1_covs[i]+gmm2_covs[j]))) 
+                                    - 0.5*np.log(np.linalg.det(gmm1_covs[i])) 
+                                    - 0.5*np.log(np.linalg.det(gmm2_covs[j]))
+                                    + 0.5*((gmm1_means[i] - gmm2_means[j]).T @ np.linalg.inv(0.5*(gmm1_covs[i]+gmm2_covs[j]))
+                                            @ (gmm1_means[i] - gmm2_means[j]))
+                                    + 0.125*np.trace(np.linalg.inv(0.5*(gmm1_covs[i]+gmm2_covs[j])) @ gmm1_covs[i])
+                                    + 0.125*np.trace(np.linalg.inv(0.5*(gmm1_covs[i]+gmm2_covs[j])) @ gmm2_covs[j])
+                                    )
+    weight_bhat_dist = bhat_dist * gmm1_weights.reshape(n_components, 1)
+    min_sum_dist = np.sum(np.amin(min_bd, axis=1))
+    return min_sum_dist
 
-    # Iterate over components in the two GMMs
-    for i in range(gmm1.weights_.size):
-        # Calculate the weighted mean and covariance for each component
-        mean1, cov1, weight1 = means1[i], covs1[i], weights1[i]
-        mean2, cov2, weight2 = means2[i], covs2[i], weights2[i]
-        w1, w2 = np.sqrt(weight1), np.sqrt(weight2)
-        cov = (cov1 + cov2) / 2
-        
-        # Calculate the first term of the Bhattacharyya distance equation
-        term1 = 1 / 8 * (mean2 - mean1).T.dot(np.linalg.inv(cov)).dot(mean2 - mean1)
-
-        # Calculate the second term of the Bhattacharyya distance equation
-        term2 = 1 / 2 * np.log(np.linalg.det(cov) / np.sqrt(np.linalg.det(cov1) * np.linalg.det(cov2)))
-
-        # Add the contribution from this component to the total Bhattacharyya distance
-        bd += w1 * w2 * np.exp(-1 * (term1 + term2))
-        
-    return -1 * np.log(bd)
 
 class TissueImage:
     def __init__(self, img_path):
