@@ -136,12 +136,11 @@ def bd(gmm1, gmm2):
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
-
     gmm2_weights = gmm.weights_
     gmm2_means = gmm.means_
     gmm2_covs = gmm.covariances_
     n_components = gmm2_weights.size
-    # 计算所有组件之间的Bhattacharyya距离
+    
     bhat_dist = np.zeros((n_components, n_components))
     for i in range(n_components):
         for j in range(n_components):
