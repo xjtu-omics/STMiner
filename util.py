@@ -132,7 +132,6 @@ def calculate_bhattacharyya_distances(gmm1, gmm2):
     return bd
 
 def bd(gmm1, gmm2):
-    # 定义两个GMM
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
@@ -140,7 +139,7 @@ def bd(gmm1, gmm2):
     gmm2_means = gmm.means_
     gmm2_covs = gmm.covariances_
     n_components = gmm2_weights.size
-    
+    # init distance matrix
     bhat_dist = np.zeros((n_components, n_components))
     for i in range(n_components):
         for j in range(n_components):
