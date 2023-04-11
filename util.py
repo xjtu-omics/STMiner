@@ -139,21 +139,23 @@ def bd(gmm1, gmm2):
     gmm2_means = gmm2.means_
     gmm2_covs = gmm2.covariances_
     n_components = gmm2_weights.size
-    # init distance matrix
+    # 计算所有组件之间的Bhattacharyya距离
     bhat_dist = np.zeros((n_components, n_components))
     for i in range(n_components):
         for j in range(n_components):
-            bhat_dist[i, j] = 0.25 * (np.log(np.linalg.det(0.5*(gmm1_covs[i]+gmm2_covs[j]))) 
-                                    - 0.5*np.log(np.linalg.det(gmm1_covs[i])) 
-                                    - 0.5*np.log(np.linalg.det(gmm2_covs[j]))
-                                    + 0.5*((gmm1_means[i] - gmm2_means[j]).T @ np.linalg.inv(0.5*(gmm1_covs[i]+gmm2_covs[j]))
-                                            @ (gmm1_means[i] - gmm2_means[j]))
-                                    + 0.125*np.trace(np.linalg.inv(0.5*(gmm1_covs[i]+gmm2_covs[j])) @ gmm1_covs[i])
-                                    + 0.125*np.trace(np.linalg.inv(0.5*(gmm1_covs[i]+gmm2_covs[j])) @ gmm2_covs[j])
-                                    )
-    weight_bhat_dist = bhat_dist * gmm1_weights.reshape(n_components, 1)
-    min_sum_dist = np.sum(np.amin(weight_bhat_dist, axis=1))
-    return min_sum_dist
+            mean_cov = 0.5*(gmm1_covs[i]+gmm2_covs[j])
+            mean_cov_det = np.linalg.det(mean_cov)
+            mean_cov_inv = np.linalg.inv(mean_cov)
+            means_diff = gmm1_means[i] - gmm2_means[j]
+            first_term = ((means_diff).T @ mean_cov_inv @ (means_diff))/8
+            second_term = np.log(
+                mean_cov_det/(np.sqrt(np.linalg.det(gmm1_covs[i]) * np.linalg.det(gmm1_covs[j]))))/2
+            result = first_term+second_term
+            bhat_dist[i, j] = result
+
+    min_bhat_dist = np.min(bhat_dist)
+    min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
+    print("Bhattacharyya距离的最小值为:", np.sum(np.amin(min_bd, axis=1)))
 
 
 class TissueImage:
