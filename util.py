@@ -11,7 +11,7 @@ from tqdm import tqdm
 from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
-from scipy.stats import multivariate_normal
+
 
 def get_3D_matrix(adata):
     x_max = int(adata.obs['x'].max())
@@ -135,9 +135,9 @@ def bd(gmm1, gmm2):
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
-    gmm2_weights = gmm.weights_
-    gmm2_means = gmm.means_
-    gmm2_covs = gmm.covariances_
+    gmm2_weights = gmm2.weights_
+    gmm2_means = gmm2.means_
+    gmm2_covs = gmm2.covariances_
     n_components = gmm2_weights.size
     # init distance matrix
     bhat_dist = np.zeros((n_components, n_components))
@@ -152,7 +152,7 @@ def bd(gmm1, gmm2):
                                     + 0.125*np.trace(np.linalg.inv(0.5*(gmm1_covs[i]+gmm2_covs[j])) @ gmm2_covs[j])
                                     )
     weight_bhat_dist = bhat_dist * gmm1_weights.reshape(n_components, 1)
-    min_sum_dist = np.sum(np.amin(min_bd, axis=1))
+    min_sum_dist = np.sum(np.amin(weight_bhat_dist, axis=1))
     return min_sum_dist
 
 
