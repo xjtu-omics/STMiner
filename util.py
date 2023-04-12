@@ -142,7 +142,7 @@ def b_distance(gmm1, gmm2):
             bhat_dist[i, j] = result
 
     min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
-    print("Bhattacharyya距离的最小值为:", np.sum(np.amin(min_bd, axis=1)))
+    print(np.sum(np.amin(min_bd, axis=1)))
 
 
 class TissueImage:
