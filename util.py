@@ -10,6 +10,7 @@ from scipy.sparse import csr_matrix
 
 
 def get_3d_matrix(adata):
+    adata: anndata
     """
     get the 3D matrix for adata
     """
@@ -79,6 +80,7 @@ def run_gaussian(adata, shape=5, sigma=1):
 
 
 def add_spatial_position(adata, position_file):
+    adata: anndata
     position_df = pd.read_csv(position_file,
                               sep=',',
                               header=None,
