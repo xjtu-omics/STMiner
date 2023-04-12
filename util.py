@@ -13,20 +13,20 @@ from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
 
 
-def get_3D_matrix(adata):
+def get_3d_matrix(adata):
     """
     get the 3D matrix for adata
     """
     x_max = int(adata.obs['x'].max())
     y_max = int(adata.obs['y'].max())
     # the spatial coordinates should be in adata.obs
-    threeD_array = np.zeros((int(x_max), int(y_max), int(adata.var.shape[0])))
+    three_d_array = np.zeros((int(x_max), int(y_max), int(adata.var.shape[0])))
     print('Transfer anndate to 3D matrix...')
     for spot in tqdm(adata, bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
         x = int(spot.obs['x'])-1
         y = int(spot.obs['y'])-1
-        threeD_array[x, y] = spot.X.toarray()
-    return threeD_array
+        three_d_array[x, y] = spot.X.toarray()
+    return three_d_array
 
 
 def get_gaussian_kernel(size=5, sigma=1):
@@ -75,12 +75,12 @@ def update_anndata(array, adata):
 
 
 def run_sharp(adata):
-    result = convolve(get_3D_matrix(adata), get_laplacian_kernel())
+    result = convolve(get_3d_matrix(adata), get_laplacian_kernel())
     update_anndata(result, adata)
 
 
 def run_gaussian(adata, shape=5, sigma=1):
-    result = convolve(get_3D_matrix(adata), get_gaussian_kernel(shape, sigma))
+    result = convolve(get_3d_matrix(adata), get_gaussian_kernel(shape, sigma))
     update_anndata(result, adata)
 
 
@@ -132,7 +132,7 @@ def b_distance(gmm1, gmm2):
     gmm2_means = gmm2.means_
     gmm2_covs = gmm2.covariances_
     n_components = gmm2_weights.size
-    # 计算所有组件之间的Bhattacharyya距离
+    # calculate the Bhattacharyya distance
     bhat_dist = np.zeros((n_components, n_components))
     for i in range(n_components):
         for j in range(n_components):
@@ -140,7 +140,7 @@ def b_distance(gmm1, gmm2):
             mean_cov_det = np.linalg.det(mean_cov)
             mean_cov_inv = np.linalg.inv(mean_cov)
             means_diff = gmm1_means[i] - gmm2_means[j]
-            first_term = ((means_diff).T @ mean_cov_inv @ (means_diff))/8
+            first_term = (means_diff.T @ mean_cov_inv @ means_diff) / 8
             second_term = np.log(
                 mean_cov_det/(np.sqrt(np.linalg.det(gmm1_covs[i]) * np.linalg.det(gmm1_covs[j]))))/2
             result = first_term+second_term
