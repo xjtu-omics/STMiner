@@ -14,6 +14,9 @@ from scipy.sparse import csr_matrix
 
 
 def get_3D_matrix(adata):
+    """
+    get the 3D matrix for adata
+    """
     x_max = int(adata.obs['x'].max())
     y_max = int(adata.obs['y'].max())
     # the spatial coordinates should be in adata.obs
@@ -54,7 +57,7 @@ def convolve(array, kernel):
     # convolve each 2D layer
     output_array = np.zeros((n, m, k))
     print('Convolve each 2D layer...')
-    for i in tqdm(range(k), bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
+    for i in tqdm(range(k)):
         output_array[:, :, i] = convolve2d(array[:, :, i],
                                            kernel,
                                            mode='same')
@@ -65,7 +68,7 @@ def convolve(array, kernel):
 
 def update_anndata(array, adata):
     print('Update anndata...')
-    for spot in tqdm(adata, bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
+    for spot in tqdm(adata):
         x = int(spot.obs['x'])-1
         y = int(spot.obs['y'])-1
         spot.X = csr_matrix(array[x, y])
@@ -87,8 +90,11 @@ def add_spatial_position(adata, position_file):
                               header=None,
                               index_col=0)
     # set the column names
-    position_df.columns = ['in_tissue', 'array_row',
-                           'array_col', 'pxl_row_in_fullres', 'pxl_col_in_fullres']
+    position_df.columns = ['in_tissue', 
+                           'array_row',
+                           'array_col', 
+                           'pxl_row_in_fullres', 
+                           'pxl_col_in_fullres']
     # get the cell positions
     cell_info_df = position_df.loc[adata.obs.index]
     # set the matrix position
@@ -113,25 +119,12 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue', tissue_h
     adata.uns[spatial_key] = {library_id: {}}
     adata.uns[spatial_key][library_id]["images"] = {}
     adata.uns[spatial_key][library_id]["images"] = {"hires": image}
-    adata.uns[spatial_key][library_id]["scalefactors"] = {"tissue_hires_scalef": tissue_hires_scalef,
-                                                          "spot_diameter_fullres": spot_diameter_fullres}
+    scalefactors = {"tissue_hires_scalef": tissue_hires_scalef,
+                    "spot_diameter_fullres": spot_diameter_fullres}
+    adata.uns[spatial_key][library_id]["scalefactors"] = scalefactors
 
 
-def calculate_bhattacharyya_distances(gmm1, gmm2):
-    mu1 = gmm1.means_
-    cov1 = gmm1.covariances_
-    w1 = gmm1.weights_
-    mu2 = gmm2.means_
-    cov2 = gmm2.covariances_
-    w2 = gmm2.weights_
-
-    cov = (cov1.mean(axis=0) + cov2.mean(axis=0)) / 2
-    diff_transpose_cov = (mu1.mean(axis=0) - mu2.mean(axis=0)).T.dot(np.linalg.inv(cov))
-    sqrt_bc = np.sqrt((w1 * w2).sum()) * np.exp(-1/8 * diff_transpose_cov.dot(mu1.mean(axis=0) - mu2.mean(axis=0)))
-    bd = -np.log(sqrt_bc)
-    return bd
-
-def bd(gmm1, gmm2):
+def b_distance(gmm1, gmm2):
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
@@ -153,7 +146,6 @@ def bd(gmm1, gmm2):
             result = first_term+second_term
             bhat_dist[i, j] = result
 
-    min_bhat_dist = np.min(bhat_dist)
     min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
     print("Bhattacharyya距离的最小值为:", np.sum(np.amin(min_bd, axis=1)))
 
@@ -180,4 +172,3 @@ class TissueImage:
         thumbnail_size = (self.img.shape[1]//10, self.img.shape[0]//10)
         pil_img.thumbnail(thumbnail_size)
         pil_img.show()
-        sc.pl.spatial()
