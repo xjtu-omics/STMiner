@@ -23,8 +23,8 @@ def get_3d_matrix(adata):
     three_d_array = np.zeros((int(x_max), int(y_max), int(adata.var.shape[0])))
     print('Transfer anndate to 3D matrix...')
     for spot in tqdm(adata, bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
-        x = int(spot.obs['x'])-1
-        y = int(spot.obs['y'])-1
+        x = int(spot.obs['x']) - 1
+        y = int(spot.obs['y']) - 1
         three_d_array[x, y] = spot.X.toarray()
     return three_d_array
 
@@ -36,8 +36,7 @@ def get_gaussian_kernel(size=5, sigma=1):
         for j in range(size):
             x = i - center
             y = j - center
-            kernel[i, j] = np.exp(-(x**2 + y**2) / (2 * sigma**2))
-
+            kernel[i, j] = np.exp(-(x ** 2 + y ** 2) / (2 * sigma ** 2))
     kernel /= kernel.sum()
     return kernel
 
@@ -49,7 +48,7 @@ def get_laplacian_kernel():
 
 
 def get_mean_filter_kernel(size=3):
-    return np.ones([size, size])*(1/size**2)
+    return np.ones([size, size]) * (1 / size ** 2)
 
 
 def convolve(array, kernel):
@@ -61,7 +60,6 @@ def convolve(array, kernel):
         output_array[:, :, i] = convolve2d(array[:, :, i],
                                            kernel,
                                            mode='same')
-
     output_array = np.where(output_array < 0, 0, output_array)
     return output_array
 
@@ -69,8 +67,8 @@ def convolve(array, kernel):
 def update_anndata(array, adata):
     print('Update anndata...')
     for spot in tqdm(adata):
-        x = int(spot.obs['x'])-1
-        y = int(spot.obs['y'])-1
+        x = int(spot.obs['x']) - 1
+        y = int(spot.obs['y']) - 1
         spot.X = csr_matrix(array[x, y])
 
 
@@ -90,10 +88,10 @@ def add_spatial_position(adata, position_file):
                               header=None,
                               index_col=0)
     # set the column names
-    position_df.columns = ['in_tissue', 
+    position_df.columns = ['in_tissue',
                            'array_row',
-                           'array_col', 
-                           'pxl_row_in_fullres', 
+                           'array_col',
+                           'pxl_row_in_fullres',
                            'pxl_col_in_fullres']
     # get the cell positions
     cell_info_df = position_df.loc[adata.obs.index]
@@ -109,7 +107,8 @@ def add_spatial_position(adata, position_file):
     adata.obsm['spatial'] = pixel_array
 
 
-def add_image(adata, image, spatial_key='spatial', library_id='tissue', tissue_hires_scalef=1, spot_diameter_fullres=89):
+def add_image(adata, image, spatial_key='spatial', library_id='tissue',
+              tissue_hires_scalef=1, spot_diameter_fullres=89):
     adata: anndata
     image: str
     # spot_diameter_fullres:
@@ -136,14 +135,14 @@ def b_distance(gmm1, gmm2):
     bhat_dist = np.zeros((n_components, n_components))
     for i in range(n_components):
         for j in range(n_components):
-            mean_cov = 0.5*(gmm1_covs[i]+gmm2_covs[j])
+            mean_cov = 0.5 * (gmm1_covs[i] + gmm2_covs[j])
             mean_cov_det = np.linalg.det(mean_cov)
             mean_cov_inv = np.linalg.inv(mean_cov)
             means_diff = gmm1_means[i] - gmm2_means[j]
             first_term = (means_diff.T @ mean_cov_inv @ means_diff) / 8
             second_term = np.log(
-                mean_cov_det/(np.sqrt(np.linalg.det(gmm1_covs[i]) * np.linalg.det(gmm1_covs[j]))))/2
-            result = first_term+second_term
+                    mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs[i]) * np.linalg.det(gmm1_covs[j])))) / 2
+            result = first_term + second_term
             bhat_dist[i, j] = result
 
     min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
@@ -169,6 +168,6 @@ class TissueImage:
 
     def preview(self):
         pil_img = Image.fromarray(self.img)
-        thumbnail_size = (self.img.shape[1]//10, self.img.shape[0]//10)
+        thumbnail_size = (self.img.shape[1] // 10, self.img.shape[0] // 10)
         pil_img.thumbnail(thumbnail_size)
         pil_img.show()
