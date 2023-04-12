@@ -1,11 +1,7 @@
 import anndata
 import numpy as np
 import pandas as pd
-import scanpy as sc
-import squidpy as sq
 import tifffile as tiff
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 from PIL import Image
