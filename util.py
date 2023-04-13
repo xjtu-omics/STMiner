@@ -7,6 +7,7 @@ from tqdm import tqdm
 from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
+from scipy.optimize import linear_sum_assignment
 
 
 def get_3d_matrix(adata):
@@ -149,7 +150,9 @@ def bhat_distance(gmm1, gmm2):
             bhat_dist[i, j] = result
     # TODO: consider the weight
     # min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
-    return bhat_dist
+    row_ind, col_ind = linear_sum_assignment(bhat_dist)
+    min_cost = bhat_dist[row_ind, col_ind].sum()
+    return min_cost
 
 
 class TissueImage:
