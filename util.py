@@ -62,6 +62,9 @@ def convolve(array, kernel):
 
 
 def update_anndata(array, adata):
+    array: np.array
+    adata: anndata
+
     print('Update anndata...')
     for spot in tqdm(adata):
         x = int(spot.obs['x']) - 1
@@ -81,6 +84,8 @@ def run_gaussian(adata, shape=5, sigma=1):
 
 def add_spatial_position(adata, position_file):
     adata: anndata
+    position_file: str
+
     position_df = pd.read_csv(position_file,
                               sep=',',
                               header=None,
