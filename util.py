@@ -87,10 +87,7 @@ def add_spatial_position(adata, position_file):
     adata: anndata
     position_file: str
 
-    position_df = pd.read_csv(position_file,
-                              sep=',',
-                              header=None,
-                              index_col=0)
+    position_df = pd.read_csv(position_file, sep=',', header=None, index_col=0)
     # set the column names
     position_df.columns = ['in_tissue',
                            'array_row',
@@ -115,6 +112,7 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue',
               tissue_hires_scalef=1, spot_diameter_fullres=89):
     adata: anndata
     image: str
+
     # spot_diameter_fullres:
     # this is the diameter of the capture area for each observation.
     # In the case of Visium, we usually call them “spots” and this value is set to ~89.
@@ -148,7 +146,7 @@ def bhat_distance(gmm1, gmm2):
                     mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs[i]) * np.linalg.det(gmm1_covs[j])))) / 2
             result = first_term + second_term
             bhat_dist[i, j] = result
-    # TODO: consider the weight
+    # TODO: consider the weight of each component
     # min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
     row_ind, col_ind = linear_sum_assignment(bhat_dist)
     min_cost = bhat_dist[row_ind, col_ind].sum()
