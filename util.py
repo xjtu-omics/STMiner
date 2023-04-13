@@ -126,14 +126,14 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue',
     adata.uns[spatial_key][library_id]["scalefactors"] = scalefactors
 
 
-def b_distance(gmm1, gmm2):
+def bhat_distance(gmm1, gmm2):
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
     gmm2_weights = gmm2.weights_
     gmm2_means = gmm2.means_
     gmm2_covs = gmm2.covariances_
-    n_components = gmm2_weights.size
+    n_components = gmm1_weights.size
     # calculate the Bhattacharyya distance
     bhat_dist = np.zeros((n_components, n_components))
     for i in range(n_components):
@@ -147,9 +147,9 @@ def b_distance(gmm1, gmm2):
                     mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs[i]) * np.linalg.det(gmm1_covs[j])))) / 2
             result = first_term + second_term
             bhat_dist[i, j] = result
-
-    min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
-    print(np.sum(np.amin(min_bd, axis=1)))
+    # TODO: consider the weight
+    # min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
+    return bhat_dist
 
 
 class TissueImage:
