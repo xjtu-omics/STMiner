@@ -14,4 +14,4 @@ rule build_index:
     shell:
         "{SAMTOOLS} sort \
         -n {input} \
-        -o {dir_work}new_bulk_bam_data/sorted/mum_{wildcards.sample}_Aligned.sortedByCoord.out.sorted.bam"
+        -o {dir_work}new_bulk_bam_data/sorted/mum_{wildcards.day}-{wildcards.sample}_Aligned.sortedByCoord.out.sorted.bam"
