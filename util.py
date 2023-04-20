@@ -137,19 +137,34 @@ def bhat_distance(gmm1, gmm2):
     bhat_dist = np.zeros((n_components, n_components))
     for i in range(n_components):
         for j in range(n_components):
-            mean_cov = 0.5 * (gmm1_covs[i] + gmm2_covs[j])
-            mean_cov_det = np.linalg.det(mean_cov)
-            mean_cov_inv = np.linalg.inv(mean_cov)
-            means_diff = gmm1_means[i] - gmm2_means[j]
-            first_term = (means_diff.T @ mean_cov_inv @ means_diff) / 8
-            second_term = np.log(
-                    mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs[i]) * np.linalg.det(gmm1_covs[j])))) / 2
-            result = first_term + second_term
-            bhat_dist[i, j] = result
+            bhat_dist[i, j] = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
     # TODO: consider the weight of each component
-    # min_bd = bhat_dist * gmm1_weights.reshape(n_components, 1)
+    # min_bd = bh_dist * gmm1_weights.reshape(n_components, 1)
     min_cost = linear_sum(bhat_dist)
     return min_cost
+
+
+def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
+    mean_cov = (gmm1_covs + gmm2_covs) / 2
+    mean_cov_det = np.linalg.det(mean_cov)
+    mean_cov_inv = np.linalg.inv(mean_cov)
+    means_diff = gmm1_means - gmm2_means
+    first_term = (means_diff.T @ mean_cov_inv @ means_diff) / 8
+    second_term = np.log(
+            mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs) * np.linalg.det(gmm1_covs)))) / 2
+    result = first_term + second_term
+    return result
+
+
+def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
+    mean_cov = (gmm1_covs + gmm2_covs) / 2
+    mean_cov_det = np.linalg.det(mean_cov)
+    mean_cov_inv = np.linalg.inv(mean_cov)
+    means_diff = gmm1_means - gmm2_means
+    first_term = np.exp(-(means_diff.T @ mean_cov_inv @ means_diff) / 8)
+    second_term = (np.linalg.det(gmm1_covs) ** (1 / 4) * np.linalg.det(gmm1_covs) ** (1 / 4)) / np.sqrt(mean_cov_det)
+    result = 1 - first_term * second_term
+    return result
 
 
 class TissueImage:
