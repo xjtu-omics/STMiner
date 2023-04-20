@@ -125,7 +125,7 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue',
     adata.uns[spatial_key][library_id]["scalefactors"] = scalefactors
 
 
-def bhat_distance(gmm1, gmm2):
+def distribution_distance(gmm1, gmm2):
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
