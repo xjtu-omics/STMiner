@@ -2,6 +2,7 @@ import anndata
 import numpy as np
 import pandas as pd
 import tifffile as tiff
+import seaborn as ans
 
 from tqdm import tqdm
 from PIL import Image
