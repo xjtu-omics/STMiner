@@ -60,29 +60,26 @@ def fit_gmm(adata, gene_name, n_comp=5, max_iter=1000):
     return gmm
 
 
-def view_gmm(gmm, type='3d'):
+def view_gmm(gmm, plot_type='3d'):
     x = np.linspace(0, 30000, 100)
     y = np.linspace(0, 30000, 100)
-    X, Y = np.meshgrid(x, y)
-    XY = np.column_stack([X.flat, Y.flat])
-
+    x_range, y_range = np.meshgrid(x, y)
+    x_y = np.column_stack([x_range.flat, y_range.flat])
     # calculate the density
-    density = gmm.score_samples(XY)
-    density = density.reshape(X.shape)
-    if type == '3d':
-        # draw 3D plot
+    density = gmm.score_samples(x_y)
+    density = density.reshape(x_range.shape)
+    if plot_type == '3d':
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        ax.plot_surface(X, Y, density, cmap='viridis')
+        ax.plot_surface(x_range, y_range, density, cmap='viridis')
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('pdf')
         ax.set_box_aspect([2, 2, 1])
         ax.set_title('Probability Density Function Surface')
         # ax.grid(False)
-        # ax.axis('off')
         ax.view_init(elev=30, azim=235)
         plt.show()
-    if type == '2d':
+    if plot_type == '2d':
         sns.heatmap(np.exp(density))
         plt.show()
