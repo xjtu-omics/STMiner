@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import tifffile as tiff
 
-from Algorithm import *
 from tqdm import tqdm
 from PIL import Image
 from scipy.signal import convolve2d
@@ -123,48 +122,6 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue',
     scalefactors = {"tissue_hires_scalef": tissue_hires_scalef,
                     "spot_diameter_fullres": spot_diameter_fullres}
     adata.uns[spatial_key][library_id]["scalefactors"] = scalefactors
-
-
-def distribution_distance(gmm1, gmm2):
-    gmm1_weights = gmm1.weights_
-    gmm1_means = gmm1.means_
-    gmm1_covs = gmm1.covariances_
-    gmm2_weights = gmm2.weights_
-    gmm2_means = gmm2.means_
-    gmm2_covs = gmm2.covariances_
-    n_components = gmm1_weights.size
-    # calculate the Bhattacharyya distance
-    bhat_dist = np.zeros((n_components, n_components))
-    for i in range(n_components):
-        for j in range(n_components):
-            bhat_dist[i, j] = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
-    # TODO: consider the weight of each component
-    # min_bd = bh_dist * gmm1_weights.reshape(n_components, 1)
-    min_cost = linear_sum(bhat_dist)
-    return min_cost
-
-
-def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
-    mean_cov = (gmm1_covs + gmm2_covs) / 2
-    mean_cov_det = np.linalg.det(mean_cov)
-    mean_cov_inv = np.linalg.inv(mean_cov)
-    means_diff = gmm1_means - gmm2_means
-    first_term = (means_diff.T @ mean_cov_inv @ means_diff) / 8
-    second_term = np.log(
-            mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs) * np.linalg.det(gmm1_covs)))) / 2
-    result = first_term + second_term
-    return result
-
-
-def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
-    mean_cov = (gmm1_covs + gmm2_covs) / 2
-    mean_cov_det = np.linalg.det(mean_cov)
-    mean_cov_inv = np.linalg.inv(mean_cov)
-    means_diff = gmm1_means - gmm2_means
-    first_term = np.exp(-(means_diff.T @ mean_cov_inv @ means_diff) / 8)
-    second_term = (np.linalg.det(gmm1_covs) ** (1 / 4) * np.linalg.det(gmm1_covs) ** (1 / 4)) / np.sqrt(mean_cov_det)
-    result = 1 - first_term * second_term
-    return result
 
 
 class TissueImage:
