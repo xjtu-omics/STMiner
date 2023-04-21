@@ -1,6 +1,9 @@
 from Algorithm.Algorithm import *
 from sklearn import mixture
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 def distribution_distance(gmm1, gmm2):
     gmm1_weights = gmm1.weights_
@@ -27,7 +30,7 @@ def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     means_diff = gmm1_means - gmm2_means
     first_term = (means_diff.T @ mean_cov_inv @ means_diff) / 8
     second_term = np.log(
-            mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs) * np.linalg.det(gmm1_covs)))) / 2
+        mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs) * np.linalg.det(gmm1_covs)))) / 2
     result = first_term + second_term
     return result
 
@@ -55,3 +58,31 @@ def fit_gmm(adata, gene_name, n_comp=5, max_iter=1000):
     gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
     gmm.fit(sample)
     return gmm
+
+
+def view_gmm(gmm, type='3d'):
+    x = np.linspace(0, 30000, 100)
+    y = np.linspace(0, 30000, 100)
+    X, Y = np.meshgrid(x, y)
+    XY = np.column_stack([X.flat, Y.flat])
+
+    # calculate the density
+    density = gmm.score_samples(XY)
+    density = density.reshape(X.shape)
+    if type == '3d':
+        # draw 3D plot
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_surface(X, Y, density, cmap='viridis')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('pdf')
+        ax.set_box_aspect([2, 2, 1])
+        ax.set_title('Probability Density Function Surface')
+        # ax.grid(False)
+        # ax.axis('off')
+        ax.view_init(elev=30, azim=235)
+        plt.show()
+    if type == '2d':
+        sns.heatmap(np.exp(density))
+        plt.show()
