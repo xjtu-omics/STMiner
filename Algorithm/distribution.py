@@ -1,8 +1,11 @@
+import anndata
+
 from Algorithm.Algorithm import *
 from sklearn import mixture
 
-import matplotlib.pyplot as plt
+from tqdm import tqdm
 import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 def distribution_distance(gmm1, gmm2):
@@ -47,6 +50,11 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
 
 
 def fit_gmm(adata, gene_name, n_comp=5, max_iter=1000):
+    adata: anndata
+    gene_name: str
+    n_comp: int
+    max_iter: int
+
     sample = []
     exp_array = adata[:, adata.var_names == gene_name]
     for index, value in enumerate(exp_array.X.todense()):
@@ -58,6 +66,13 @@ def fit_gmm(adata, gene_name, n_comp=5, max_iter=1000):
     gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
     gmm.fit(sample)
     return gmm
+
+
+def fit_gmms(adata, gene_name_list, n_comp=5, max_iter=1000):
+    adata: anndata
+    gene_name: list
+    n_comp: int
+    max_iter: int
 
 
 def view_gmm(gmm, plot_type='3d'):

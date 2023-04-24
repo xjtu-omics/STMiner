@@ -1,8 +1,8 @@
 import networkx as nx
-from distribution import *
+from Algorithm.distribution import *
 
 
-def build_graph(gmm_dict):
+def build_graph(gmm_dict, distance_threshold=1):
     gmm_dict: dict
     # build graph
     graph = nx.Graph()
@@ -16,5 +16,7 @@ def build_graph(gmm_dict):
         for j in range(gene_counts):
             if i != j and not graph.has_edge(gene_list[i], gene_list[j]):
                 distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
-                graph.add_edge(gene_list[i], gene_list[j], weight=distance)
+                if distance < distance_threshold:
+                    weight = 1 / distance
+                    graph.add_edge(gene_list[i], gene_list[j], weight=weight)
     return graph
