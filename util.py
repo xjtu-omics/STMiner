@@ -2,7 +2,6 @@ import anndata
 import numpy as np
 import pandas as pd
 import tifffile as tiff
-import seaborn as ans
 
 from tqdm import tqdm
 from PIL import Image
@@ -19,7 +18,7 @@ def get_3d_matrix(adata):
     y_max = int(adata.obs['y'].max())
     # the spatial coordinates should be in adata.obs
     three_d_array = np.zeros((int(x_max), int(y_max), int(adata.var.shape[0])))
-    print('Transfer anndate to 3D matrix...')
+    print('Transfer anndata to 3D matrix...')
     for spot in tqdm(adata, bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
         x = int(spot.obs['x']) - 1
         y = int(spot.obs['y']) - 1
