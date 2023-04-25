@@ -20,3 +20,13 @@ def build_graph(gmm_dict, distance_threshold=1):
                     weight = 1 / distance
                     graph.add_edge(gene_list[i], gene_list[j], weight=weight)
     return graph
+
+
+def modify_graph(graph):
+    node = []
+    for i in graph.nodes:
+        if len(list(graph.neighbors(i))) == 0:
+            node.append(i)
+    for i in node:
+        graph.remove_node(i)
+    return graph
