@@ -2,8 +2,7 @@ import networkx as nx
 from Algorithm.distribution import *
 
 
-def build_graph(gmm_dict, distance_threshold=1):
-    gmm_dict: dict
+def build_graph(gmm_dict: dict, distance_threshold: int = 1):
     # build graph
     graph = nx.Graph()
     gene_list = list(gmm_dict.keys())
