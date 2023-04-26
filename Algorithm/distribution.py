@@ -1,11 +1,11 @@
 import anndata
+import multiprocessing
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from Algorithm.Algorithm import *
 from sklearn import mixture
-
 from tqdm import tqdm
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 
 def distribution_distance(gmm1, gmm2):
@@ -68,11 +68,24 @@ def fit_gmm(adata, gene_name, n_comp=5, max_iter=1000):
     return gmm
 
 
-def fit_gmms(adata, gene_name_list, n_comp=5, max_iter=1000):
+def fit_gmms(adata, gene_name_list, n_comp=5, max_iter=1000, thread=4):
     adata: anndata
     gene_name: list
     n_comp: int
     max_iter: int
+
+    manager = multiprocessing.Manager()
+    shared_dict = manager.dict()
+    pool = multiprocessing.Pool(processes=thread)
+    for i in gene_name_list:
+        pool.apply_async(_fit_worker, args=(shared_dict, adata, i, n_comp, max_iter))
+    pool.close()
+    pool.join()
+    return shared_dict
+
+
+def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
+    shared_dict[gene_name] = fit_gmm(adata, gene_name, n_comp, max_iter)
 
 
 def view_gmm(gmm, plot_type='3d'):
