@@ -31,8 +31,7 @@ def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     mean_cov_inv = np.linalg.inv(mean_cov)
     means_diff = gmm1_means - gmm2_means
     first_term = (means_diff.T @ mean_cov_inv @ means_diff) / 8
-    second_term = np.log(
-        mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs) * np.linalg.det(gmm1_covs)))) / 2
+    second_term = np.log(mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs) * np.linalg.det(gmm2_covs)))) / 2
     result = first_term + second_term
     return result
 
@@ -41,11 +40,13 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     mean_cov = (gmm1_covs + gmm2_covs) / 2
     mean_cov_det = np.linalg.det(mean_cov)
     mean_cov_inv = np.linalg.inv(mean_cov)
+    gmm1_cov_det = np.linalg.det(gmm1_covs)
+    gmm2_cov_det = np.linalg.det(gmm2_covs)
     means_diff = gmm1_means - gmm2_means
     first_term = np.exp(-(means_diff.T @ mean_cov_inv @ means_diff) / 8)
-    second_term = (np.linalg.det(gmm1_covs) ** (1 / 4) * np.linalg.det(gmm1_covs) ** (1 / 4)) / np.sqrt(mean_cov_det)
-    result = 1 - first_term * second_term
-    return result
+    second_term = ((np.power(gmm1_cov_det, 0.25)) * np.power(gmm2_cov_det, 0.25)) / np.sqrt(mean_cov_det)
+    hellinger_distance = np.sqrt(np.abs(1 - first_term * second_term))
+    return hellinger_distance
 
 
 def fit_gmm(adata: anndata,
