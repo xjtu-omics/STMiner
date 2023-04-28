@@ -1,5 +1,6 @@
 import networkx as nx
 from Algorithm.distribution import *
+from sklearn.cluster import SpectralClustering
 
 
 def build_graph(gmm_dict: dict, distance_threshold: int = 1):
@@ -29,3 +30,11 @@ def modify_graph(graph):
     for i in node:
         graph.remove_node(i)
     return graph
+
+
+def cluster_graph(graph):
+    similarity_matrix = nx.to_numpy_array(graph)
+    k = 2
+    clustering_model = SpectralClustering(n_clusters=k, affinity='precomputed')
+    clustering_model.fit(similarity_matrix)
+    return clustering_model.labels_
