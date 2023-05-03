@@ -52,7 +52,7 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
 def fit_gmm(adata: anndata,
             gene_name: str,
             n_comp: int = 5,
-            max_iter: int = 1000):
+            max_iter: int = 1000) -> mixture.GaussianMixture:
     sample = []
     exp_array = adata[:, adata.var_names == gene_name]
     for index, value in enumerate(exp_array.X.todense()):
@@ -70,7 +70,7 @@ def fit_gmms(adata: anndata,
              gene_name_list: list,
              n_comp: int = 5,
              max_iter: int = 1000,
-             thread: int = 4):
+             thread: int = 4) -> dict:
     manager = multiprocessing.Manager()
     shared_dict = manager.dict()
     pool = multiprocessing.Pool(processes=thread)
