@@ -21,7 +21,7 @@ def build_graph(gmm_dict: dict, distance_threshold: int = 1):
     return graph
 
 
-def modify_graph(graph):
+def cut_graph(graph):
     node = []
     for i in graph.nodes:
         if len(list(graph.neighbors(i))) == 0:
