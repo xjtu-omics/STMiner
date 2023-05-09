@@ -9,8 +9,7 @@ from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
 
 
-def get_3d_matrix(adata):
-    adata: anndata
+def get_3d_matrix(adata: anndata):
     """
     get the 3D matrix for adata
     """
@@ -61,10 +60,7 @@ def convolve(array, kernel):
     return output_array
 
 
-def update_anndata(array, adata):
-    array: np.array
-    adata: anndata
-
+def update_anndata(array: np.array, adata: anndata):
     print('Update anndata...')
     for spot in tqdm(adata):
         x = int(spot.obs['x']) - 1
@@ -72,20 +68,17 @@ def update_anndata(array, adata):
         spot.X = csr_matrix(array[x, y])
 
 
-def run_sharp(adata):
+def run_sharp(adata: anndata):
     result = convolve(get_3d_matrix(adata), get_laplacian_kernel())
     update_anndata(result, adata)
 
 
-def run_gaussian(adata, shape=5, sigma=1):
+def run_gaussian(adata: anndata, shape=5, sigma=1):
     result = convolve(get_3d_matrix(adata), get_gaussian_kernel(shape, sigma))
     update_anndata(result, adata)
 
 
-def add_spatial_position(adata, position_file):
-    adata: anndata
-    position_file: str
-
+def add_spatial_position(adata: anndata, position_file: str):
     position_df = pd.read_csv(position_file, sep=',', header=None, index_col=0)
     # set the column names
     position_df.columns = ['in_tissue',

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from sklearn import mixture
 from Algorithm.Algorithm import *
+from scipy.sparse import isspmatrix_coo
 
 
 def distribution_distance(gmm1, gmm2):
@@ -55,7 +56,9 @@ def fit_gmm(adata: anndata,
             max_iter: int = 1000) -> mixture.GaussianMixture:
     sample = []
     exp_array = adata[:, adata.var_names == gene_name]
-    for index, value in enumerate(exp_array.X.todense()):
+    if isspmatrix_coo(exp_array.X):
+        exp_array.X = exp_array.X.todense()
+    for index, value in enumerate(exp_array.X):
         exp_count = int(value * 10)
         if exp_count > 0:
             for i in range(exp_count):
