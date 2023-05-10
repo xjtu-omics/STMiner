@@ -35,14 +35,14 @@ def cluster(distance_array: np.array,
     
     Ref:
      - https://scikit-learn.org/stable/modules/manifold.html#multidimensional-scaling
-     - https://en.wikipedia.org/wiki/Multidimensional_scaling
+     - Multidimensional scaling. (2023, March 28). In Wikipedia. https://en.wikipedia.org/wiki/Multidimensional_scaling
     :param distance_array: Distance array
     :type distance_array: numpy.Array
     :param mds_components: Number of dimensions
     :type mds_components: int
     :param n_clusters: Number of clusters
     :type n_clusters: int
-    :return: A list of labels for each element
+    :return: A list of labels for each element.
     :rtype: numpy.Array
     """
     mds = MDS(n_components=mds_components, dissimilarity='precomputed')
