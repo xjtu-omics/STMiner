@@ -5,25 +5,34 @@ from sklearn.cluster import SpectralClustering
 
 def build_distance_matrix(gmm_dict: dict):
     """
-
-    :param gmm_dict:
-    :type gmm_dict:
-    :return:
-    :rtype:
+    Generate a distance matrix by the given gmm dictionary.
+    :param gmm_dict: gmm dictionary, key is gene name, value is GMM model.
+    :type gmm_dict: dict
+    :return: distance array
+    :rtype: np.Array
     """
     gene_list = list(gmm_dict.keys())
     gene_counts = len(gene_list)
-    distance_matrix = np.zeros((gene_counts, gene_counts), dtype=np.float64)
+    distance_array = np.zeros((gene_counts, gene_counts), dtype=np.float64)
     # calculate the weight and add edges
     for i in range(gene_counts):
         for j in range(gene_counts):
             if i != j:
                 distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
-                distance_matrix[i][j] = distance
-    return distance_matrix
+                distance_array[i][j] = distance
+    return distance_array
 
 
 def build_graph(gmm_dict: dict, distance_threshold: int = 1):
+    """
+    Build graph by distance matrix
+    :param gmm_dict:
+    :type gmm_dict: dict
+    :param distance_threshold:
+    :type distance_threshold:
+    :return:
+    :rtype:
+    """
     # build graph
     graph = nx.Graph()
     gene_list = list(gmm_dict.keys())

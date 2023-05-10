@@ -48,17 +48,23 @@ def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
 
 def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     """
+    Calculates the distance between two GMM models by hellinger distance.
 
-    :param gmm1_covs:
-    :type gmm1_covs:
-    :param gmm1_means:
-    :type gmm1_means:
-    :param gmm2_covs:
-    :type gmm2_covs:
-    :param gmm2_means:
-    :type gmm2_means:
-    :return:
-    :rtype:
+    **Hellinger distance** (closely related to, although different from, the Bhattacharyya distance) is used to quantify
+    the similarity between two probability distributions.
+
+    Ref:
+     - https://en.wikipedia.org/wiki/Hellinger_distance
+    :param gmm1_covs: first gmm covariances
+    :type gmm1_covs: np.Array_
+    :param gmm1_means: first gmm means
+    :type gmm1_means: Array
+    :param gmm2_covs: second gmm covariances
+    :type gmm2_covs: Array
+    :param gmm2_means: second gmm means
+    :type gmm2_means: Array
+    :return: distance between two GMM models
+    :rtype: np.float_
     """
     mean_cov = (gmm1_covs + gmm2_covs) / 2
     mean_cov_det = np.linalg.det(mean_cov)
