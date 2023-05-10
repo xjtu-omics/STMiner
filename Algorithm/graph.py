@@ -3,6 +3,26 @@ from Algorithm.distribution import *
 from sklearn.cluster import SpectralClustering
 
 
+def build_distance_matrix(gmm_dict: dict):
+    """
+
+    :param gmm_dict:
+    :type gmm_dict:
+    :return:
+    :rtype:
+    """
+    gene_list = list(gmm_dict.keys())
+    gene_counts = len(gene_list)
+    distance_matrix = np.zeros((gene_counts, gene_counts), dtype=np.float64)
+    # calculate the weight and add edges
+    for i in range(gene_counts):
+        for j in range(gene_counts):
+            if i != j:
+                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
+                distance_matrix[i][j] = distance
+    return distance_matrix
+
+
 def build_graph(gmm_dict: dict, distance_threshold: int = 1):
     # build graph
     graph = nx.Graph()
@@ -20,20 +40,6 @@ def build_graph(gmm_dict: dict, distance_threshold: int = 1):
                     weight = 1 / distance
                     graph.add_edge(gene_list[i], gene_list[j], weight=weight)
     return graph
-
-
-def build_distance_matrix(gmm_dict: dict):
-    # build graph
-    gene_list = list(gmm_dict.keys())
-    gene_counts = len(gene_list)
-    distance_matrix = np.zeros((gene_counts, gene_counts), dtype=np.float64)
-    # calculate the weight and add edges
-    for i in range(gene_counts):
-        for j in range(gene_counts):
-            if i != j:
-                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
-                distance_matrix[i][j] = distance
-    return distance_matrix
 
 
 def cut_graph(graph):

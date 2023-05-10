@@ -9,6 +9,15 @@ from scipy.sparse import isspmatrix_coo
 
 
 def distribution_distance(gmm1, gmm2):
+    """
+
+    :param gmm1:
+    :type gmm1:
+    :param gmm2:
+    :type gmm2:
+    :return:
+    :rtype:
+    """
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
@@ -38,6 +47,19 @@ def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
 
 
 def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
+    """
+
+    :param gmm1_covs:
+    :type gmm1_covs:
+    :param gmm1_means:
+    :type gmm1_means:
+    :param gmm2_covs:
+    :type gmm2_covs:
+    :param gmm2_means:
+    :type gmm2_means:
+    :return:
+    :rtype:
+    """
     mean_cov = (gmm1_covs + gmm2_covs) / 2
     mean_cov_det = np.linalg.det(mean_cov)
     mean_cov_inv = np.linalg.inv(mean_cov)
@@ -54,6 +76,22 @@ def fit_gmm(adata: anndata,
             gene_name: str,
             n_comp: int = 5,
             max_iter: int = 1000) -> mixture.GaussianMixture:
+    """
+    Representation of a Gaussian mixture model probability distribution.
+    Estimate the parameters of a Gaussian mixture distribution.
+
+    Estimate model parameters with the EM algorithm.
+    :param adata: Anndata of spatial data
+    :type adata: Anndata
+    :param gene_name: The gene name to fit
+    :type gene_name: str
+    :param n_comp: The number of mixture components.
+    :type n_comp: int
+    :param max_iter: The number of EM iterations to perform.
+    :type max_iter: int
+    :return: The fitted mixture.
+    :rtype: GaussianMixture
+    """
     sample = []
     exp_array = adata[:, adata.var_names == gene_name]
     if isspmatrix_coo(exp_array.X):
@@ -74,6 +112,25 @@ def fit_gmms(adata: anndata,
              n_comp: int = 5,
              max_iter: int = 1000,
              thread: int = 4) -> dict:
+    """
+    Same as fit_gmm, use multiple threads.
+    Representation of a Gaussian mixture model probability distribution.
+    Estimate the parameters of a Gaussian mixture distribution.
+
+    Estimate model parameters with the EM algorithm.
+    :param adata: Anndata of spatial data
+    :type adata: Anndata
+    :param gene_name_list: The genes list to fit
+    :type gene_name_list: list
+    :param n_comp: The number of mixture components.
+    :type n_comp: int
+    :param max_iter: The number of EM iterations to perform.
+    :type max_iter: int
+    :param thread: The number of threads to use, default:4
+    :type thread: int
+    :return: A Python dict of given genes list, key is gene name, value is GMM object.
+    :rtype: dict
+    """
     manager = multiprocessing.Manager()
     shared_dict = manager.dict()
     pool = multiprocessing.Pool(processes=thread)
@@ -89,6 +146,13 @@ def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
 
 
 def view_gmm(gmm, plot_type: str = '3d'):
+    """
+    View the fitted GMM model.
+    :param gmm: fitted GMM model by sklearn.mixture.GaussianMixture
+    :type gmm: sklearn.mixture.GaussianMixture
+    :param plot_type: 3d or 2d are accepted
+    :type plot_type: str
+    """
     x = np.linspace(0, 30000, 100)
     y = np.linspace(0, 30000, 100)
     x_range, y_range = np.meshgrid(x, y)
