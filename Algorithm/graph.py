@@ -3,7 +3,7 @@ from Algorithm.distribution import *
 from sklearn.cluster import SpectralClustering
 
 
-def build_distance_matrix(gmm_dict: dict):
+def build_distance_array(gmm_dict: dict):
     """
     Generate a distance matrix by the given gmm dictionary.
     :param gmm_dict: gmm dictionary, key is gene name, value is GMM model.
