@@ -8,14 +8,14 @@ from Algorithm.Algorithm import *
 from scipy.sparse import isspmatrix_coo
 
 
-def distribution_distance(gmm1, gmm2):
+def distribution_distance(gmm1, gmm2, method='hellinger'):
     """
-
-    :param gmm1:
+    Calculates the distance between gmm1 and gmm2
+    :param gmm1: first GMM model
     :type gmm1:
-    :param gmm2:
+    :param gmm2: second GMM model
     :type gmm2:
-    :return:
+    :return: Distance between gmm1 and gmm2
     :rtype:
     """
     gmm1_weights = gmm1.weights_
@@ -27,12 +27,14 @@ def distribution_distance(gmm1, gmm2):
     n_components = gmm1_weights.size
     # calculate the distance
     distance_array = np.zeros((n_components, n_components))
-    for i in range(n_components):
-        for j in range(n_components):
-            distance_array[i, j] = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
-    # TODO: consider the weight of each component
-    min_cost = linear_sum(distance_array)
-    return min_cost
+    # TODO: other distance metrics
+    if method == 'hellinger':
+        for i in range(n_components):
+            for j in range(n_components):
+                distance_array[i, j] = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
+                # TODO: consider the weight of each component
+        distance = linear_sum(distance_array)
+    return distance
 
 
 def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
