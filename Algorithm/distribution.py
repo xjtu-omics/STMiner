@@ -2,12 +2,15 @@ import anndata
 import multiprocessing
 import seaborn as sns
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
+from numba import jit
 from sklearn import mixture
 from Algorithm.Algorithm import *
 from scipy.sparse import isspmatrix_coo
 
 
+@jit
 def distribution_distance(gmm1, gmm2, method='hellinger'):
     """
     Calculates the distance between gmm1 and gmm2
@@ -48,6 +51,7 @@ def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     return result
 
 
+@jit
 def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     """
     Calculates the distance between two GMM models by hellinger distance.

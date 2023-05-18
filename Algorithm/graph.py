@@ -1,4 +1,6 @@
 import networkx as nx
+
+from tqdm import tqdm
 from Algorithm.distribution import *
 from sklearn.cluster import SpectralClustering
 
@@ -15,7 +17,7 @@ def build_distance_array(gmm_dict: dict):
     gene_counts = len(gene_list)
     distance_array = np.zeros((gene_counts, gene_counts), dtype=np.float64)
     # calculate the weight and add edges
-    for i in range(gene_counts):
+    for i in tqdm(range(gene_counts), desc='Processing'):
         for j in range(gene_counts):
             if i != j:
                 distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
@@ -41,7 +43,7 @@ def build_graph(gmm_dict: dict, distance_threshold: int = 1):
     for gene_id in gene_list:
         graph.add_node(gene_id)
     # calculate the weight and add edges
-    for i in range(gene_counts):
+    for i in tqdm(range(gene_counts)):
         for j in range(gene_counts):
             if i != j and not graph.has_edge(gene_list[i], gene_list[j]):
                 distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
