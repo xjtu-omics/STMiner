@@ -9,3 +9,4 @@
 *.xml
 .idea/Wukong.iml
 Algorithm/__pycache__/*.pyc
+*.pyc
