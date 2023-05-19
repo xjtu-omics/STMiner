@@ -2,7 +2,6 @@ import anndata
 import multiprocessing
 import seaborn as sns
 import matplotlib.pyplot as plt
-from numba import njit
 
 from numba import njit
 from sklearn import mixture
@@ -10,7 +9,6 @@ from Algorithm.Algorithm import *
 from scipy.sparse import isspmatrix_coo
 
 
-@njit
 def distribution_distance(gmm1, gmm2, method='hellinger'):
     """
     Calculates the distance between gmm1 and gmm2
@@ -84,7 +82,6 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     return hellinger_distance
 
 
-@njit
 def fit_gmm(adata: anndata,
             gene_name: str,
             n_comp: int = 5,
@@ -114,7 +111,6 @@ def fit_gmm(adata: anndata,
         if exp_count > 0:
             for i in range(exp_count):
                 sample.append([int(exp_array[index].obs.fig_x), int(exp_array[index].obs.fig_y)])
-
     gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
     gmm.fit(sample)
     return gmm

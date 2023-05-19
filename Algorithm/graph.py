@@ -6,7 +6,6 @@ from sklearn.cluster import SpectralClustering
 from numba import njit
 
 
-@njit
 def build_distance_array(gmm_dict: dict):
     """
     Generate a distance matrix by the given gmm dictionary.
