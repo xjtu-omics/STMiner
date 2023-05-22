@@ -102,18 +102,25 @@ def fit_gmm(adata: anndata,
     :return: The fitted mixture.
     :rtype: GaussianMixture
     """
-    sample = []
+
     exp_array = adata[:, adata.var_names == gene_name]
     if isspmatrix_coo(exp_array.X):
         exp_array.X = exp_array.X.todense()
+    sample = get_sample(exp_array)
+    gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
+    gmm.fit(sample)
+    return gmm
+
+
+@njit
+def get_sample(exp_array):
+    sample = []
     for index, value in enumerate(exp_array.X):
         exp_count = int(value * 10)
         if exp_count > 0:
             for i in range(exp_count):
                 sample.append([int(exp_array[index].obs.fig_x), int(exp_array[index].obs.fig_y)])
-    gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
-    gmm.fit(sample)
-    return gmm
+    return sample
 
 
 def fit_gmms(adata: anndata,
