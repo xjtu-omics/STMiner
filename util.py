@@ -131,8 +131,10 @@ def get_labels(gmm_dict, kmeans):
                        'labels': list(kmeans.labels_)})
     return df
 
+
 def get_pattern():
     pass
+
 
 class TissueImage:
     def __init__(self, img_path):

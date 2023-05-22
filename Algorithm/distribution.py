@@ -112,7 +112,6 @@ def fit_gmm(adata: anndata,
     return gmm
 
 
-@njit
 def get_sample(exp_array):
     sample = []
     for index, value in enumerate(exp_array.X):
