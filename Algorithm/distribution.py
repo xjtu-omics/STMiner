@@ -68,7 +68,7 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     :param gmm2_means: second gmm means
     :type gmm2_means: Array
     :return: distance between two GMM models
-    :rtype: np.float_
+    :rtype: np.float
     """
     mean_cov = (gmm1_covs + gmm2_covs) / 2
     mean_cov_det = np.linalg.det(mean_cov)
