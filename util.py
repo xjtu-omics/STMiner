@@ -117,7 +117,7 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue',
     adata.uns[spatial_key][library_id]["scalefactors"] = scalefactors
 
 
-def get_labels(gmm_dict, kmeans):
+def map_labels(gmm_dict, kmeans):
     """
     Get the cluster labels of each gene GMM model.
     :param gmm_dict: dictionary of GMM model

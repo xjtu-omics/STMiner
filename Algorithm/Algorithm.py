@@ -48,4 +48,4 @@ def cluster(distance_array: np.array,
     mds = MDS(n_components=mds_components, dissimilarity='precomputed')
     embedding = mds.fit_transform(distance_array)
     kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(embedding)
-    return kmeans.labels_
+    return kmeans
