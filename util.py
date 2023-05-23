@@ -117,21 +117,6 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue',
     adata.uns[spatial_key][library_id]["scalefactors"] = scalefactors
 
 
-def map_labels(gmm_dict, kmeans):
-    """
-    Get the cluster labels of each gene GMM model.
-    :param gmm_dict: dictionary of GMM model
-    :type gmm_dict:
-    :param kmeans: result of K-means
-    :type kmeans:
-    :return:
-    :rtype: pd.DataFrame
-    """
-    df = pd.DataFrame({'gene': list(gmm_dict.keys()),
-                       'labels': list(kmeans.labels_)})
-    return df
-
-
 def get_pattern():
     pass
 

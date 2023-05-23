@@ -153,7 +153,8 @@ def fit_gmms(adata: anndata,
         pool.apply_async(_fit_worker, args=(shared_dict, adata, i, n_comp, max_iter))
     pool.close()
     pool.join()
-    return shared_dict
+    normal_dict = dict(shared_dict)
+    return normal_dict
 
 
 def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
