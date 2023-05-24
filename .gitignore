@@ -15,3 +15,4 @@ Algorithm/__pycache__/distribution.cpython-39.pyc
 Algorithm/__pycache__/Algorithm.cpython-39.pyc
 gmm_dict.pickle
 *.pickle
+*.pyc
