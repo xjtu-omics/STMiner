@@ -1,5 +1,6 @@
 import anndata
 import multiprocessing
+
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -12,6 +13,8 @@ from scipy.sparse import isspmatrix_coo
 def distribution_distance(gmm1, gmm2, method='hellinger'):
     """
     Calculates the distance between gmm1 and gmm2
+    :param method:
+    :type method:
     :param gmm1: first GMM model
     :type gmm1:
     :param gmm2: second GMM model
@@ -33,7 +36,6 @@ def distribution_distance(gmm1, gmm2, method='hellinger'):
         for i in range(n_components):
             for j in range(n_components):
                 distance_array[i, j] = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
-                # TODO: consider the weight of each component
         distance = linear_sum(distance_array)
     return distance
 
