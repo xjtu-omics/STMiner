@@ -5,9 +5,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from numba import njit
+from scipy import sparse
 from sklearn import mixture
+from util import array_to_list
 from Algorithm.Algorithm import *
-from scipy.sparse import isspmatrix_coo
 
 
 def distribution_distance(gmm1, gmm2, method='hellinger'):
@@ -104,24 +105,12 @@ def fit_gmm(adata: anndata,
     :return: The fitted mixture.
     :rtype: GaussianMixture
     """
-
-    exp_array = adata[:, adata.var_names == gene_name]
-    if isspmatrix_coo(exp_array.X):
-        exp_array.X = exp_array.X.todense()
-    sample = get_sample(exp_array)
-    gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
-    gmm.fit(sample)
-    return gmm
-
-
-def get_sample(exp_array):
-    sample = []
-    for index, value in enumerate(exp_array.X):
-        exp_count = int(value * 10)
-        if exp_count > 0:
-            for i in range(exp_count):
-                sample.append([int(exp_array[index].obs.fig_x), int(exp_array[index].obs.fig_y)])
-    return sample
+    data = np.array(adata[:, adata.var_names == gene_name].X.todense())
+    sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['fig_x']), np.array(adata.obs['fig_y']))))
+    arr = np.array(sparse_matrix.todense(), dtype=np.int32)
+    result = array_to_list(arr)
+    gmm = mixture.GaussianMixture(n_components=10, max_iter=200)
+    gmm.fit(result)
 
 
 def fit_gmms(adata: anndata,
@@ -193,3 +182,7 @@ def view_gmm(gmm, plot_type: str = '3d'):
     if plot_type == '2d':
         sns.heatmap(np.exp(density))
         plt.show()
+
+
+def get_pattern():
+    pass
