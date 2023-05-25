@@ -146,6 +146,7 @@ def get_annadata(df):
     adata.obs['y'] = list(map(lambda id: y_dict[id], cells))
     adata.obs['fig_x'] = list(map(lambda id: x_center_dict[id], cells))
     adata.obs['fig_y'] = list(map(lambda id: y_center_dict[id], cells))
+    adata.var_names = list(adata.var['gene_ids'])
     return adata
 
 
@@ -176,17 +177,3 @@ def normalize_gene_count(adata, exclude_highly_expressed=True, max_fraction=0.05
                           exclude_highly_expressed=exclude_highly_expressed,
                           max_fraction=max_fraction,
                           inplace=True)
-
-
-def clean_up_data(adata, **args):
-    if len(args.items()) == 0:
-        raise ValueError("None filter conditions specified.")
-    for key, value in args.items():
-        if key == 'min_cells_for_gene':
-            sc.pp.filter_genes(adata, min_cells=value)
-        elif key == 'max_cells_for_gene':
-            sc.pp.filter_genes(adata, max_cells=value)
-        elif key == 'min_genes_for_cell':
-            sc.pp.filter_cells(adata, min_genes=value)
-        elif key == 'max_genes_for_cell':
-            sc.pp.filter_cells(adata, max_genes=value)
