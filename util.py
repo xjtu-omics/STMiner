@@ -117,8 +117,11 @@ def add_image(adata, image, spatial_key='spatial', library_id='tissue',
     adata.uns[spatial_key][library_id]["scalefactors"] = scalefactors
 
 
-def get_pattern():
-    pass
+def array_to_list(matrix):
+    coords = np.column_stack(np.where(matrix > 0))
+    counts = matrix[matrix > 0].flatten()
+    result = np.repeat(coords, counts, axis=0).tolist()
+    return result
 
 
 class TissueImage:
