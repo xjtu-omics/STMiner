@@ -35,5 +35,5 @@ arr = build_distance_array(gmm_dict)
 ```
 ### clustering
 ```python
-
+cluster()
 ```

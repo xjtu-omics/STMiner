@@ -106,18 +106,47 @@ def fit_gmm(adata: anndata,
     :rtype: GaussianMixture
     """
     data = np.array(adata[:, adata.var_names == gene_name].X.todense())
-    sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['fig_x']), np.array(adata.obs['fig_y']))))
+    sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
     arr = np.array(sparse_matrix.todense(), dtype=np.int32)
     result = array_to_list(arr)
     gmm = mixture.GaussianMixture(n_components=10, max_iter=200)
     gmm.fit(result)
+    return gmm
 
 
-def fit_gmms(adata: anndata,
+def fit_gmms(adata,
              gene_name_list: list,
              n_comp: int = 5,
-             max_iter: int = 1000,
-             thread: int = 4) -> dict:
+             max_iter: int = 1000):
+    """
+    Same as fit_gmm, accepts a list of gene name.
+    Representation of a Gaussian mixture model probability distribution.
+    Estimate the parameters of a Gaussian mixture distribution.
+    :param adata: Anndata of spatial data
+    :type adata: Anndata
+    :param gene_name_list: The python list, each element is a gene name in adata.
+    :type gene_name_list: list
+    :param n_comp: The number of mixture components.
+    :type n_comp: int
+    :param max_iter: The number of EM iterations to perform.
+    :type max_iter: int
+    :param thread: The number of threads to use, default:4
+    :type thread: int
+    :return: A Python dict of given genes list, key is gene name, value is GMM object.
+    :return:
+    :rtype: dict
+    """
+    gmm_dict = {}
+    for gene_id in gene_name_list:
+        gmm_dict[gene_id] = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
+    return gmm_dict
+
+
+def fit_gmms_multiprocessing(adata: anndata,
+                             gene_name_list: list,
+                             n_comp: int = 5,
+                             max_iter: int = 1000,
+                             thread: int = 4) -> dict:
     """
     Same as fit_gmm, use multiple threads.
     Representation of a Gaussian mixture model probability distribution.
@@ -152,36 +181,31 @@ def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
     shared_dict[gene_name] = fit_gmm(adata, gene_name, n_comp, max_iter)
 
 
-def view_gmm(gmm, plot_type: str = '3d'):
+def view_gmm(gmm, scope, bin_count=None):
     """
     View the fitted GMM model.
+    :param bin_count:
+    :type bin_count:
+    :param scope:
+    :type scope:
     :param gmm: fitted GMM model by sklearn.mixture.GaussianMixture
     :type gmm: sklearn.mixture.GaussianMixture
-    :param plot_type: 3d or 2d are accepted
-    :type plot_type: str
     """
-    x = np.linspace(0, 30000, 100)
-    y = np.linspace(0, 30000, 100)
+    start = scope[0]
+    end = scope[1]
+    if bin_count is None:
+        num = end - start
+    else:
+        num = bin_count
+    x = np.linspace(start, end, num)
+    y = np.linspace(start, end, num)
     x_range, y_range = np.meshgrid(x, y)
     x_y = np.column_stack([x_range.flat, y_range.flat])
     # calculate the density
     density = gmm.score_samples(x_y)
     density = density.reshape(x_range.shape)
-    if plot_type == '3d':
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot_surface(x_range, y_range, density, cmap='viridis')
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
-        ax.set_zlabel('pdf')
-        ax.set_box_aspect([2, 2, 1])
-        ax.set_title('Probability Density Function Surface')
-        # ax.grid(False)
-        ax.view_init(elev=30, azim=235)
-        plt.show()
-    if plot_type == '2d':
-        sns.heatmap(np.exp(density))
-        plt.show()
+    sns.heatmap(np.exp(density))
+    plt.show()
 
 
 def get_pattern():

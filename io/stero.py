@@ -116,10 +116,14 @@ def enhance_df_info(df, bin_size=20):
     return df
 
 
-def get_annadata(df):
+def get_anndata(df):
     """
-    Get [bins * genes] matrix from inhanced df(enhance_df_info)\n
+    Get [bins * genes] matrix from enhanced df(enhance_df_info)\n
     The cell_id is the id of each merged bin (size = bin_size * bin_size)\n
+    :param df:
+    :type df: pd.DataFrame
+    :return:
+    :rtype: AnnData
     """
     # cells_id
     cells = df['cell_id'].unique()
