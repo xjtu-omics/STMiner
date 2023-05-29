@@ -146,11 +146,12 @@ def get_anndata(df):
     adata = AnnData(X=umi_arr, dtype=np.float32)
     adata.var['gene_ids'] = genes
     adata.obs['cell_id'] = cells
-    adata.obs['x'] = list(map(lambda id: x_dict[id], cells))
-    adata.obs['y'] = list(map(lambda id: y_dict[id], cells))
-    adata.obs['fig_x'] = list(map(lambda id: x_center_dict[id], cells))
-    adata.obs['fig_y'] = list(map(lambda id: y_center_dict[id], cells))
+    adata.obs['x'] = list(map(lambda gene_id: x_dict[gene_id], cells))
+    adata.obs['y'] = list(map(lambda gene_id: y_dict[gene_id], cells))
+    adata.obs['fig_x'] = list(map(lambda gene_id: x_center_dict[gene_id], cells))
+    adata.obs['fig_y'] = list(map(lambda gene_id: y_center_dict[gene_id], cells))
     adata.var_names = list(adata.var['gene_ids'])
+    adata.obsm['spatial'] = adata.obs[['x', 'y']].values
     return adata
 
 

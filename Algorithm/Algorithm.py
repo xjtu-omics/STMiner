@@ -52,5 +52,5 @@ def cluster(distance_array: pd.DataFrame,
     embedding = mds.fit_transform(distance_array)
     print('Clustering...')
     kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(embedding)
-    result = pd.DataFrame({'gene_id': list(index), 'labels': list(kmeans.labels_)})
+    result = pd.DataFrame(dict(gene_id=list(index), labels=list(kmeans.labels_)))
     return result
