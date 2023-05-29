@@ -5,6 +5,7 @@ import scanpy as sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+from tqdm import tqdm
 from numba import njit
 from scipy import sparse
 from sklearn import mixture
@@ -136,7 +137,7 @@ def fit_gmms(adata,
     :rtype: dict
     """
     gmm_dict = {}
-    for gene_id in gene_name_list:
+    for gene_id in tqdm(gene_name_list):
         gmm_dict[gene_id] = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
     return gmm_dict
 
