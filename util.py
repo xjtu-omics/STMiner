@@ -2,6 +2,7 @@ import anndata
 import numpy as np
 import pandas as pd
 import tifffile as tiff
+import scanpy as sc
 
 from tqdm import tqdm
 from PIL import Image
@@ -122,6 +123,15 @@ def array_to_list(matrix):
     counts = matrix[matrix > 0].flatten()
     result = np.repeat(coords, counts, axis=0).tolist()
     return result
+
+
+def plot_scatter(adata, size=5):
+    sc.pl.scatter(adata,
+                  x='x',
+                  y='y',
+                  color='log1p_n_genes_by_counts',
+                  size=size,
+                  palette=['#FF0000', '#00FF00', '#0000FF'])
 
 
 class TissueImage:
