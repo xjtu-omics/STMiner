@@ -6,7 +6,7 @@ from sklearn.cluster import KMeans
 from scipy.optimize import linear_sum_assignment
 
 
-def linear_sum(cost: np.array):
+def linear_sum(cost: np.array) -> np.float:
     """
     Solve the linear sum assignment problem. The goal is to find a complete assignment of workers to jobs of minimal
     cost.
