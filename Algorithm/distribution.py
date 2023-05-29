@@ -130,8 +130,6 @@ def fit_gmms(adata,
     :type n_comp: int
     :param max_iter: The number of EM iterations to perform.
     :type max_iter: int
-    :param thread: The number of threads to use, default:4
-    :type thread: int
     :return: A Python dict of given genes list, key is gene name, value is GMM object.
     :return:
     :rtype: dict
