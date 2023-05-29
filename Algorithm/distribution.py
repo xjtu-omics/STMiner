@@ -1,6 +1,7 @@
 import anndata
 import multiprocessing
 
+import scanpy as sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -206,5 +207,19 @@ def view_gmm(gmm, scope, bin_count=None):
     plt.show()
 
 
-def get_pattern():
-    pass
+def view_pattern(adata, gene_list, size=6):
+    """
+    Plot expression pattern of given genes.
+    :param adata:
+    :type adata:
+    :param gene_list:
+    :type gene_list:
+    :param size:
+    :type size:
+    """
+    tmp = adata[:, gene_list]
+    sc.pl.scatter(tmp,
+                  x='x',
+                  y='y',
+                  color='log1p_n_genes_by_counts',
+                  size=size)
