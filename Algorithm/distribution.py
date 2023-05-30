@@ -108,7 +108,11 @@ def fit_gmm(adata: anndata,
     :return: The fitted mixture.
     :rtype: GaussianMixture
     """
-    data = np.array(adata[:, adata.var_names == gene_name].X.todense())
+    exp_array = adata[:, adata.var_names == gene_name].X
+    if sparse.issparse(exp_array):
+        data = np.array(exp_array.todense())
+    else:
+        data = np.array(exp_array)
     sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
     dense_array = np.array(sparse_matrix.todense(), dtype=np.int32)
     result = array_to_list(dense_array)
