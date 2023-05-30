@@ -112,6 +112,7 @@ def fit_gmm(adata: anndata,
     sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
     dense_array = np.array(sparse_matrix.todense(), dtype=np.int32)
     result = array_to_list(dense_array)
+    # Number of unique center must be larger than the number of components.
     if len(set(map(tuple, result))) > n_comp:
         gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
         gmm.fit(result)
