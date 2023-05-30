@@ -1,6 +1,7 @@
 import anndata
 import multiprocessing
 
+import numpy as np
 import scanpy as sc
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -89,8 +90,8 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
 
 def fit_gmm(adata: anndata,
             gene_name: str,
-            n_comp: int = 5,
-            max_iter: int = 1000) -> mixture.GaussianMixture:
+            n_comp: int = 10,
+            max_iter: int = 200):
     """
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
@@ -109,11 +110,14 @@ def fit_gmm(adata: anndata,
     """
     data = np.array(adata[:, adata.var_names == gene_name].X.todense())
     sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
-    arr = np.array(sparse_matrix.todense(), dtype=np.int32)
-    result = array_to_list(arr)
-    gmm = mixture.GaussianMixture(n_components=10, max_iter=200)
-    gmm.fit(result)
-    return gmm
+    dense_array = np.array(sparse_matrix.todense(), dtype=np.int32)
+    result = array_to_list(dense_array)
+    if len(set(map(tuple, result))) > n_comp:
+        gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
+        gmm.fit(result)
+        return gmm
+    else:
+        return None
 
 
 def fit_gmms(adata,
@@ -137,8 +141,19 @@ def fit_gmms(adata,
     :rtype: dict
     """
     gmm_dict = {}
-    for gene_id in tqdm(gene_name_list):
-        gmm_dict[gene_id] = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
+    dropped_genes = []
+    for gene_id in tqdm(gene_name_list, desc='Processing ...'):
+        try:
+            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
+            if fit_result is not None:
+                gmm_dict[gene_id] = fit_result
+            else:
+                dropped_genes.append(gene_id)
+        except Exception as e:
+            error_msg = str(e)
+            raise ValueError("Gene id: " + gene_id + "\nError: " + error_msg)
+    print('Dropped genes:')
+    print(dropped_genes)
     return gmm_dict
 
 

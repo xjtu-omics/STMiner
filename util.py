@@ -8,6 +8,7 @@ from tqdm import tqdm
 from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
+from numba import njit
 
 
 def get_3d_matrix(adata: anndata):

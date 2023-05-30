@@ -1,7 +1,5 @@
-import pandas as pd
 import networkx as nx
 
-from tqdm import tqdm
 from Algorithm.distribution import *
 from sklearn.cluster import SpectralClustering
 
@@ -18,7 +16,7 @@ def build_distance_array(gmm_dict: dict):
     gene_counts = len(gene_list)
     distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
     # calculate the weight and add edges
-    for i in tqdm(range(gene_counts), desc='Processing...'):
+    for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
                 distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
