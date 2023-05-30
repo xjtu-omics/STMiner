@@ -62,9 +62,8 @@ def cut_graph(graph):
     return graph
 
 
-def cluster_graph(graph):
+def cluster_graph(graph, k=2):
     similarity_matrix = nx.to_numpy_array(graph)
-    k = 2
     clustering_model = SpectralClustering(n_clusters=k, affinity='precomputed')
     clustering_model.fit(similarity_matrix)
     return clustering_model.labels_
