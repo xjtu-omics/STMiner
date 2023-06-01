@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import scanpy as sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -43,11 +42,11 @@ def get_surround_matrix(matrix, index, distance):
            sub_index(col_index, distance): add_index(col_index, distance, col_edge)]
 
 
-def merge_bin_coor(coor: np.ndarray, coor_min: int, bin_size: int):
+def _merge_bin_coor(coor: np.ndarray, coor_min: int, bin_size: int):
     return np.floor((coor - coor_min) / bin_size).astype(int)
 
 
-def get_bin_center(bin_coor: np.ndarray, coor_min: int, bin_size: int):
+def _get_bin_center(bin_coor: np.ndarray, coor_min: int, bin_size: int):
     return bin_coor * bin_size + coor_min + int(bin_size / 2)
 
 
@@ -56,10 +55,10 @@ def get_coor_matrix(df, merge_count=20):
     count = df.loc[:, ['x', 'y', 'UMICount']].groupby(['x', 'y'], as_index=False).sum('UMICount')
     bins = [np.array(range(count['x'].min(), count['x'].max() + merge_count, merge_count)),
             np.array(range(count['y'].min(), count['y'].max() + merge_count, merge_count))]
-    matrix, xedges, yedges = np.histogram2d(x=count['x'],
-                                            y=count['y'],
-                                            weights=count['UMICount'],
-                                            bins=bins)
+    matrix, x_edges, y_edges = np.histogram2d(x=count['x'],
+                                              y=count['y'],
+                                              weights=count['UMICount'],
+                                              bins=bins)
     return matrix
 
 
@@ -108,10 +107,10 @@ def enhance_df_info(df, bin_size=20):
         df.rename(columns={'MIDCount': 'UMICount'}, inplace=True)
     x_min = df['x'].min()
     y_min = df['y'].min()
-    df['bin_x'] = merge_bin_coor(df['x'].values, x_min, bin_size)
-    df['bin_y'] = merge_bin_coor(df['y'].values, y_min, bin_size)
-    df['x_center'] = get_bin_center(df['bin_x'], x_min, bin_size)
-    df['y_center'] = get_bin_center(df['bin_y'], y_min, bin_size)
+    df['bin_x'] = _merge_bin_coor(df['x'].values, x_min, bin_size)
+    df['bin_y'] = _merge_bin_coor(df['y'].values, y_min, bin_size)
+    df['x_center'] = _get_bin_center(df['bin_x'], x_min, bin_size)
+    df['y_center'] = _get_bin_center(df['bin_y'], y_min, bin_size)
     df['cell_id'] = df['bin_x'].astype(str) + '_' + df['bin_y'].astype(str)
     return df
 
@@ -175,10 +174,3 @@ def view_genes_matrix(matrix, dpi=200):
                                                  'blue'],
                                                 as_cmap=True))
     return figure
-
-
-def normalize_gene_count(adata, exclude_highly_expressed=True, max_fraction=0.05):
-    sc.pp.normalize_total(adata,
-                          exclude_highly_expressed=exclude_highly_expressed,
-                          max_fraction=max_fraction,
-                          inplace=True)
