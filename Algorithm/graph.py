@@ -1,7 +1,7 @@
 import networkx as nx
+from sklearn.cluster import SpectralClustering
 
 from Algorithm.distribution import *
-from sklearn.cluster import SpectralClustering
 
 
 def build_distance_array(gmm_dict: dict):

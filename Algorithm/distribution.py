@@ -1,17 +1,17 @@
-import anndata
 import multiprocessing
 
+import anndata
+import matplotlib.pyplot as plt
 import numpy as np
 import scanpy as sc
 import seaborn as sns
-import matplotlib.pyplot as plt
-
-from tqdm import tqdm
 from numba import njit
 from scipy import sparse
 from sklearn import mixture
-from util import array_to_list
+from tqdm import tqdm
+
 from Algorithm.Algorithm import *
+from util import array_to_list
 
 
 def distribution_distance(gmm1, gmm2, method='hellinger'):

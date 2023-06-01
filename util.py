@@ -1,14 +1,12 @@
 import anndata
 import numpy as np
 import pandas as pd
-import tifffile as tiff
 import scanpy as sc
-
-from tqdm import tqdm
+import tifffile as tiff
 from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix
-from numba import njit
+from tqdm import tqdm
 
 
 def get_3d_matrix(adata: anndata):

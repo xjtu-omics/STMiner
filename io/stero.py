@@ -1,8 +1,7 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
-
 from anndata import AnnData
 from scipy.sparse import csr_matrix
 from scipy.stats import wasserstein_distance

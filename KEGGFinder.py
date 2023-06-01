@@ -1,5 +1,5 @@
-from bioservices.kegg import KEGG
 import pandas as pd
+from bioservices.kegg import KEGG
 
 
 class KEGGFinder:
