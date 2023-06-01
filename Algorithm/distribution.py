@@ -14,7 +14,7 @@ from Algorithm.Algorithm import *
 from util import array_to_list
 
 
-def distribution_distance(gmm1, gmm2, method='hellinger'):
+def distribution_distance(gmm1, gmm2):
     """
     Calculates the distance between gmm1 and gmm2
     :param method:
@@ -36,11 +36,10 @@ def distribution_distance(gmm1, gmm2, method='hellinger'):
     # calculate the distance
     distance_array = np.zeros((n_components, n_components))
     # TODO: other distance metrics
-    if method == 'hellinger':
-        for i in range(n_components):
-            for j in range(n_components):
-                distance_array[i, j] = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
-        distance = linear_sum(distance_array)
+    for i in range(n_components):
+        for j in range(n_components):
+            distance_array[i, j] = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
+    distance = linear_sum(distance_array)
     return distance
 
 
@@ -108,13 +107,7 @@ def fit_gmm(adata: anndata,
     :return: The fitted mixture.
     :rtype: GaussianMixture
     """
-    exp_array = adata[:, adata.var_names == gene_name].X
-    if sparse.issparse(exp_array):
-        data = np.array(exp_array.todense())
-    else:
-        data = np.array(exp_array)
-    sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
-    dense_array = np.array(sparse_matrix.todense(), dtype=np.int32)
+    dense_array = get_exp_array(adata, gene_name)
     result = array_to_list(dense_array)
     # Number of unique center must be larger than the number of components.
     if len(set(map(tuple, result))) > n_comp:
@@ -123,6 +116,17 @@ def fit_gmm(adata: anndata,
         return gmm
     else:
         return None
+
+
+def get_exp_array(adata, gene_name):
+    exp_array = adata[:, adata.var_names == gene_name].X
+    if sparse.issparse(exp_array):
+        data = np.array(exp_array.todense())
+    else:
+        data = np.array(exp_array)
+    sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
+    dense_array = np.array(sparse_matrix.todense(), dtype=np.int32)
+    return dense_array
 
 
 def fit_gmms(adata,
@@ -146,19 +150,18 @@ def fit_gmms(adata,
     :rtype: dict
     """
     gmm_dict = {}
-    dropped_genes = []
+    dropped_genes_count = 0
     for gene_id in tqdm(gene_name_list, desc='Processing ...'):
         try:
             fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
             if fit_result is not None:
                 gmm_dict[gene_id] = fit_result
             else:
-                dropped_genes.append(gene_id)
+                dropped_genes_count += 1
         except Exception as e:
             error_msg = str(e)
             raise ValueError("Gene id: " + gene_id + "\nError: " + error_msg)
-    print('Dropped genes:')
-    print(dropped_genes)
+    print('Dropped genes number:' + str(dropped_genes_count))
     return gmm_dict
 
 
@@ -244,3 +247,12 @@ def view_pattern(adata, gene_list, size=6):
                   y='y',
                   color='log1p_n_genes_by_counts',
                   size=size)
+
+
+def mean_square_error(matrix1, matrix2):
+    if matrix1.shape != matrix2.shape:
+        raise ValueError("Dimension mismatch")
+    diff = matrix1 - matrix2
+    squared_diff = np.square(diff)
+    mse = np.mean(squared_diff)
+    return mse

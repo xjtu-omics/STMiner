@@ -31,7 +31,7 @@ gmm_dict = fit_gmms(adata, gene_list, n_comp=10, thread=4)
 ```
 ### build distance matrix
 ```python
-arr = build_distance_array(gmm_dict)
+arr = build_gmm_distance_array(gmm_dict)
 ```
 ### clustering
 ```python

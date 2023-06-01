@@ -14,7 +14,7 @@ def read_10X_h5ad(file, amplification=1):
     """
     amplification = np.int(amplification)
     adata = sc.read_h5ad(file)
-    if ('x' not in adata.obs.keys() | 'y' not in adata.obs.keys()) and 'spatial' in adata.obsm.keys():
+    if (('x' not in adata.obs.keys()) | ('y' not in adata.obs.keys())) and 'spatial' in adata.obsm.keys():
         position = adata.obsm['spatial']
         adata.obs['x'] = _correct_coordinate(position[:, 0] * amplification)
         adata.obs['y'] = _correct_coordinate(position[:, 1] * amplification)
