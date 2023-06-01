@@ -4,13 +4,13 @@ import scanpy as sc
 
 def read_10X_h5ad(file, amplification=1):
     """
-
-    :param file:
-    :type file:
+    Read h5ad file to anndata and add more information for SEP pipline.
+    :param file: path to h5ad file
+    :type file: str
     :param amplification:
-    :type amplification:
+    :type amplification: int
     :return:
-    :rtype:
+    :rtype: Anndata
     """
     amplification = np.int(amplification)
     adata = sc.read_h5ad(file)
