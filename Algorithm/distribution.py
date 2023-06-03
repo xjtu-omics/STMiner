@@ -90,12 +90,15 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
 def fit_gmm(adata: anndata,
             gene_name: str,
             n_comp: int = 10,
-            max_iter: int = 200):
+            max_iter: int = 200,
+            top_components: int = 5):
     """
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
 
     Estimate model parameters with the EM algorithm.
+    :param top_components:
+    :type top_components:
     :param adata: Anndata of spatial data
     :type adata: Anndata
     :param gene_name: The gene name to fit
@@ -113,7 +116,19 @@ def fit_gmm(adata: anndata,
     if len(set(map(tuple, result))) > n_comp:
         gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
         gmm.fit(result)
-        return gmm
+        indices = list(np.argsort(gmm.weights_)[-top_components:])
+        means = []
+        covs = []
+        weights = []
+        new_gmm = GMM(5)
+        for index in indices:
+            means.append(gmm.means_[index])
+            covs.append(gmm.covariances_[index])
+            weights.append(gmm.weights_[index])
+        new_gmm.set_mean(np.array(means))
+        new_gmm.set_covariances(np.array(covs))
+        new_gmm.set_weights(np.array(weights))
+        return new_gmm
     else:
         return None
 
@@ -132,11 +147,14 @@ def get_exp_array(adata, gene_name):
 def fit_gmms(adata,
              gene_name_list: list,
              n_comp: int = 5,
-             max_iter: int = 1000):
+             max_iter: int = 100,
+             n_top_comp: int = 1):
     """
     Same as fit_gmm, accepts a list of gene name.
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
+    :param n_top_comp:
+    :type n_top_comp:
     :param adata: Anndata of spatial data
     :type adata: Anndata
     :param gene_name_list: The python list, each element is a gene name in adata.
@@ -153,7 +171,7 @@ def fit_gmms(adata,
     dropped_genes_count = 0
     for gene_id in tqdm(gene_name_list, desc='Processing ...'):
         try:
-            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
+            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter, top_components=n_top_comp)
             if fit_result is not None:
                 gmm_dict[gene_id] = fit_result
             else:
@@ -249,10 +267,36 @@ def view_pattern(adata, gene_list, size=6):
                   size=size)
 
 
+@njit
 def mean_square_error(matrix1, matrix2):
+    """
+
+    :param matrix1:
+    :type matrix1:
+    :param matrix2:
+    :type matrix2:
+    :return:
+    :rtype:
+    """
     if matrix1.shape != matrix2.shape:
         raise ValueError("Dimension mismatch")
     diff = matrix1 - matrix2
     squared_diff = np.square(diff)
     mse = np.mean(squared_diff)
     return mse
+
+
+class GMM:
+    def __init__(self, n):
+        self.means_ = np.zeros((n, 2))
+        self.covariances_ = np.zeros((n, 2, 2))
+        self.weights_ = np.zeros((n,))
+
+    def set_mean(self, means):
+        self.means_ = means
+
+    def set_covariances(self, covariances):
+        self.covariances_ = covariances
+
+    def set_weights(self, weights):
+        self.weights_ = weights
