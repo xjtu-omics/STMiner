@@ -29,7 +29,7 @@ def build_mse_distance_array(adata, gene_list):
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
-                distance = mean_square_error(get_exp_array(adata, gene_list[i]), get_exp_array(adata, gene_list[j]))
+                distance = np.mean(np.square(adata[:, [gene_list[i]]].X - adata[:, [gene_list[j]]].X))
                 distance_array.loc[gene_list[i], gene_list[j]] = distance
     return distance_array
 
