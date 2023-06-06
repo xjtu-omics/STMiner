@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-from scipy.optimize import linear_sum_assignment
-from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
+from sklearn.cluster import KMeans
+from sklearn.cluster import SpectralClustering
+from scipy.optimize import linear_sum_assignment
 
 
 def linear_sum(cost: np.array) -> np.float:
@@ -26,7 +27,8 @@ def linear_sum(cost: np.array) -> np.float:
 
 def cluster(distance_array: pd.DataFrame,
             mds_components: int = 20,
-            n_clusters: int = 10) -> np.array:
+            n_clusters: int = 10,
+            method: str = 'kmeans') -> np.array:
     """
     Given a distance matrix with the distances between each pair of objects in a set, and a chosen number of
     dimensions, N, an MDS algorithm places each object into N-dimensional space (a lower-dimensional representation)
@@ -36,6 +38,8 @@ def cluster(distance_array: pd.DataFrame,
     Ref:
      - https://scikit-learn.org/stable/modules/manifold.html#multidimensional-scaling
      - Multidimensional scaling. (2023, March 28). In Wikipedia. https://en.wikipedia.org/wiki/Multidimensional_scaling
+    :param method: 'kmeans' or 'spectral'
+    :type method: str
     :param distance_array: Distance array dataframe
     :type distance_array: pd.DataFrame
     :param mds_components: Number of dimensions
@@ -47,9 +51,10 @@ def cluster(distance_array: pd.DataFrame,
     """
     index = distance_array.index
     mds = MDS(n_components=mds_components, dissimilarity='precomputed')
-    print('Embedding...')
-    embedding = mds.fit_transform(distance_array)
-    print('Clustering...')
-    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(embedding)
-    result = pd.DataFrame(dict(gene_id=list(index), labels=list(kmeans.labels_)))
+    embedding_position = mds.fit_transform(distance_array)
+    if method == 'kmeans':
+        fit_result = KMeans(n_clusters=n_clusters, random_state=0).fit(embedding_position)
+    elif method == 'spectral':
+        fit_result = SpectralClustering(n_clusters=n_clusters, random_state=0).fit(embedding_position)
+    result = pd.DataFrame(dict(gene_id=list(index), labels=list(fit_result.labels_)))
     return result
