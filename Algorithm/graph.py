@@ -4,9 +4,11 @@ from sklearn.cluster import SpectralClustering
 from Algorithm.distribution import *
 
 
-def build_gmm_distance_array(gmm_dict: dict):
+def build_gmm_distance_array(gmm_dict, method='weight_match'):
     """
     Generate a distance matrix by the given gmm dictionary.
+    :param method:
+    :type method:
     :param gmm_dict: gmm dictionary, key is gene name, value is GMM model.
     :type gmm_dict: dict
     :return: distance array
@@ -18,7 +20,7 @@ def build_gmm_distance_array(gmm_dict: dict):
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
-                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
+                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]], method=method)
                 distance_array.loc[gene_list[i], gene_list[j]] = distance
     return distance_array
 
