@@ -14,17 +14,17 @@ from Algorithm.Algorithm import *
 from util import array_to_list
 
 
-def distribution_distance(gmm1, gmm2):
+def distribution_distance(gmm1, gmm2, method='weight_match'):
     """
     Calculates the distance between gmm1 and gmm2
-    :param method:
-    :type method:
-    :param gmm1: first GMM model
+    :param method: 'weight_match' or 'optimized_match', default: 'weight_match'
+    :type method: str
+    :param gmm1: The first GMM model
     :type gmm1:
-    :param gmm2: second GMM model
+    :param gmm2: The second GMM model
     :type gmm2:
     :return: Distance between gmm1 and gmm2
-    :rtype:
+    :rtype: np.float64
     """
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
@@ -33,13 +33,18 @@ def distribution_distance(gmm1, gmm2):
     gmm2_means = gmm2.means_
     gmm2_covs = gmm2.covariances_
     n_components = gmm1_weights.size
-    # calculate the distance
-    distance_array = np.zeros((n_components, n_components))
-    # TODO: other distance metrics
-    for i in range(n_components):
-        for j in range(n_components):
-            distance_array[i, j] = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
-    distance = linear_sum(distance_array)
+    distance = np.float64(0)
+    if method == 'optimized_match':
+        distance_array = np.zeros((n_components, n_components))
+        for i in range(n_components):
+            for j in range(n_components):
+                hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
+                distance_array[i, j] = (gmm1_weights[i] + gmm2_weights[j]) * hd
+        distance = linear_sum(distance_array)
+    elif method == 'weight_match':
+        for i in range(n_components):
+            hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[i], gmm2_means[i])
+            distance += (gmm1.weights_[i] + gmm2.weights_[i]) * hd
     return distance
 
 
@@ -73,7 +78,7 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
     :param gmm2_means: second gmm means
     :type gmm2_means: Array
     :return: distance between two GMM models
-    :rtype: np.float
+    :rtype: np.float64
     """
     mean_cov = (gmm1_covs + gmm2_covs) / 2
     mean_cov_det = np.linalg.det(mean_cov)
@@ -120,7 +125,7 @@ def fit_gmm(adata: anndata,
         means = []
         covs = []
         weights = []
-        new_gmm = GMM(5)
+        new_gmm = GMM(n_comp)
         for index in indices:
             means.append(gmm.means_[index])
             covs.append(gmm.covariances_[index])
