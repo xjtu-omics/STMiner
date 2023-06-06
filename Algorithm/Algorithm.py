@@ -16,8 +16,8 @@ def linear_sum(cost: np.array) -> np.float:
      - https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html
     :param cost:
     :type cost:
-    :return:
-    :rtype:
+    :return: return the
+    :rtype: np.float64
     """
     row_ind, col_ind = linear_sum_assignment(cost)
     min_cost = cost[row_ind, col_ind].sum()
