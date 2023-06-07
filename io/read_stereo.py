@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
 from anndata import AnnData
 from scipy.sparse import csr_matrix
 from scipy.stats import wasserstein_distance
+
+from IOUtil import *
 
 
 def read_gem_file(gem_file):
@@ -39,14 +40,6 @@ def get_surround_matrix(matrix, index, distance):
     col_index = index[1]
     return matrix[sub_index(row_index, distance): add_index(row_index, distance, row_edge),
            sub_index(col_index, distance): add_index(col_index, distance, col_edge)]
-
-
-def _merge_bin_coor(coor: np.ndarray, coor_min: int, bin_size: int):
-    return np.floor((coor - coor_min) / bin_size).astype(int)
-
-
-def _get_bin_center(bin_coor: np.ndarray, coor_min: int, bin_size: int):
-    return bin_coor * bin_size + coor_min + int(bin_size / 2)
 
 
 def get_coor_matrix(df, merge_count=20):
@@ -91,9 +84,9 @@ def find_undersampled_pixel(H, distance, mean_percentage=0.2):
         is_lower_than_mean = surround_matrix.mean() * mean_percentage > value
         not_blank_region = np.median(surround_matrix) > 0
         is_square_matrix = surround_matrix.shape[0] == surround_matrix.shape[1]
-        is_undersampled = is_lower_than_mean & is_square_matrix & not_blank_region & (
+        is_under_sampled = is_lower_than_mean & is_square_matrix & not_blank_region & (
                 value > 0)
-        if is_undersampled:
+        if is_under_sampled:
             bad_matrix[index[0], index[1]] = 1
     return bad_matrix
 
@@ -106,10 +99,10 @@ def enhance_df_info(df, bin_size=20):
         df.rename(columns={'MIDCount': 'UMICount'}, inplace=True)
     x_min = df['x'].min()
     y_min = df['y'].min()
-    df['bin_x'] = _merge_bin_coor(df['x'].values, x_min, bin_size)
-    df['bin_y'] = _merge_bin_coor(df['y'].values, y_min, bin_size)
-    df['x_center'] = _get_bin_center(df['bin_x'], x_min, bin_size)
-    df['y_center'] = _get_bin_center(df['bin_y'], y_min, bin_size)
+    df['bin_x'] = merge_bin_coor(df['x'].values, x_min, bin_size)
+    df['bin_y'] = merge_bin_coor(df['y'].values, y_min, bin_size)
+    df['x_center'] = get_bin_center(df['bin_x'], x_min, bin_size)
+    df['y_center'] = get_bin_center(df['bin_y'], y_min, bin_size)
     df['cell_id'] = df['bin_x'].astype(str) + '_' + df['bin_y'].astype(str)
     return df
 

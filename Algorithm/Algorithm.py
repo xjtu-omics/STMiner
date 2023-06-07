@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from sklearn.manifold import MDS
+from scipy.optimize import linear_sum_assignment
 from sklearn.cluster import KMeans
 from sklearn.cluster import SpectralClustering
-from scipy.optimize import linear_sum_assignment
+from sklearn.manifold import MDS
 
 
 def linear_sum(cost: np.array) -> np.float:
