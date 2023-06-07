@@ -55,6 +55,6 @@ def cluster(distance_array: pd.DataFrame,
     if method == 'kmeans':
         fit_result = KMeans(n_clusters=n_clusters, random_state=0).fit(embedding_position)
     elif method == 'spectral':
-        fit_result = SpectralClustering(n_clusters=n_clusters, random_state=0).fit(embedding_position)
+        fit_result = SpectralClustering(n_clusters=n_clusters, random_state=0, affinity='rbf').fit(embedding_position)
     result = pd.DataFrame(dict(gene_id=list(index), labels=list(fit_result.labels_)))
     return result

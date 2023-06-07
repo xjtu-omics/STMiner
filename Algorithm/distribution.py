@@ -26,6 +26,8 @@ def distribution_distance(gmm1, gmm2, method='weight_match'):
     :return: Distance between gmm1 and gmm2
     :rtype: np.float64
     """
+    gmm1 = _sort_gmm(gmm1)
+    gmm2 = _sort_gmm(gmm2)
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
@@ -121,21 +123,25 @@ def fit_gmm(adata: anndata,
     if len(set(map(tuple, result))) > n_comp:
         gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
         gmm.fit(result)
-        indices = list(np.argsort(gmm.weights_)[-top_components:])
-        means = []
-        covs = []
-        weights = []
-        new_gmm = GMM(n_comp)
-        for index in indices:
-            means.append(gmm.means_[index])
-            covs.append(gmm.covariances_[index])
-            weights.append(gmm.weights_[index])
-        new_gmm.set_mean(np.array(means))
-        new_gmm.set_covariances(np.array(covs))
-        new_gmm.set_weights(np.array(weights))
-        return new_gmm
+        return gmm
     else:
         return None
+
+
+def _sort_gmm(gmm):
+    indices = list(np.argsort(gmm.weights_))
+    means = []
+    covs = []
+    weights = []
+    new_gmm = GMM(len(gmm.weights))
+    for index in indices:
+        means.append(gmm.means_[index])
+        covs.append(gmm.covariances_[index])
+        weights.append(gmm.weights_[index])
+    new_gmm.set_mean(np.array(means))
+    new_gmm.set_covariances(np.array(covs))
+    new_gmm.set_weights(np.array(weights))
+    return new_gmm
 
 
 def get_exp_array(adata, gene_name):
