@@ -97,15 +97,12 @@ def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
 def fit_gmm(adata: anndata,
             gene_name: str,
             n_comp: int = 10,
-            max_iter: int = 200,
-            top_components: int = 5):
+            max_iter: int = 200):
     """
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
 
     Estimate model parameters with the EM algorithm.
-    :param top_components:
-    :type top_components:
     :param adata: Anndata of spatial data
     :type adata: Anndata
     :param gene_name: The gene name to fit
@@ -158,14 +155,11 @@ def get_exp_array(adata, gene_name):
 def fit_gmms(adata,
              gene_name_list: list,
              n_comp: int = 5,
-             max_iter: int = 100,
-             n_top_comp: int = 1):
+             max_iter: int = 100):
     """
     Same as fit_gmm, accepts a list of gene name.
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
-    :param n_top_comp:
-    :type n_top_comp:
     :param adata: Anndata of spatial data
     :type adata: Anndata
     :param gene_name_list: The python list, each element is a gene name in adata.
@@ -182,7 +176,7 @@ def fit_gmms(adata,
     dropped_genes_count = 0
     for gene_id in tqdm(gene_name_list, desc='Processing ...'):
         try:
-            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter, top_components=n_top_comp)
+            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
             if fit_result is not None:
                 gmm_dict[gene_id] = fit_result
             else:
