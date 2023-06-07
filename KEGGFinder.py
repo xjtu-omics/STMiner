@@ -5,14 +5,14 @@ from bioservices.kegg import KEGG
 class KEGGFinder:
     def __init__(self):
         self.kegg = KEGG()
-        self.result
+        self.result = object()
 
     def find(self, pathway):
         raw = self.kegg.get(pathway)
         self.result = self.kegg.parse(raw)
         return self.result
 
-    def get_gene_dataframe(self):        
+    def get_gene_dataframe(self):
         genes = self.result['GENE']
         symbols = []
         info = []
