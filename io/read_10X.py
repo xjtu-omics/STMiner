@@ -21,6 +21,6 @@ def read_10X_h5ad(file, amplification=1, bin_size=1):
         position = adata.obsm['spatial']
         x_min = position[:, 0].min() * amplification
         y_min = position[:, 1].min() * amplification
-        adata.obs['x'] = merge_bin_coor(position[:, 0] * amplification, x_min, bin_size=bin_size)
-        adata.obs['y'] = merge_bin_coor(position[:, 1] * amplification, y_min, bin_size=bin_size)
+        adata.obs['x'] = merge_bin_coordinate(position[:, 0] * amplification, x_min, bin_size=bin_size)
+        adata.obs['y'] = merge_bin_coordinate(position[:, 1] * amplification, y_min, bin_size=bin_size)
     return adata

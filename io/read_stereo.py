@@ -14,7 +14,7 @@ def read_gem_file(gem_file):
 
 
 def cos_similarity_distance(x, y):
-    """Calculate the cosin similarity distance between two vectors"""
+    """Calculate the cosine similarity distance between two vectors"""
     if x.shape != y.shape:
         raise ValueError('x and y must have same dimensions.')
     x = np.array(x)
@@ -31,19 +31,20 @@ def add_index(center_index, distance, edge_index):
 
 
 def get_surround_matrix(matrix, index, distance):
-    '''Get the surrounding matrix by index'''
+    """Get the surrounding matrix by index"""
     if distance < 1:
         raise ValueError("The value of distance must be larger than 0")
     row_edge = matrix.shape[0]
     col_edge = matrix.shape[1]
     row_index = index[0]
     col_index = index[1]
-    return matrix[sub_index(row_index, distance): add_index(row_index, distance, row_edge),
+    return matrix[
+           sub_index(row_index, distance): add_index(row_index, distance, row_edge),
            sub_index(col_index, distance): add_index(col_index, distance, col_edge)]
 
 
-def get_coor_matrix(df, merge_count=20):
-    '''Transform gene expression df to expression matrix'''
+def get_coordinate_matrix(df, merge_count=20):
+    """Transform gene expression df to expression matrix"""
     count = df.loc[:, ['x', 'y', 'UMICount']].groupby(['x', 'y'], as_index=False).sum('UMICount')
     bins = [np.array(range(count['x'].min(), count['x'].max() + merge_count, merge_count)),
             np.array(range(count['y'].min(), count['y'].max() + merge_count, merge_count))]
@@ -55,32 +56,32 @@ def get_coor_matrix(df, merge_count=20):
 
 
 def find_track(df):
-    H = get_coor_matrix(df)
+    mat = get_coordinate_matrix(df)
     # Calculate by columns
     col_total = []
-    for i in range(1, H.shape[1] - 1):
-        dis_1 = wasserstein_distance(H[:, i], H[:, i + 1])
-        dis_2 = wasserstein_distance(H[:, i], H[:, i - 1])
+    for i in range(1, mat.shape[1] - 1):
+        dis_1 = wasserstein_distance(mat[:, i], mat[:, i + 1])
+        dis_2 = wasserstein_distance(mat[:, i], mat[:, i - 1])
         wd_average = (dis_1 + dis_2) / 2
         col_total.append(wd_average)
     # Calculate by row
     row_total = []
-    for i in range(1, H.shape[0] - 1):
-        dis_1 = wasserstein_distance(H[i, :], H[i + 1, :])
-        dis_2 = wasserstein_distance(H[i, :], H[i - 1, :])
+    for i in range(1, mat.shape[0] - 1):
+        dis_1 = wasserstein_distance(mat[i, :], mat[i + 1, :])
+        dis_2 = wasserstein_distance(mat[i, :], mat[i - 1, :])
         wd_average = (dis_1 + dis_2) / 2
         row_total.append(wd_average)
     return {'row': row_total, 'col': col_total}
 
 
-def find_undersampled_pixel(H, distance, mean_percentage=0.2):
+def find_under_sampled_pixel(arr, distance, mean_percentage=0.2):
     """
     distance: The Chebyshev distance of surround_matrix to pixel location
     mean_percentage: The percentage threshold to compare against the mean value of surround_matrix
     """
-    bad_matrix = np.zeros(H.shape)
-    for index, value in np.ndenumerate(H):
-        surround_matrix = get_surround_matrix(H, index, distance)
+    bad_matrix = np.zeros(arr.shape)
+    for index, value in np.ndenumerate(arr):
+        surround_matrix = get_surround_matrix(arr, index, distance)
         is_lower_than_mean = surround_matrix.mean() * mean_percentage > value
         not_blank_region = np.median(surround_matrix) > 0
         is_square_matrix = surround_matrix.shape[0] == surround_matrix.shape[1]
@@ -99,8 +100,8 @@ def enhance_df_info(df, bin_size=20):
         df.rename(columns={'MIDCount': 'UMICount'}, inplace=True)
     x_min = df['x'].min()
     y_min = df['y'].min()
-    df['bin_x'] = merge_bin_coor(df['x'].values, x_min, bin_size)
-    df['bin_y'] = merge_bin_coor(df['y'].values, y_min, bin_size)
+    df['bin_x'] = merge_bin_coordinate(df['x'].values, x_min, bin_size)
+    df['bin_y'] = merge_bin_coordinate(df['y'].values, y_min, bin_size)
     df['x_center'] = get_bin_center(df['bin_x'], x_min, bin_size)
     df['y_center'] = get_bin_center(df['bin_y'], y_min, bin_size)
     df['cell_id'] = df['bin_x'].astype(str) + '_' + df['bin_y'].astype(str)
@@ -156,7 +157,6 @@ def view_under_sampled_matrix(matrix, dpi=200):
 def view_genes_matrix(matrix, dpi=200):
     max_value = np.mean(matrix) + np.std(matrix) * 3
     matrix[matrix > max_value] = max_value
-    std = np.std(matrix)
     plt.figure(dpi=dpi)
     # disable the legend
     plt.axis('off')
