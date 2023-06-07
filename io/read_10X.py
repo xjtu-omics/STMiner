@@ -1,10 +1,13 @@
-import numpy as np
 import scanpy as sc
 
+from IO.IOUtil import *
 
-def read_10X_h5ad(file, amplification=1):
+
+def read_10X_h5ad(file, amplification=1, bin_size=1):
     """
     Read h5ad file to anndata and add more information for SEP pipline.
+    :param bin_size:
+    :type bin_size:
     :param file: path to h5ad file
     :type file: str
     :param amplification:
@@ -16,10 +19,8 @@ def read_10X_h5ad(file, amplification=1):
     adata = sc.read_h5ad(file)
     if (('x' not in adata.obs.keys()) | ('y' not in adata.obs.keys())) and 'spatial' in adata.obsm.keys():
         position = adata.obsm['spatial']
-        adata.obs['x'] = _correct_coordinate(position[:, 0] * amplification)
-        adata.obs['y'] = _correct_coordinate(position[:, 1] * amplification)
+        x_min = position[:, 0].min() * amplification
+        y_min = position[:, 1].min() * amplification
+        adata.obs['x'] = merge_bin_coor(position[:, 0] * amplification, x_min, bin_size=bin_size)
+        adata.obs['y'] = merge_bin_coor(position[:, 1] * amplification, y_min, bin_size=bin_size)
     return adata
-
-
-def _correct_coordinate(array):
-    return (array - array.min()).astype(np.int32)

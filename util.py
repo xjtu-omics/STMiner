@@ -16,7 +16,7 @@ def get_3d_matrix(adata: anndata):
     x_max = int(adata.obs['x'].max())
     y_max = int(adata.obs['y'].max())
     # the spatial coordinates should be in adata.obs
-    three_d_array = np.zeros((int(x_max), int(y_max), int(adata.var.shape[0])))
+    three_d_array = np.zeros((int(x_max), int(y_max), int(adata.var.shape[0])), dtype=np.int32)
     print('Transfer anndata to 3D matrix...')
     for spot in tqdm(adata, bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
         x = int(spot.obs['x']) - 1
@@ -52,6 +52,7 @@ def convolve(array, kernel):
     # convolve each 2D layer
     output_array = np.zeros((n, m, k))
     print('Convolve each 2D layer...')
+
     for i in tqdm(range(k)):
         output_array[:, :, i] = convolve2d(array[:, :, i],
                                            kernel,

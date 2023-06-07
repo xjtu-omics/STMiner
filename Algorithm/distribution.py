@@ -130,7 +130,7 @@ def _sort_gmm(gmm):
     means = []
     covs = []
     weights = []
-    new_gmm = GMM(len(gmm.weights))
+    new_gmm = GMM(len(gmm.weights_))
     for index in indices:
         means.append(gmm.means_[index])
         covs.append(gmm.covariances_[index])
