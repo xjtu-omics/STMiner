@@ -125,22 +125,6 @@ def fit_gmm(adata: anndata,
         return None
 
 
-def _sort_gmm(gmm):
-    indices = list(np.argsort(gmm.weights_))
-    means = []
-    covs = []
-    weights = []
-    new_gmm = GMM(len(gmm.weights_))
-    for index in indices:
-        means.append(gmm.means_[index])
-        covs.append(gmm.covariances_[index])
-        weights.append(gmm.weights_[index])
-    new_gmm.set_mean(np.array(means))
-    new_gmm.set_covariances(np.array(covs))
-    new_gmm.set_weights(np.array(weights))
-    return new_gmm
-
-
 def get_exp_array(adata, gene_name):
     exp_array = adata[:, adata.var_names == gene_name].X
     if sparse.issparse(exp_array):
@@ -289,6 +273,22 @@ def mean_square_error(matrix1, matrix2):
     squared_diff = np.square(diff)
     mse = np.mean(squared_diff)
     return mse
+
+
+def _sort_gmm(gmm):
+    indices = list(np.argsort(gmm.weights_))
+    means = []
+    covs = []
+    weights = []
+    new_gmm = GMM(len(gmm.weights_))
+    for index in indices:
+        means.append(gmm.means_[index])
+        covs.append(gmm.covariances_[index])
+        weights.append(gmm.weights_[index])
+    new_gmm.set_mean(np.array(means))
+    new_gmm.set_covariances(np.array(covs))
+    new_gmm.set_weights(np.array(weights))
+    return new_gmm
 
 
 class GMM:
