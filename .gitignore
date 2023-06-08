@@ -8,6 +8,5 @@
 *.jpg
 *.xml
 .idea/Wukong.iml
-gmm_dict.pickle
 *.pickle
 *.pyc
