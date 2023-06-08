@@ -204,7 +204,7 @@ def fit_gmms(adata,
     dropped_genes_count = 0
     for gene_id in tqdm(gene_name_list, desc='Processing ...'):
         try:
-            _, fit_result = fit_gmm_bic(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
+            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
             if fit_result is not None:
                 gmm_dict[gene_id] = fit_result
             else:
