@@ -1,11 +1,12 @@
 # Usage
 
 ### import package
+
 ```python
 import scanpy as sc
 import squidpy as sq
 
-from util import *
+from utils import *
 from Algorithm.graph import *
 from Algorithm.distribution import *
 ```
