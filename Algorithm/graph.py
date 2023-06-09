@@ -1,6 +1,7 @@
 import networkx as nx
-from utils import issparse
+
 from Algorithm.distribution import *
+from utils import issparse
 
 
 def build_gmm_distance_array(gmm_dict, method='weight_match'):

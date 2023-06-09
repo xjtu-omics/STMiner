@@ -2,12 +2,12 @@ import anndata
 import numpy as np
 import pandas as pd
 import scanpy as sc
+import scipy.signal as signal
 import tifffile as tiff
 from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix, issparse
 from tqdm import tqdm
-import scipy.signal as signal
 
 
 def get_3d_matrix(adata: anndata):
