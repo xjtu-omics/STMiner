@@ -5,8 +5,9 @@ import scanpy as sc
 import tifffile as tiff
 from PIL import Image
 from scipy.signal import convolve2d
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, issparse
 from tqdm import tqdm
+import scipy.signal as signal
 
 
 def get_3d_matrix(adata: anndata):
@@ -47,26 +48,39 @@ def get_mean_filter_kernel(size=3):
     return np.ones([size, size]) * (1 / size ** 2)
 
 
-def convolve(array, kernel):
-    n, m, k = array.shape
+def convolve(array, method, kernel_size=3):
+    x, y, gene_index = array.shape
     # convolve each 2D layer
-    output_array = np.zeros((n, m, k))
+    output_array = np.zeros((x, y, gene_index))
     print('Convolve each 2D layer...')
-
-    for i in tqdm(range(k)):
-        output_array[:, :, i] = convolve2d(array[:, :, i],
-                                           kernel,
-                                           mode='same')
+    if method == 'gaussian':
+        for i in tqdm(range(gene_index)):
+            output_array[:, :, i] = convolve2d(array[:, :, i],
+                                               get_gaussian_kernel(size=kernel_size),
+                                               mode='same')
+    elif method == 'mid':
+        for i in tqdm(range(gene_index)):
+            output_array[:, :, i] = signal.medfilt2d(array[:, :, i], kernel_size=kernel_size)
     output_array = np.where(output_array < 0, 0, output_array)
     return output_array
 
 
 def update_anndata(array: np.array, adata: anndata):
     print('Update anndata...')
-    for spot in tqdm(adata):
-        x = int(spot.obs['x']) - 1
-        y = int(spot.obs['y']) - 1
-        spot.X = csr_matrix(array[x, y])
+    if issparse(adata[0].X):
+        for spot in tqdm(adata):
+            x = int(spot.obs['x']) - 1
+            y = int(spot.obs['y']) - 1
+            spot.X = csr_matrix(array[x, y])
+    else:
+        for spot in tqdm(adata):
+            x = int(spot.obs['x']) - 1
+            y = int(spot.obs['y']) - 1
+            spot.X = array[x, y]
+
+
+def is_sparse(array):
+    return issparse(array)
 
 
 def run_sharp(adata: anndata):
