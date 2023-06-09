@@ -11,7 +11,7 @@ from sklearn import mixture
 from tqdm import tqdm
 
 from Algorithm.Algorithm import *
-from util import array_to_list
+from utils import array_to_list
 
 
 def distribution_distance(gmm1, gmm2, method='weight_match'):
