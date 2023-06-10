@@ -4,10 +4,15 @@ from Algorithm.distribution import *
 from utils import issparse
 
 
+class Graph:
+    def __init__(self):
+        pass
+
+
 def build_gmm_distance_array(gmm_dict, method='weight_match'):
     """
     Generate a distance matrix by the given gmm dictionary.
-    :param method:
+    :param method: 'weight_match' or 'optimized_match', default: 'weight_match'
     :type method:
     :param gmm_dict: gmm dictionary, key is gene name, value is GMM model.
     :type gmm_dict: dict
@@ -37,7 +42,18 @@ def build_mse_distance_array(adata, gene_list):
     return distance_array
 
 
-def build_mix_distance_array(adata, gmm_dict):
+def build_mix_distance_array(adata, gmm_dict, method='optimized_match'):
+    """
+
+    :param adata:
+    :type adata:
+    :param gmm_dict: 
+    :type gmm_dict:
+    :param method: optimized_match or weight_match
+    :type method:
+    :return:
+    :rtype:
+    """
     gene_list = list(gmm_dict.keys())
     gene_counts = len(gene_list)
     distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
@@ -51,15 +67,19 @@ def build_mix_distance_array(adata, gmm_dict):
                     mse_distance = np.mean(np.square(diff))
                 gmm_distance = distribution_distance(gmm_dict[gene_list[i]],
                                                      gmm_dict[gene_list[j]],
-                                                     method='weight_match')
+                                                     method=method)
                 # TODO:
                 distance_array.loc[gene_list[i], gene_list[j]] = mse_distance + gmm_distance
     return distance_array
 
 
-def build_graph(gmm_dict: dict, distance_threshold: int = 1):
+def build_graph(gmm_dict: dict,
+                method='optimized_match',
+                distance_threshold: int = 1):
     """
     Build graph by distance matrix
+    :param method: weight_match or optimized_match
+    :type method:
     :param gmm_dict:
     :type gmm_dict: dict
     :param distance_threshold:
@@ -78,7 +98,7 @@ def build_graph(gmm_dict: dict, distance_threshold: int = 1):
     for i in tqdm(range(gene_counts)):
         for j in range(gene_counts):
             if i != j and not graph.has_edge(gene_list[i], gene_list[j]):
-                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
+                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]], method=method)
                 if distance < distance_threshold:
                     weight = 1 / distance
                     graph.add_edge(gene_list[i], gene_list[j], weight=weight)

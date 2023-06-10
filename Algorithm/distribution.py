@@ -14,7 +14,7 @@ from Algorithm.Algorithm import *
 from utils import array_to_list
 
 
-def distribution_distance(gmm1, gmm2, method='weight_match'):
+def distribution_distance(gmm1, gmm2, method='optimized_match'):
     """
     Calculates the distance between gmm1 and gmm2
     :param method: 'weight_match' or 'optimized_match', default: 'weight_match'
@@ -161,7 +161,7 @@ def fit_gmm(adata: anndata,
     dense_array = get_exp_array(adata, gene_name)
     result = np.array(array_to_list(dense_array))
     # Number of unique center must be larger than the number of components.
-    if len(set(map(tuple, result))) > n_comp:
+    if len(set(map(tuple, result))) >= n_comp:
         gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
         gmm.fit(result)
         return gmm
@@ -202,7 +202,7 @@ def fit_gmms(adata,
     """
     gmm_dict = {}
     dropped_genes_count = 0
-    for gene_id in tqdm(gene_name_list, desc='Processing ...'):
+    for gene_id in tqdm(gene_name_list, desc='Fitting ...'):
         try:
             fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
             if fit_result is not None:
