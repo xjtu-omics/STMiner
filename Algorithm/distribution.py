@@ -14,20 +14,20 @@ from Algorithm.Algorithm import *
 from utils import array_to_list
 
 
-def distribution_distance(gmm1, gmm2, method='optimized_match'):
+def distribution_distance(first_gmm, second_gmm, method='optimized_match'):
     """
     Calculates the distance between gmm1 and gmm2
-    :param method: 'weight_match' or 'optimized_match', default: 'weight_match'
+    :param method: 'weight_match' or 'optimized_match' or 'emd', default: 'weight_match'
     :type method: str
-    :param gmm1: The first GMM model
-    :type gmm1:
-    :param gmm2: The second GMM model
-    :type gmm2:
+    :param first_gmm: The first GMM model
+    :type first_gmm:
+    :param second_gmm: The second GMM model
+    :type second_gmm:
     :return: Distance between gmm1 and gmm2
     :rtype: np.float64
     """
-    gmm1 = _sort_gmm(gmm1)
-    gmm2 = _sort_gmm(gmm2)
+    gmm1 = _sort_gmm(first_gmm)
+    gmm2 = _sort_gmm(second_gmm)
     gmm1_weights = gmm1.weights_
     gmm1_means = gmm1.means_
     gmm1_covs = gmm1.covariances_
@@ -36,8 +36,8 @@ def distribution_distance(gmm1, gmm2, method='optimized_match'):
     gmm2_covs = gmm2.covariances_
     n_components = gmm1_weights.size
     distance = np.float64(0)
+    distance_array = np.zeros((n_components, n_components))
     if method == 'optimized_match':
-        distance_array = np.zeros((n_components, n_components))
         for i in range(n_components):
             for j in range(n_components):
                 hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
@@ -47,6 +47,13 @@ def distribution_distance(gmm1, gmm2, method='optimized_match'):
         for i in range(n_components):
             hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[i], gmm2_means[i])
             distance += (gmm1.weights_[i] + gmm2.weights_[i]) * hd
+    elif method == 'emd':
+        for i in range(n_components):
+            for j in range(n_components):
+                hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
+                distance_array[i, j] = hd
+        distance = emd(distance_array, gmm1_weights, gmm2_weights)
+
     return distance
 
 
