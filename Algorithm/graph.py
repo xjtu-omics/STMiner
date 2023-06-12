@@ -13,7 +13,7 @@ class Graph:
 def build_gmm_distance_array(gmm_dict, method='weight_match'):
     """
     Generate a distance matrix by the given gmm dictionary.
-    :param method: 'weight_match' or 'optimized_match', default: 'weight_match'
+    :param method: 'weight_match' or 'optimized_match' or 'emd, default: 'weight_match'
     :type method:
     :param gmm_dict: gmm dictionary, key is gene name, value is GMM model.
     :type gmm_dict: dict
