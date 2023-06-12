@@ -302,10 +302,6 @@ def fit_gmms_multiprocessing(adata: anndata,
     return normal_dict
 
 
-def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
-    shared_dict[gene_name] = fit_gmm_bic(adata, gene_name, n_comp, max_iter)
-
-
 def view_gmm(gmm, scope, bin_count=None):
     """
     View the fitted GMM model.
@@ -352,7 +348,7 @@ def view_pattern(adata, gene_list, size=6):
 
 
 @njit
-def mean_square_error(matrix1, matrix2):
+def _mean_square_error(matrix1, matrix2):
     """
 
     :param matrix1:
@@ -384,6 +380,10 @@ def _sort_gmm(gmm):
     new_gmm.set_covariances(np.array(covs))
     new_gmm.set_weights(np.array(weights))
     return new_gmm
+
+
+def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
+    shared_dict[gene_name] = fit_gmm_bic(adata, gene_name, n_comp, max_iter)
 
 
 class GMM:
