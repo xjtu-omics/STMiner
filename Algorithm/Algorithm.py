@@ -5,6 +5,8 @@ from sklearn.cluster import KMeans
 from sklearn.cluster import SpectralClustering
 from sklearn.manifold import MDS
 
+import ot
+
 
 def linear_sum(cost: np.array) -> np.float:
     """
@@ -23,6 +25,11 @@ def linear_sum(cost: np.array) -> np.float:
     row_ind, col_ind = linear_sum_assignment(cost)
     min_cost = cost[row_ind, col_ind].sum()
     return min_cost
+
+
+def emd(cost, weights1, weights2):
+    distance = ot.sinkhorn2(weights1, weights2, cost, 1)
+    return distance
 
 
 def cluster(distance_array: pd.DataFrame,
@@ -53,7 +60,7 @@ def cluster(distance_array: pd.DataFrame,
     mds = MDS(n_components=mds_components, dissimilarity='precomputed')
     embedding_position = mds.fit_transform(distance_array)
     if method == 'kmeans':
-        fit_result = KMeans(n_clusters=n_clusters, random_state=0).fit(embedding_position)
+        fit_result = KMeans(n_clusters=n_clusters, random_state=0, max_iter=1000, n_init=20).fit(embedding_position)
     elif method == 'spectral':
         fit_result = SpectralClustering(n_clusters=n_clusters, random_state=0, affinity='rbf').fit(embedding_position)
     result = pd.DataFrame(dict(gene_id=list(index), labels=list(fit_result.labels_)))
