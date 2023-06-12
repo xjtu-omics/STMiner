@@ -140,13 +140,16 @@ def fit_gmm_bic(adata: anndata,
 def fit_gmm(adata: anndata,
             gene_name: str,
             n_comp: int = 2,
-            max_iter: int = 200):
+            max_iter: int = 200,
+            reg_covar=1e-3):
     """
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
 
     Estimate model parameters with the EM algorithm.
 
+    :param reg_covar:
+    :type reg_covar:
     :param adata: Anndata of spatial data
     :type adata: Anndata
     :param gene_name: The gene name to fit
@@ -162,7 +165,7 @@ def fit_gmm(adata: anndata,
     result = np.array(array_to_list(dense_array))
     # Number of unique center must be larger than the number of components.
     if len(set(map(tuple, result))) >= n_comp:
-        gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter)
+        gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
         gmm.fit(result)
         return gmm
     else:
@@ -181,13 +184,16 @@ def get_exp_array(adata, gene_name):
 
 
 def fit_gmms(adata,
-             gene_name_list: list,
-             n_comp: int = 5,
-             max_iter: int = 100):
+             gene_name_list,
+             n_comp=5,
+             max_iter=100,
+             reg_covar=1e-3):
     """
     Same as fit_gmm_bic, accepts a list of gene name.
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
+    :param reg_covar:
+    :type reg_covar:
     :param adata: Anndata of spatial data
     :type adata: Anndata
     :param gene_name_list: The python list, each element is a gene name in adata.
@@ -202,9 +208,9 @@ def fit_gmms(adata,
     """
     gmm_dict = {}
     dropped_genes_count = 0
-    for gene_id in tqdm(gene_name_list, desc='Fitting ...'):
+    for gene_id in tqdm(gene_name_list, desc='Fitting...'):
         try:
-            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter)
+            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter, reg_covar=reg_covar)
             if fit_result is not None:
                 gmm_dict[gene_id] = fit_result
             else:

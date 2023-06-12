@@ -47,3 +47,9 @@ arr = build_gmm_distance_array(gmm_dict)
 ```python
 cluster()
 ```
+
+### Visualization
+
+```python
+todo
+```

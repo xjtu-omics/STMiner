@@ -1,4 +1,5 @@
 import networkx as nx
+from scipy.spatial.distance import cdist
 
 from Algorithm.distribution import *
 from utils import issparse
@@ -47,7 +48,7 @@ def build_mix_distance_array(adata, gmm_dict, method='optimized_match'):
 
     :param adata:
     :type adata:
-    :param gmm_dict: 
+    :param gmm_dict:
     :type gmm_dict:
     :param method: optimized_match or weight_match
     :type method:
@@ -70,6 +71,20 @@ def build_mix_distance_array(adata, gmm_dict, method='optimized_match'):
                                                      method=method)
                 # TODO:
                 distance_array.loc[gene_list[i], gene_list[j]] = mse_distance + gmm_distance
+    return distance_array
+
+
+def build_ot_distance_array(adata, gene_list):
+    gene_list = list(gene_list)
+    gene_counts = len(gene_list)
+    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
+    for i in tqdm(range(gene_counts), desc='Building distance array...'):
+        for j in range(gene_counts):
+            if i != j:
+                d = cdist(get_exp_array(adata, gene_list[i]), get_exp_array(adata, gene_list[j]))
+                assignment = linear_sum_assignment(d)
+                distance = d[assignment].sum()
+                distance_array.loc[gene_list[i], gene_list[j]] = distance
     return distance_array
 
 

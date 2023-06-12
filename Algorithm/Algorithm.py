@@ -11,7 +11,7 @@ def linear_sum(cost: np.array) -> np.float:
     Solve the linear sum assignment problem. The goal is to find a complete assignment of workers to jobs of minimal
     cost.
 
-    LATEX: \min_{x}\sum_{i=1}^{n}\sum_{j=1}^{m} c_{i, j} x_{i, j}
+    .. math:: \min_{x}\sum_{i=1}^{n}\sum_{j=1}^{m} c_{i, j} x_{i, j}
 
     Ref:
      - https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html
