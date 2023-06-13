@@ -1,11 +1,10 @@
 import numpy as np
+import ot
 import pandas as pd
 from scipy.optimize import linear_sum_assignment
 from sklearn.cluster import KMeans
 from sklearn.cluster import SpectralClustering
 from sklearn.manifold import MDS
-
-import ot
 
 
 def linear_sum(cost: np.array) -> np.float:

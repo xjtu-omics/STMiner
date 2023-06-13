@@ -1,5 +1,6 @@
 import networkx as nx
 from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cosine
 
 from Algorithm.distribution import *
 from utils import issparse
@@ -27,6 +28,19 @@ def build_gmm_distance_array(gmm_dict, method='weight_match'):
         for j in range(gene_counts):
             if i != j:
                 distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]], method=method)
+                distance_array.loc[gene_list[i], gene_list[j]] = distance
+    return distance_array
+
+
+def build_cosine_similarity_array(adata, gene_list):
+    gene_list = list(gene_list)
+    gene_counts = len(gene_list)
+    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
+    for i in tqdm(range(gene_counts), desc='Building distance array...'):
+        for j in range(gene_counts):
+            if i != j:
+                distance = cosine(get_exp_array(adata, gene_list[i]).flatten(),
+                                  get_exp_array(adata, gene_list[j]).flatten())
                 distance_array.loc[gene_list[i], gene_list[j]] = distance
     return distance_array
 
