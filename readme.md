@@ -6,7 +6,7 @@
 import scanpy as sc
 import squidpy as sq
 
-from utils import *
+from Utils.utils import *
 from Algorithm.graph import *
 from Algorithm.distribution import *
 ```

@@ -3,7 +3,7 @@ from scipy.spatial.distance import cdist
 from scipy.spatial.distance import cosine
 
 from Algorithm.distribution import *
-from utils import issparse
+from Utils.utils import issparse
 
 
 class Graph:

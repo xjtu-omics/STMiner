@@ -11,7 +11,7 @@ from sklearn import mixture
 from tqdm import tqdm
 
 from Algorithm.Algorithm import *
-from utils import array_to_list
+from Utils.utils import array_to_list
 
 
 def distribution_distance(first_gmm, second_gmm, method='optimized_match'):
@@ -186,7 +186,7 @@ def get_exp_array(adata, gene_name):
     else:
         data = np.array(exp_array)
     sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
-    dense_array = np.array(sparse_matrix.todense(), dtype=np.int32)
+    dense_array = np.array(np.round(sparse_matrix.todense()), dtype=np.int32)
     return dense_array
 
 
@@ -309,9 +309,11 @@ def fit_gmms_multiprocessing(adata: anndata,
     return normal_dict
 
 
-def view_gmm(gmm, scope, bin_count=None):
+def view_gmm(gmm, scope, cmap=None, bin_count=None):
     """
     View the fitted GMM model.
+    :param cmap:
+    :type cmap:
     :param bin_count:
     :type bin_count:
     :param scope:
@@ -332,7 +334,10 @@ def view_gmm(gmm, scope, bin_count=None):
     # calculate the density
     density = gmm.score_samples(x_y)
     density = density.reshape(x_range.shape)
-    sns.heatmap(np.exp(density))
+    if cmap is not None:
+        sns.heatmap(np.exp(density), cmap=cmap)
+    else:
+        sns.heatmap(np.exp(density))
     plt.show()
 
 
