@@ -43,7 +43,10 @@ def plot_heatmap(result,
     for i, heatmap in enumerate(gene_list):
         row = i // num_cols
         col = i % num_cols
-        ax = axes[row, col]
+        if len(axes.shape) == 1:
+            ax = axes[i]
+        else:
+            ax = axes[row, col]
         arr = get_exp_array(adata, heatmap)
         sns.heatmap(arr,
                     cbar=False,
