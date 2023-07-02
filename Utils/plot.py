@@ -9,7 +9,7 @@ def plot_heatmap(result,
                  adata,
                  label,
                  cmap=None,
-                 num_cols=5,
+                 num_cols=4,
                  vmax=99,
                  vmin=0):
     """

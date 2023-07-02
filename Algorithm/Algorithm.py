@@ -7,7 +7,7 @@ from sklearn.cluster import SpectralClustering
 from sklearn.manifold import MDS
 
 
-def linear_sum(cost: np.array) -> np.float:
+def linear_sum(cost: np.array):
     """
     Solve the linear sum assignment problem. The goal is to find a complete assignment of workers to jobs of minimal
     cost.
