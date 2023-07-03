@@ -66,6 +66,6 @@ def plot_pattern(result, adata, label, cmap=None, vmax=99):
     for i in li:
         total += get_exp_array(adata, i)
     if cmap is not None:
-        sns.heatmap(total, cmap=cmap, vmax=vmax)
+        sns.heatmap(total, cmap=cmap, vmax=np.percentile(total, vmax))
     else:
-        sns.heatmap(total, vmax=vmax)
+        sns.heatmap(total, vmax=np.percentile(total, vmax))
