@@ -10,7 +10,7 @@ def plot_heatmap(result,
                  label,
                  cmap=None,
                  num_cols=4,
-                 vmax=99,
+                 vmax=100,
                  vmin=0):
     """
 
@@ -33,8 +33,7 @@ def plot_heatmap(result,
     if cmap is not None:
         new_cmap = cmap
     else:
-        new_colors = ['lightgrey', 'lightblue', '#00FF00', '#FFFF00', '#FFA500', '#FF0000']
-        new_cmap = colors.ListedColormap(new_colors)
+        new_cmap = 'viridis'
     num_plots = len(gene_list)
     num_cols = num_cols
     num_rows = (num_plots + num_cols - 1) // num_cols
