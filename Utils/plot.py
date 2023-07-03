@@ -61,11 +61,11 @@ def plot_heatmap(result,
 
 
 def plot_pattern(result, adata, label, cmap=None, vmax=99):
-    li = list(result[result['labels'] == label]['gene_id'])
-    total = np.zeros(get_exp_array(adata, li[0]).shape)
-    for i in li:
-        total += get_exp_array(adata, i)
+    gene_list = list(result[result['labels'] == label]['gene_id'])
+    total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
+    for gene in gene_list:
+        total_count += get_exp_array(adata, gene)
     if cmap is not None:
-        sns.heatmap(total, cmap=cmap, vmax=np.percentile(total, vmax))
+        sns.heatmap(total_count, cmap=cmap, vmax=np.percentile(total_count, vmax))
     else:
-        sns.heatmap(total, vmax=np.percentile(total, vmax))
+        sns.heatmap(total_count, cmap='viridis', vmax=np.percentile(total_count, vmax))
