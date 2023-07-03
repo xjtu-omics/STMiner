@@ -3,7 +3,7 @@ import scanpy as sc
 from IO.IOUtil import *
 
 
-def read_10X_h5ad(file, amplification=1, bin_size=1):
+def read_10x_h5ad(file, amplification=1, bin_size=1):
     """
     Read h5ad file to anndata and add more information for SEP pipline.
     :param bin_size:
