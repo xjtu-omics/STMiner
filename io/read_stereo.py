@@ -8,9 +8,13 @@ from scipy.stats import wasserstein_distance
 from IO.IOUtil import *
 
 
-def read_gem_file(gem_file):
+def read_gem_file(gem_file, bin_size=40):
     gem_dataframe = pd.read_csv(str(gem_file), sep='\t', comment='#', header=0)
-    return gem_dataframe
+    df = enhance_df_info(gem_dataframe, bin_size=bin_size)
+    adata = get_anndata(df)
+    return adata
+
+
 
 
 def cos_similarity_distance(x, y):
