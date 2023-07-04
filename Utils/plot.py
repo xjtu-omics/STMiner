@@ -6,14 +6,17 @@ from Algorithm.distribution import get_exp_array
 
 
 def plot_heatmap(result,
-                 adata,
                  label,
+                 adata,
+                 gene_list=None,
                  cmap=None,
                  num_cols=4,
                  vmax=100,
                  vmin=0):
     """
-
+    Plot the heatmap for the given list.
+    :param gene_list:
+    :type gene_list:
     :param cmap:
     :type cmap:
     :param result:
@@ -29,7 +32,8 @@ def plot_heatmap(result,
     :param vmin:
     :type vmin:
     """
-    gene_list = list(result[result['labels'] == label]['gene_id'])
+    if gene_list is None:
+        gene_list = list(result[result['labels'] == label]['gene_id'])
     if cmap is not None:
         new_cmap = cmap
     else:

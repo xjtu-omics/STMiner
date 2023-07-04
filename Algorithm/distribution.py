@@ -147,6 +147,8 @@ def fit_gmm_bic(adata: anndata,
 def fit_gmm(adata: anndata,
             gene_name: str,
             n_comp: int = 2,
+            binary: bool = False,
+            threshold: int = 95,
             max_iter: int = 200,
             reg_covar=1e-3):
     """
@@ -155,6 +157,10 @@ def fit_gmm(adata: anndata,
 
     Estimate model parameters with the EM algorithm.
 
+    :param threshold:
+    :type threshold:
+    :param binary:
+    :type binary:
     :param reg_covar:
     :type reg_covar:
     :param adata: Anndata of spatial data
@@ -169,7 +175,14 @@ def fit_gmm(adata: anndata,
     :rtype: GaussianMixture
     """
     dense_array = get_exp_array(adata, gene_name)
-    result = np.array(array_to_list(dense_array))
+    if binary:
+        if threshold > 100 | threshold < 0:
+            print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
+            threshold = 100
+        binary_arr = np.where(dense_array > np.percentile(dense_array, threshold), 1, 0)
+        result = np.array(array_to_list(binary_arr))
+    else:
+        result = np.array(array_to_list(dense_array))
     # Number of unique center must be larger than the number of components.
     if len(set(map(tuple, result))) >= n_comp:
         gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
@@ -193,12 +206,18 @@ def get_exp_array(adata, gene_name):
 def fit_gmms(adata,
              gene_name_list,
              n_comp=5,
+             binary=False,
+             threshold=95,
              max_iter=100,
              reg_covar=1e-3):
     """
     Same as fit_gmm_bic, accepts a list of gene name.
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
+    :param threshold:
+    :type threshold:
+    :param binary:
+    :type binary:
     :param reg_covar:
     :type reg_covar:
     :param adata: Anndata of spatial data
@@ -217,7 +236,13 @@ def fit_gmms(adata,
     dropped_genes_count = 0
     for gene_id in tqdm(gene_name_list, desc='Fitting...'):
         try:
-            fit_result = fit_gmm(adata, gene_id, n_comp=n_comp, max_iter=max_iter, reg_covar=reg_covar)
+            fit_result = fit_gmm(adata,
+                                 gene_id,
+                                 n_comp=n_comp,
+                                 binary=binary,
+                                 threshold=threshold,
+                                 max_iter=max_iter,
+                                 reg_covar=reg_covar)
             if fit_result is not None:
                 gmm_dict[gene_id] = fit_result
             else:
