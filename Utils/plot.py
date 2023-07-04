@@ -39,14 +39,14 @@ def plot_heatmap(result,
     num_rows = (num_plots + num_cols - 1) // num_cols
     fig, axes = plt.subplots(num_rows, num_cols, figsize=(12, 3 * num_rows))
     fig.subplots_adjust(hspace=0.5)
-    for i, heatmap in enumerate(gene_list):
+    for i, gene in enumerate(gene_list):
         row = i // num_cols
         col = i % num_cols
         if len(axes.shape) == 1:
             ax = axes[i]
         else:
             ax = axes[row, col]
-        arr = get_exp_array(adata, heatmap)
+        arr = get_exp_array(adata, gene)
         sns.heatmap(arr,
                     cbar=False,
                     ax=ax,
@@ -55,7 +55,7 @@ def plot_heatmap(result,
                     vmin=np.percentile(arr, vmin)
                     )
         ax.axis('off')
-        ax.set_title(heatmap)
+        ax.set_title(gene)
     plt.tight_layout()
     plt.show()
 
