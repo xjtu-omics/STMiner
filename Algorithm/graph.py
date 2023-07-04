@@ -32,6 +32,18 @@ def build_gmm_distance_array(gmm_dict, method='weight_match'):
     return distance_array
 
 
+def compare_gmm_distance(gmm, gmm_dict, method='weight_match'):
+    gene_list = list(gmm_dict.keys())
+    gene_counts = len(gene_list)
+    distance_dict = {}
+    for gene in tqdm(range(gene_counts), desc='Building distance array...'):
+        distance = distribution_distance(gmm, gmm_dict[gene_list[gene]], method=method)
+        distance_dict[gene_list[gene]] = distance
+    df = pd.DataFrame.from_dict(distance_dict, orient='index')
+    sorted_df = df.sort_values(0)
+    return sorted_df
+
+
 def build_cosine_similarity_array(adata, gene_list):
     gene_list = list(gene_list)
     gene_counts = len(gene_list)
