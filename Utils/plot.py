@@ -63,10 +63,11 @@ def plot_heatmap(result=None,
     plt.show()
 
 
-def plot_pattern(result, adata, label, cmap=None, vmax=99, num_cols=4):
+def plot_pattern(result, adata, cmap=None, vmax=99, num_cols=4):
     label_list = set(result['labels'])
     plot_count = len(label_list)
     axes, fig = _get_figure(plot_count, num_cols)
+    fig.subplots_adjust(hspace=0.5)
     for i, label in enumerate(label_list):
         row = i // num_cols
         col = i % num_cols
@@ -74,19 +75,24 @@ def plot_pattern(result, adata, label, cmap=None, vmax=99, num_cols=4):
             ax = axes[i]
         else:
             ax = axes[row, col]
+        gene_list = list(result[result['labels'] == str(label)]['gene_id'])
+        total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
+        for gene in gene_list:
+            total_count += get_exp_array(adata, gene)
 
-    gene_list = list(result[result['labels'] == label]['gene_id'])
-    total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
-
-    for gene in gene_list:
-        total_count += get_exp_array(adata, gene)
-
-    sns.heatmap(total_count,
-                cmap=cmap if cmap is not None else 'viridis',
-                vmax=np.percentile(total_count, vmax))
+        sns.heatmap(total_count,
+                    cmap=cmap if cmap is not None else 'viridis',
+                    vmax=np.percentile(total_count, vmax))
+        ax.axis('off')
+        ax.set_title('Pattern ' + label)
+    plt.tight_layout()
+    plt.show()
 
 
 def _get_figure(fig_count, num_cols):
     num_rows = (fig_count + num_cols - 1) // num_cols
     fig, axes = plt.subplots(num_rows, num_cols, figsize=(12, 3 * num_rows))
+    # Disable the axis for each subplot
+    for ax in axes.flat:
+        ax.axis('off')
     return axes, fig
