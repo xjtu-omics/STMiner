@@ -75,16 +75,18 @@ def plot_pattern(result, adata, cmap=None, vmax=99, num_cols=4):
             ax = axes[i]
         else:
             ax = axes[row, col]
-        gene_list = list(result[result['labels'] == str(label)]['gene_id'])
+        gene_list = list(result[result['labels'] == label]['gene_id'])
         total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
         for gene in gene_list:
             total_count += get_exp_array(adata, gene)
 
         sns.heatmap(total_count,
+                    ax=ax,
+                    cbar=False,
                     cmap=cmap if cmap is not None else 'viridis',
                     vmax=np.percentile(total_count, vmax))
         ax.axis('off')
-        ax.set_title('Pattern ' + label)
+        ax.set_title('Pattern ' + str(label))
     plt.tight_layout()
     plt.show()
 
