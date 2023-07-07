@@ -11,11 +11,9 @@ class Graph:
         pass
 
 
-def build_gmm_distance_array(gmm_dict, method='weight_match'):
+def build_gmm_distance_array(gmm_dict):
     """
     Generate a distance matrix by the given gmm dictionary.
-    :param method: 'weight_match' or 'optimized_match' or 'emd, default: 'weight_match'
-    :type method:
     :param gmm_dict: gmm dictionary, key is gene name, value is GMM model.
     :type gmm_dict: dict
     :return: distance array
@@ -27,7 +25,7 @@ def build_gmm_distance_array(gmm_dict, method='weight_match'):
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
-                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]], method=method)
+                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
                 distance_array.loc[gene_list[i], gene_list[j]] = distance
     return distance_array
 
