@@ -11,14 +11,19 @@ class SPFinder:
         self.genes_patterns = None
         self.genes_distance_array = None
         self.genes_labels = None
+        self._gene_expression_edge = {}
         self._highly_variable_genes = []
-        self.gene_expression_edge = {}
+        self._scope = ()
+
+    def set_adata(self, adata):
+        self.adata = adata
+        self._scope = (0, max(adata.obs['y'].max(), adata.obs['x'].max()))
 
     def read_10x(self, file, amplification=1, bin_size=1):
-        self.adata = read_10x_h5ad(file, amplification=amplification, bin_size=bin_size)
+        self.set_adata(read_10x_h5ad(file, amplification=amplification, bin_size=bin_size))
 
     def read_gem(self, file):
-        self.adata = read_gem_file(file, bin_size=40)
+        self.set_adata(read_gem_file(file, bin_size=40))
 
     def merge_bin(self, bin_width):
         self.adata.obs['x'] = merge_bin_coordinate(self.adata.obs['x'], self.adata.obs['x'].min(), bin_size=bin_width)
@@ -38,3 +43,7 @@ class SPFinder:
 
     def plot_pattern(self, vmax=100):
         plot_pattern(self.genes_labels, self.adata, vmax=vmax)
+
+    def plot_gmm(self, gene_name, cmap=None):
+        gmm = self.genes_patterns[gene_name]
+        view_gmm(gmm, scope=self._scope, cmap=cmap)
