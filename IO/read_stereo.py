@@ -15,8 +15,6 @@ def read_gem_file(gem_file, bin_size=40):
     return adata
 
 
-
-
 def cos_similarity_distance(x, y):
     """Calculate the cosine similarity distance between two vectors"""
     if x.shape != y.shape:

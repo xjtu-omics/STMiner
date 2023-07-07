@@ -23,4 +23,8 @@ def read_10x_h5ad(file, amplification=1, bin_size=1):
         y_min = position[:, 1].min() * amplification
         adata.obs['x'] = merge_bin_coordinate(position[:, 0] * amplification, x_min, bin_size=bin_size)
         adata.obs['y'] = merge_bin_coordinate(position[:, 1] * amplification, y_min, bin_size=bin_size)
+        adata.misc = {'up': position[:, 1].min(),
+                      'down': position[:, 1].max(),
+                      'left': position[:, 0].min(),
+                      'right': position[:, 0].max()}
     return adata

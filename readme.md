@@ -23,8 +23,8 @@ adata = sc.read_h5ad(h5ad_path)
 ```python
 sc.pp.normalize_total(adata, inplace=True)
 sc.pp.log1p(adata)
-sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
-sc.pl.highly_variable_genes(adata)
+sc.pp._highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
+sc.pl._highly_variable_genes(adata)
 ```
 
 ### fit GMM
