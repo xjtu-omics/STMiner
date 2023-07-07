@@ -14,11 +14,9 @@ from Algorithm.Algorithm import *
 from Utils.utils import array_to_list
 
 
-def distribution_distance(first_gmm, second_gmm, method='optimized_match'):
+def distribution_distance(first_gmm, second_gmm):
     """
     Calculates the distance between gmm1 and gmm2
-    :param method: 'weight_match' or 'optimized_match' or 'emd', default: 'weight_match'
-    :type method: str
     :param first_gmm: The first GMM model
     :type first_gmm:
     :param second_gmm: The second GMM model
@@ -35,25 +33,12 @@ def distribution_distance(first_gmm, second_gmm, method='optimized_match'):
     gmm2_means = gmm2.means_
     gmm2_covs = gmm2.covariances_
     n_components = gmm1_weights.size
-    distance = np.float64(0)
     distance_array = np.zeros((n_components, n_components))
-    if method == 'optimized_match':
-        for i in range(n_components):
-            for j in range(n_components):
-                hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
-                distance_array[i, j] = (gmm1_weights[i] + gmm2_weights[j]) * hd
-        distance = linear_sum(distance_array)
-    elif method == 'weight_match':
-        for i in range(n_components):
-            hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[i], gmm2_means[i])
-            distance += (gmm1.weights_[i] + gmm2.weights_[i]) * hd
-    elif method == 'emd':
-        for i in range(n_components):
-            for j in range(n_components):
-                hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
-                distance_array[i, j] = hd
-        distance = emd(distance_array, gmm1_weights, gmm2_weights)
-
+    for i in range(n_components):
+        for j in range(n_components):
+            hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
+            distance_array[i, j] = (gmm1_weights[i] + gmm2_weights[j]) * hd
+    distance = linear_sum(distance_array)
     return distance
 
 

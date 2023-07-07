@@ -1,5 +1,5 @@
 import numpy as np
-import ot
+
 import pandas as pd
 from scipy.optimize import linear_sum_assignment
 from sklearn.cluster import KMeans
@@ -24,11 +24,6 @@ def linear_sum(cost: np.array):
     row_ind, col_ind = linear_sum_assignment(cost)
     min_cost = cost[row_ind, col_ind].sum()
     return min_cost
-
-
-def emd(cost, weights1, weights2):
-    distance = ot.sinkhorn2(weights1, weights2, cost, 1)
-    return distance
 
 
 def cluster(distance_array: pd.DataFrame,
@@ -64,3 +59,4 @@ def cluster(distance_array: pd.DataFrame,
         fit_result = SpectralClustering(n_clusters=n_clusters, random_state=0, affinity='rbf').fit(embedding_position)
     result = pd.DataFrame(dict(gene_id=list(index), labels=list(fit_result.labels_)))
     return result
+
