@@ -132,6 +132,7 @@ def fit_gmm_bic(adata: anndata,
 def fit_gmm(adata: anndata,
             gene_name: str,
             n_comp: int = 2,
+            cut: bool = False,
             binary: bool = False,
             threshold: int = 95,
             max_iter: int = 200,
@@ -142,6 +143,8 @@ def fit_gmm(adata: anndata,
 
     Estimate model parameters with the EM algorithm.
 
+    :param cut:
+    :type cut:
     :param threshold:
     :type threshold:
     :param binary:
@@ -167,6 +170,8 @@ def fit_gmm(adata: anndata,
         binary_arr = np.where(dense_array > np.percentile(dense_array, threshold), 1, 0)
         result = np.array(array_to_list(binary_arr))
     else:
+        if cut:
+            dense_array[dense_array < np.percentile(dense_array, threshold)] = 0
         result = np.array(array_to_list(dense_array))
     # Number of unique center must be larger than the number of components.
     if len(set(map(tuple, result))) >= n_comp:

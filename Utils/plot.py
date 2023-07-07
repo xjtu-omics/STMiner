@@ -78,7 +78,11 @@ def plot_pattern(result, adata, cmap=None, vmax=99, num_cols=4):
         gene_list = list(result[result['labels'] == label]['gene_id'])
         total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
         for gene in gene_list:
-            total_count += get_exp_array(adata, gene)
+            exp_matrix = get_exp_array(adata, gene)
+            total_sum = np.sum(exp_matrix)
+            scale_factor = 100 / total_sum
+            scaled_matrix = exp_matrix * scale_factor
+            total_count += scaled_matrix
 
         sns.heatmap(total_count,
                     ax=ax,
