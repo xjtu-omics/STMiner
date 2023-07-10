@@ -1,5 +1,6 @@
 import multiprocessing
 
+import warnings
 import anndata
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,6 +13,9 @@ from tqdm import tqdm
 
 from Algorithm.Algorithm import *
 from Utils.utils import array_to_list
+
+# Ignore the unnecessary warnings
+warnings.filterwarnings("ignore", message="memory leak on Windows with MKL")
 
 
 def distribution_distance(first_gmm, second_gmm):
