@@ -24,5 +24,5 @@ def get_high_var_genes(adata, n_top_genes=200):
         var_dict[gene] = var
     mse_df = pd.DataFrame(var_dict.items(), columns=['gene', 'mse'])
     sorted_df = mse_df.sort_values(by='mse', ascending=False)
-    gene_list = list(sorted_df['gene'][:n_top_genes])
+    gene_list = list(sorted_df['gene'].loc[:n_top_genes])
     return gene_list
