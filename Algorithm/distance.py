@@ -7,6 +7,7 @@ from scipy.spatial.distance import cdist
 from scipy.spatial.distance import cosine
 from tqdm import tqdm
 
+from Algorithm.algorithm import linear_sum
 from Utils.utils import issparse
 
 
@@ -20,14 +21,12 @@ def distribution_distance(first_gmm, second_gmm):
     :return: Distance between gmm1 and gmm2
     :rtype: np.float64
     """
-    gmm1 = _sort_gmm(first_gmm)
-    gmm2 = _sort_gmm(second_gmm)
-    gmm1_weights = gmm1.weights_
-    gmm1_means = gmm1.means_
-    gmm1_covs = gmm1.covariances_
-    gmm2_weights = gmm2.weights_
-    gmm2_means = gmm2.means_
-    gmm2_covs = gmm2.covariances_
+    gmm1_weights = first_gmm.weights_
+    gmm1_means = first_gmm.means_
+    gmm1_covs = first_gmm.covariances_
+    gmm2_weights = second_gmm.weights_
+    gmm2_means = second_gmm.means_
+    gmm2_covs = second_gmm.covariances_
     n_components = gmm1_weights.size
     distance_array = np.zeros((n_components, n_components))
     for i in range(n_components):

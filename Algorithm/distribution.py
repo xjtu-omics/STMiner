@@ -3,7 +3,6 @@ import warnings
 
 import anndata
 import matplotlib.pyplot as plt
-import numpy as np
 import scanpy as sc
 import seaborn as sns
 from numba import njit
@@ -11,10 +10,10 @@ from sklearn import mixture
 from tqdm import tqdm
 
 from Algorithm.algorithm import *
-from Algorithm.distance import get_hellinger_distance, get_exp_array
+from Algorithm.distance import get_exp_array
 
 # Ignore the unnecessary warnings
-warnings.filterwarnings("ignore", message="MKL")
+warnings.filterwarnings("ignore")
 
 
 def get_gmm(matrix):
@@ -320,22 +319,6 @@ def _mean_square_error(matrix1, matrix2):
     squared_diff = np.square(diff)
     mse = np.mean(squared_diff)
     return mse
-
-
-def _sort_gmm(gmm):
-    indices = list(np.argsort(gmm.weights_))
-    means = []
-    covs = []
-    weights = []
-    new_gmm = GMM(len(gmm.weights_))
-    for index in indices:
-        means.append(gmm.means_[index])
-        covs.append(gmm.covariances_[index])
-        weights.append(gmm.weights_[index])
-    new_gmm.set_mean(np.array(means))
-    new_gmm.set_covariances(np.array(covs))
-    new_gmm.set_weights(np.array(weights))
-    return new_gmm
 
 
 def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
