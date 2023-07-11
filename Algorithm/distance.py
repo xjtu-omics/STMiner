@@ -7,8 +7,35 @@ from scipy.spatial.distance import cdist
 from scipy.spatial.distance import cosine
 from tqdm import tqdm
 
-from Algorithm.distribution import distribution_distance
 from Utils.utils import issparse
+
+
+def distribution_distance(first_gmm, second_gmm):
+    """
+    Calculates the distance between gmm1 and gmm2
+    :param first_gmm: The first GMM model
+    :type first_gmm:
+    :param second_gmm: The second GMM model
+    :type second_gmm:
+    :return: Distance between gmm1 and gmm2
+    :rtype: np.float64
+    """
+    gmm1 = _sort_gmm(first_gmm)
+    gmm2 = _sort_gmm(second_gmm)
+    gmm1_weights = gmm1.weights_
+    gmm1_means = gmm1.means_
+    gmm1_covs = gmm1.covariances_
+    gmm2_weights = gmm2.weights_
+    gmm2_means = gmm2.means_
+    gmm2_covs = gmm2.covariances_
+    n_components = gmm1_weights.size
+    distance_array = np.zeros((n_components, n_components))
+    for i in range(n_components):
+        for j in range(n_components):
+            hd = get_hellinger_distance(gmm1_covs[i], gmm1_means[i], gmm2_covs[j], gmm2_means[j])
+            distance_array[i, j] = (gmm1_weights[i] + gmm2_weights[j]) * hd
+    distance = linear_sum(distance_array)
+    return distance
 
 
 def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
