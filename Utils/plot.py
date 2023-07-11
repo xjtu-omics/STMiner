@@ -9,6 +9,7 @@ def plot_heatmap(result=None,
                  label=None,
                  adata=None,
                  gene_list=None,
+                 n_gene=12,
                  cmap=None,
                  num_cols=4,
                  vmax=100,
@@ -36,7 +37,7 @@ def plot_heatmap(result=None,
         if label is None or result is None:
             raise 'Error: Parameter [label] and [result] should not be None.'
         else:
-            gene_list = list(result[result['labels'] == label]['gene_id'])
+            gene_list = list(result[result['labels'] == label]['gene_id'])[:n_gene]
 
     new_cmap = cmap if cmap is not None else 'viridis'
     genes_count = len(gene_list)

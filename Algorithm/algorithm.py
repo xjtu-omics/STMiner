@@ -59,4 +59,3 @@ def cluster(distance_array: pd.DataFrame,
         fit_result = SpectralClustering(n_clusters=n_clusters, random_state=0, affinity='rbf').fit(embedding_position)
     result = pd.DataFrame(dict(gene_id=list(index), labels=list(fit_result.labels_)))
     return result
-

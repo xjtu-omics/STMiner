@@ -7,15 +7,14 @@ import numpy as np
 import scanpy as sc
 import seaborn as sns
 from numba import njit
-from scipy import sparse
 from sklearn import mixture
 from tqdm import tqdm
 
-from Algorithm.Algorithm import *
+from Algorithm.algorithm import *
 from Utils.utils import array_to_list
 
 # Ignore the unnecessary warnings
-warnings.filterwarnings("ignore", message="memory leak on Windows with MKL")
+warnings.filterwarnings("ignore", message="MKL")
 
 
 def distribution_distance(first_gmm, second_gmm):
@@ -44,50 +43,6 @@ def distribution_distance(first_gmm, second_gmm):
             distance_array[i, j] = (gmm1_weights[i] + gmm2_weights[j]) * hd
     distance = linear_sum(distance_array)
     return distance
-
-
-def get_bh_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
-    mean_cov = (gmm1_covs + gmm2_covs) / 2
-    mean_cov_det = np.linalg.det(mean_cov)
-    mean_cov_inv = np.linalg.inv(mean_cov)
-    means_diff = gmm1_means - gmm2_means
-    first_term = (means_diff.T @ mean_cov_inv @ means_diff) / 8
-    second_term = np.log(mean_cov_det / (np.sqrt(np.linalg.det(gmm1_covs) * np.linalg.det(gmm2_covs)))) / 2
-    result = first_term + second_term
-    return result
-
-
-@njit
-def get_hellinger_distance(gmm1_covs, gmm1_means, gmm2_covs, gmm2_means):
-    """
-    Calculates the distance between two GMM models by hellinger distance.
-
-    **Hellinger distance** (closely related to, although different from, the Bhattacharyya distance) is used to quantify
-    the similarity between two probability distributions.
-
-    Ref:
-     - https://en.wikipedia.org/wiki/Hellinger_distance
-    :param gmm1_covs: first gmm covariances
-    :type gmm1_covs: np.Array_
-    :param gmm1_means: first gmm means
-    :type gmm1_means: Array
-    :param gmm2_covs: second gmm covariances
-    :type gmm2_covs: Array
-    :param gmm2_means: second gmm means
-    :type gmm2_means: Array
-    :return: distance between two GMM models
-    :rtype: np.float64
-    """
-    mean_cov = (gmm1_covs + gmm2_covs) / 2
-    mean_cov_det = np.linalg.det(mean_cov)
-    mean_cov_inv = np.linalg.inv(mean_cov)
-    gmm1_cov_det = np.linalg.det(gmm1_covs)
-    gmm2_cov_det = np.linalg.det(gmm2_covs)
-    means_diff = gmm1_means - gmm2_means
-    first_term = np.exp(-(means_diff.T @ mean_cov_inv @ means_diff) / 8)
-    second_term = ((np.power(gmm1_cov_det, 0.25)) * np.power(gmm2_cov_det, 0.25)) / np.sqrt(mean_cov_det)
-    hellinger_distance = np.sqrt(np.abs(1 - first_term * second_term))
-    return hellinger_distance
 
 
 def fit_gmm_bic(adata: anndata,
@@ -184,17 +139,6 @@ def fit_gmm(adata: anndata,
         return gmm
     else:
         return None
-
-
-def get_exp_array(adata, gene_name):
-    exp_array = adata[:, adata.var_names == gene_name].X
-    if sparse.issparse(exp_array):
-        data = np.array(exp_array.todense())
-    else:
-        data = np.array(exp_array)
-    sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
-    dense_array = np.array(np.round(sparse_matrix.todense()), dtype=np.int32)
-    return dense_array
 
 
 def fit_gmms(adata,

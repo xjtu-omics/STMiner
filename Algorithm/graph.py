@@ -1,112 +1,11 @@
 import networkx as nx
-from scipy.spatial.distance import cdist
-from scipy.spatial.distance import cosine
 
 from Algorithm.distribution import *
-from Utils.utils import issparse
 
 
 class Graph:
     def __init__(self):
         pass
-
-
-def build_gmm_distance_array(gmm_dict):
-    """
-    Generate a distance matrix by the given gmm dictionary.
-    :param gmm_dict: gmm dictionary, key is gene name, value is GMM model.
-    :type gmm_dict: dict
-    :return: distance array
-    :rtype: np.Array
-    """
-    gene_list = list(gmm_dict.keys())
-    gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
-    for i in tqdm(range(gene_counts), desc='Building distance array...', colour='green'):
-        for j in range(gene_counts):
-            if i != j:
-                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
-                distance_array.loc[gene_list[i], gene_list[j]] = distance
-    return distance_array
-
-
-def compare_gmm_distance(gmm, gmm_dict):
-    gene_list = list(gmm_dict.keys())
-    gene_counts = len(gene_list)
-    distance_dict = {}
-    for gene in tqdm(range(gene_counts), desc='Building distance array...'):
-        distance = distribution_distance(gmm, gmm_dict[gene_list[gene]])
-        distance_dict[gene_list[gene]] = distance
-    df = pd.DataFrame.from_dict(distance_dict, orient='index')
-    sorted_df = df.sort_values(0)
-    return sorted_df
-
-
-def build_cosine_similarity_array(adata, gene_list):
-    gene_list = list(gene_list)
-    gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
-    for i in tqdm(range(gene_counts), desc='Building distance array...'):
-        for j in range(gene_counts):
-            if i != j:
-                distance = cosine(get_exp_array(adata, gene_list[i]).flatten(),
-                                  get_exp_array(adata, gene_list[j]).flatten())
-                distance_array.loc[gene_list[i], gene_list[j]] = distance
-    return distance_array
-
-
-def build_mse_distance_array(adata, gene_list):
-    gene_list = list(gene_list)
-    gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
-    for i in tqdm(range(gene_counts), desc='Building distance array...'):
-        for j in range(gene_counts):
-            if i != j:
-                distance = np.mean(np.square(adata[:, [gene_list[i]]].X - adata[:, [gene_list[j]]].X))
-                distance_array.loc[gene_list[i], gene_list[j]] = distance
-    return distance_array
-
-
-def build_mix_distance_array(adata, gmm_dict):
-    """
-
-    :param adata:
-    :type adata:
-    :param gmm_dict:
-    :type gmm_dict:
-    :return:
-    :rtype:
-    """
-    gene_list = list(gmm_dict.keys())
-    gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
-    for i in tqdm(range(gene_counts), desc='Building distance array...'):
-        for j in range(gene_counts):
-            if i != j:
-                diff = adata[:, [gene_list[i]]].X - adata[:, [gene_list[j]]].X
-                if issparse(diff):
-                    mse_distance = np.mean(np.square(diff.todense()))
-                else:
-                    mse_distance = np.mean(np.square(diff))
-                gmm_distance = distribution_distance(gmm_dict[gene_list[i]],
-                                                     gmm_dict[gene_list[j]])
-                # TODO:
-                distance_array.loc[gene_list[i], gene_list[j]] = mse_distance + gmm_distance
-    return distance_array
-
-
-def build_ot_distance_array(adata, gene_list):
-    gene_list = list(gene_list)
-    gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
-    for i in tqdm(range(gene_counts), desc='Building distance array...'):
-        for j in range(gene_counts):
-            if i != j:
-                d = cdist(get_exp_array(adata, gene_list[i]), get_exp_array(adata, gene_list[j]))
-                assignment = linear_sum_assignment(d)
-                distance = d[assignment].sum()
-                distance_array.loc[gene_list[i], gene_list[j]] = distance
-    return distance_array
 
 
 def build_graph(gmm_dict: dict,
