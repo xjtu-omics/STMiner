@@ -15,7 +15,7 @@ def read_10x_h5ad(file, amplification=1, bin_size=1):
     :return:
     :rtype: Anndata
     """
-    amplification = np.int(amplification)
+    amplification = np.int32(amplification)
     adata = sc.read_h5ad(file)
     if (('x' not in adata.obs.keys()) | ('y' not in adata.obs.keys())) and 'spatial' in adata.obsm.keys():
         position = adata.obsm['spatial']
