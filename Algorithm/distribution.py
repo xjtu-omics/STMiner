@@ -16,10 +16,10 @@ from Algorithm.distance import get_exp_array
 warnings.filterwarnings("ignore")
 
 
-def get_gmm(matrix):
+def get_gmm(matrix, n_comp=10):
     arr = np.array(matrix, dtype=np.int32)
     result = _array_to_list(arr)
-    gmm = mixture.GaussianMixture(n_components=10, max_iter=200).fit(result)
+    gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=200).fit(result)
     return gmm
 
 
@@ -125,11 +125,14 @@ def fit_gmms(adata,
              binary=False,
              threshold=95,
              max_iter=100,
-             reg_covar=1e-3):
+             reg_covar=1e-3,
+             cut=False):
     """
     Same as fit_gmm_bic, accepts a list of gene name.
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
+    :param cut: filter out the spots which have low expression
+    :type cut: bool
     :param threshold:
     :type threshold:
     :param binary:
@@ -160,7 +163,8 @@ def fit_gmms(adata,
                                  binary=binary,
                                  threshold=threshold,
                                  max_iter=max_iter,
-                                 reg_covar=reg_covar)
+                                 reg_covar=reg_covar,
+                                 cut=cut)
             if fit_result is not None:
                 gmm_dict[gene_id] = fit_result
             else:

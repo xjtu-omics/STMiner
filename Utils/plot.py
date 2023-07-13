@@ -16,6 +16,8 @@ def plot_heatmap(result=None,
                  vmin=0):
     """
     Plot the heatmap for the given list.
+    :param n_gene:
+    :type n_gene:
     :param gene_list:
     :type gene_list:
     :param cmap:

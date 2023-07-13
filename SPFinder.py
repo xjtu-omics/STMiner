@@ -2,6 +2,7 @@ from typing import Optional
 
 from anndata import AnnData
 
+from Algorithm.distance import build_gmm_distance_array
 from Algorithm.graph import *
 from IO.IOUtil import merge_bin_coordinate
 from IO.read_10X import read_10x_h5ad
@@ -17,6 +18,7 @@ class SPFinder:
         self.genes_labels = None
         self._gene_expression_edge = {}
         self._highly_variable_genes = []
+        self._kmeans_fit_result = None
         self._scope = ()
 
         if adata is not None:
@@ -51,8 +53,8 @@ class SPFinder:
 
     def cluster(self, n_clusters):
         self.genes_distance_array = build_gmm_distance_array(self.genes_patterns)
-        self.genes_labels = cluster(self.genes_distance_array,
-                                    n_clusters=n_clusters)
+        self.genes_labels, self._kmeans_fit_result = cluster(self.genes_distance_array,
+                                                             n_clusters=n_clusters)
 
     def plot_pattern(self, vmax=100):
         plot_pattern(self.genes_labels, self.adata, vmax=vmax)

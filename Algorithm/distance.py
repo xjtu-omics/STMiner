@@ -160,7 +160,6 @@ def build_mix_distance_array(adata, gmm_dict):
                     mse_distance = np.mean(np.square(diff))
                 gmm_distance = distribution_distance(gmm_dict[gene_list[i]],
                                                      gmm_dict[gene_list[j]])
-                # TODO:
                 distance_array.loc[gene_list[i], gene_list[j]] = mse_distance + gmm_distance
     return distance_array
 
