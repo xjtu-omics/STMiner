@@ -32,7 +32,9 @@ spf.log1p()
 ```python
 spf.fit_pattern(n_top_genes=100, n_comp=10)
 ```
+
 Each GMM model has 10 components.
+
 ### build distance matrix & clustering
 
 ```python
@@ -46,6 +48,22 @@ The result are stored in **genes_labels**:
 ```python
 spf.genes_labels
 ```
+
+The output looks like the following:
+
+| index | gene_id        | labels |
+|-------|----------------|--------|
+| 0     | Cldn5          | 2      |
+| 1     | Fyco1          | 2      |
+| 2     | Pmepa1         | 2      |
+| 3     | Arhgap5        | 0      |
+| 4     | Apc            | 5      |
+| ..    | ...            | ...    |
+| 95    | Cyp2a5         | 0      |
+| 96    | X5730403I07Rik | 0      |
+| 97    | Ltbp2          | 2      |
+| 98    | Rbp4           | 4      |
+| 99    | Hist1h1e       | 4      |
 
 To visualize the patterns by heatmap:
 
