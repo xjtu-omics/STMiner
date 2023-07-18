@@ -3,53 +3,49 @@
 ### import package
 
 ```python
-import scanpy as sc
-import squidpy as sq
-
-from Utils.utils import *
-from Algorithm.graph import *
-from Algorithm.distribution import *
+from SPFinder import SPFinder
 ```
 
 ### load data
 
 ```python
-h5ad_path = 'F://Rep11_MOB_ST.h5ad'
-adata = sc.read_h5ad(h5ad_path)
+spf = SPFinder()
+spf.read_10x(file='F://Rep11_MOB_ST.h5ad', amplification=1000, bin_size=80)
 ```
 
 ### preprocess
 
 ```python
-sc.pp.normalize_total(adata, inplace=True)
-sc.pp.log1p(adata)
-sc.pp._highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
-sc.pl._highly_variable_genes(adata)
+spf.normalize()
+```
+
+Optional:
+
+```python
+spf.log1p()
 ```
 
 ### fit GMM
 
 ```python
-# get high variable gene 
-gene_list = adata.var[adata.var['highly_variable'] == True].index
-# fit gmms
-gmm_dict = fit_gmms(adata, gene_list, n_comp=10, thread=4)
+spf.fit_pattern(100, n_comp=10)
 ```
 
-### build distance matrix
+### build distance matrix & clustering
 
 ```python
-arr = build_gmm_distance_array(gmm_dict)
-```
-
-### clustering
-
-```python
-cluster()
+spf.cluster(6)
 ```
 
 ### Visualization
 
 ```python
-todo
+spf.plot_pattern()
 ```
+
+| Attribute           | Type         | Description                        |
+|---------------------|--------------|------------------------------------|
+| adata               | Anndata      | Anndata for loaded spatial data    |
+| genes_patterns      | dict         | GMM model for each gene            |
+| genes_distance_aray | pd.DataFrame | distance between each GMM          |
+| genes_labels        | pd.DataFrame | gene name and their pattern labels |
