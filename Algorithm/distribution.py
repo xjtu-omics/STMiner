@@ -154,8 +154,7 @@ def fit_gmms(adata,
     gmm_dict = {}
     dropped_genes_count = 0
     for gene_id in tqdm(gene_name_list,
-                        desc='Fitting...',
-                        colour='green'):
+                        desc='Fitting GMM...'):
         try:
             fit_result = fit_gmm(adata,
                                  gene_id,
