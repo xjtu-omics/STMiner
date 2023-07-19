@@ -89,3 +89,17 @@ plot_heatmap(label=0, vmax=95)
 | genes_labels        | pd.DataFrame | Gene name and their pattern labels |
 
 ### Methods of SPFinder
+
+#### load data
+- read_10x
+- read_gem
+- merge_bin
+#### preprocess
+- fit_pattern
+- normalize
+- log1p
+#### fit model
+- fit_pattern
+#### build distance array & clustering
+- cluster
+#### visualization
