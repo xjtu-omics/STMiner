@@ -20,7 +20,7 @@ def add_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
 
 def add_periodicity_noise(matrix,
                           interval: int,
-                          multiplier: int = 10,
+                          multiplier: int = 2,
                           axis=1) -> np.array:
     n_row = matrix.shape[0]
     n_col = matrix.shape[1]

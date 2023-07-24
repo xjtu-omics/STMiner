@@ -99,6 +99,17 @@ def fit_gmm(adata: anndata,
     :return: The number of components and the fitted mixture.
     :rtype: GaussianMixture
     """
+    processed_arr = preprocess_array(adata, binary, cut, gene_name, threshold)
+    # Number of unique center must be larger than the number of components.
+    if len(set(map(tuple, processed_arr))) >= n_comp:
+        gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
+        gmm.fit(processed_arr)
+        return gmm
+    else:
+        return None
+
+
+def preprocess_array(adata, binary, cut, gene_name, threshold):
     dense_array = get_exp_array(adata, gene_name)
     if binary:
         if threshold > 100 | threshold < 0:
@@ -110,13 +121,7 @@ def fit_gmm(adata: anndata,
         if cut:
             dense_array[dense_array < np.percentile(dense_array, threshold)] = 0
         result = array_to_list(dense_array)
-    # Number of unique center must be larger than the number of components.
-    if len(set(map(tuple, result))) >= n_comp:
-        gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
-        gmm.fit(result)
-        return gmm
-    else:
-        return None
+    return result
 
 
 def fit_gmms(adata,

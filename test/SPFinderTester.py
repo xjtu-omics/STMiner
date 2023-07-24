@@ -59,17 +59,7 @@ class SPFinderTester(SPFinder):
                 threshold: int = 95,
                 max_iter: int = 200,
                 reg_covar=1e-3):
-        dense_array = get_exp_array(adata, gene_name)
-        if binary:
-            if threshold > 100 | threshold < 0:
-                print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
-                threshold = 100
-            binary_arr = np.where(dense_array > np.percentile(dense_array, threshold), 1, 0)
-            result = array_to_list(binary_arr)
-        else:
-            if cut:
-                dense_array[dense_array < np.percentile(dense_array, threshold)] = 0
-            result = array_to_list(dense_array)
+        result = preprocess_array(adata, binary, cut, gene_name, threshold)
         # Add noise
         noised = add_salt_pepper_noise(result, 0.1)
         self.noise_dict[gene_name] = noised
