@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 from skimage.util import random_noise
 
@@ -26,11 +28,9 @@ def add_sp_noise(matrix, percentage: int) -> np.array:
     return added
 
 
-def add_gauss_noise(matrix, mean: float) -> np.array:
-    added = random_noise(matrix,
-                         mode='gaussian',
-                         mean=mean)
-    return added
+def add_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
+    noise = np.random.normal(loc=mean, scale=.1, size=matrix.shape)
+    noise[noise < 0] = 0
 
 
 def add_periodicity_noise(matrix,
