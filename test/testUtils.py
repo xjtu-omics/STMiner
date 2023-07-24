@@ -8,14 +8,14 @@ def add_salt_pepper_noise(matrix, percentage: float) -> np.array:
     probability_array[probability_array <= percentage] = 0
     probability_array[probability_array > percentage] = 1
     matrix = matrix * probability_array
-    return matrix
+    return matrix, probability_array
 
 
 def add_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
     noise = np.random.normal(loc=mean, scale=.1, size=matrix.shape)
     noise[noise < 0] = 0
     matrix += noise
-    return matrix
+    return matrix, noise
 
 
 def add_periodicity_noise(matrix,
@@ -30,3 +30,10 @@ def add_periodicity_noise(matrix,
         for i in range(0, n_col, interval):
             matrix[:, i] = matrix[:, i] * multiplier
     return matrix
+
+
+def add_uniform_noise(matrix, range):
+    base = np.random.random(matrix.shape)
+    noise = base * range
+    matrix += noise
+    return matrix, noise
