@@ -1,6 +1,5 @@
-from Algorithm.distribution import array_to_list
-from SPFinder import SPFinder
 from Algorithm.graph import *
+from SPFinder import SPFinder
 from test.testUtils import *
 
 

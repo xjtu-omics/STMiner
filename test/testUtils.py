@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Union
+
+import numpy as np
 
 
 def add_salt_pepper_noise(matrix, percentage: float) -> np.array:

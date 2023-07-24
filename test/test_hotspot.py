@@ -1,7 +1,8 @@
 import hotspot
-import scanpy as sc
 import pandas as pd
+import scanpy as sc
 from anndata import AnnData
+
 from IO.IOUtil import merge_bin_coordinate
 from SPFinder import SPFinder
 
