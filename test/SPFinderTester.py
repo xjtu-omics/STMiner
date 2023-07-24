@@ -1,4 +1,4 @@
-from Algorithm.distribution import _array_to_list
+from Algorithm.distribution import array_to_list
 from SPFinder import SPFinder
 from Algorithm.graph import *
 from test.testUtils import *
@@ -66,13 +66,13 @@ class SPFinderTester(SPFinder):
                 print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
                 threshold = 100
             binary_arr = np.where(dense_array > np.percentile(dense_array, threshold), 1, 0)
-            result = _array_to_list(binary_arr)
+            result = array_to_list(binary_arr)
         else:
             if cut:
                 dense_array[dense_array < np.percentile(dense_array, threshold)] = 0
-            result = _array_to_list(dense_array)
+            result = array_to_list(dense_array)
         # Add noise
-        noised = add_salt_noise(result, 10)
+        noised = add_salt_pepper_noise(result, 0.1)
         self.noise_dict[gene_name] = noised
         # Number of unique center must be larger than the number of components.
         if len(set(map(tuple, noised))) >= n_comp:

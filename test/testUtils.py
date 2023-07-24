@@ -1,36 +1,20 @@
+import numpy as np
 from typing import Union
 
-import numpy as np
-from skimage.util import random_noise
 
-
-def add_salt_noise(matrix, percentage: int) -> np.array:
-    amount = percentage / 100
-    added = random_noise(matrix,
-                         mode='salt',
-                         amount=amount)
-    return added
-
-
-def add_pepper_noise(matrix, percentage: int) -> np.array:
-    amount = percentage / 100
-    added = random_noise(matrix,
-                         mode='pepper',
-                         amount=amount)
-    return added
-
-
-def add_sp_noise(matrix, percentage: int) -> np.array:
-    amount = percentage / 100
-    added = random_noise(matrix,
-                         mode='s&p',
-                         amount=amount)
-    return added
+def add_salt_pepper_noise(matrix, percentage: float) -> np.array:
+    probability_array = np.random.random(matrix.shape)
+    probability_array[probability_array <= percentage] = 0
+    probability_array[probability_array > percentage] = 1
+    matrix = matrix * probability_array
+    return matrix
 
 
 def add_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
     noise = np.random.normal(loc=mean, scale=.1, size=matrix.shape)
     noise[noise < 0] = 0
+    matrix += noise
+    return matrix
 
 
 def add_periodicity_noise(matrix,

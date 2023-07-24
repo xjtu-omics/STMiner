@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore")
 
 def get_gmm(matrix, n_comp=10):
     arr = np.array(matrix, dtype=np.int32)
-    result = _array_to_list(arr)
+    result = array_to_list(arr)
     gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=200).fit(result)
     return gmm
 
@@ -47,7 +47,7 @@ def fit_gmm_bic(adata: anndata,
     :rtype: GaussianMixture
     """
     dense_array = get_exp_array(adata, gene_name)
-    result = np.array(_array_to_list(dense_array))
+    result = np.array(array_to_list(dense_array))
     # Number of unique center must be larger than the number of components.
     if len(set(map(tuple, result))) > min_n_comp:
         bic_list = []
@@ -105,11 +105,11 @@ def fit_gmm(adata: anndata,
             print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
             threshold = 100
         binary_arr = np.where(dense_array > np.percentile(dense_array, threshold), 1, 0)
-        result = _array_to_list(binary_arr)
+        result = array_to_list(binary_arr)
     else:
         if cut:
             dense_array[dense_array < np.percentile(dense_array, threshold)] = 0
-        result = _array_to_list(dense_array)
+        result = array_to_list(dense_array)
     # Number of unique center must be larger than the number of components.
     if len(set(map(tuple, result))) >= n_comp:
         gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
@@ -328,7 +328,7 @@ def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
     shared_dict[gene_name] = fit_gmm_bic(adata, gene_name, n_comp, max_iter)
 
 
-def _array_to_list(matrix) -> np.array:
+def array_to_list(matrix) -> np.array:
     coords = np.column_stack(np.where(matrix > 0))
     counts = matrix[matrix > 0].flatten()
     result = np.repeat(coords, counts, axis=0)

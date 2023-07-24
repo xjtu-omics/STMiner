@@ -1,6 +1,6 @@
 #%%
 from SPFinder import SPFinder
-
+from test import SPFinderTester
 #%%
 spf = SPFinder()
 spf.read_10x(file='F://Rep11_MOB_ST.h5ad', amplification=1000, bin_size=80)
@@ -14,3 +14,4 @@ spf.cluster(6)
 spf.genes_labels
 
 #%%
+spft = SPFinderTester()
