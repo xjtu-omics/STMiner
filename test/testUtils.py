@@ -3,10 +3,10 @@ from typing import Union
 import numpy as np
 
 
-def add_salt_pepper_noise(matrix, percentage: float) -> np.array:
+def add_salt_pepper_noise(matrix, noise_percentage: float) -> np.array:
     probability_array = np.random.random(matrix.shape)
-    probability_array[probability_array <= percentage] = 0
-    probability_array[probability_array > percentage] = 1
+    probability_array[probability_array <= noise_percentage] = 0
+    probability_array[probability_array > noise_percentage] = 1
     matrix = matrix * probability_array
     return matrix, probability_array
 
@@ -32,8 +32,8 @@ def add_periodicity_noise(matrix,
     return matrix
 
 
-def add_uniform_noise(matrix, range):
+def add_uniform_noise(matrix, mean):
     base = np.random.random(matrix.shape)
-    noise = base * range
+    noise = base * mean
     matrix += noise
     return matrix, noise
