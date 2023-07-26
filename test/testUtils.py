@@ -19,16 +19,15 @@ def get_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
 
 def get_periodicity_noise(matrix,
                           interval: int,
-                          multiplier: int = 2,
-                          axis=1) -> np.array:
+                          multiplier: int = 2) -> np.array:
+    noise_arr = np.ones(matrix.shape)
     n_row = matrix.shape[0]
     n_col = matrix.shape[1]
     for i in range(0, n_row, interval):
-        matrix[i, :] = matrix[i, :] * multiplier
-    if axis != 1:
-        for i in range(0, n_col, interval):
-            matrix[:, i] = matrix[:, i] * multiplier
-    return matrix
+        noise_arr[i, :] = multiplier
+    for i in range(0, n_col, interval):
+        noise_arr[:, i] = multiplier
+    return noise_arr
 
 
 def get_uniform_noise(matrix, mean):

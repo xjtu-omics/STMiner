@@ -1,13 +1,19 @@
-from Algorithm.graph import *
 from SPFinder import SPFinder
 from test.testUtils import *
+from Algorithm.graph import *
+from Algorithm.distribution import preprocess_array
 
 
 class SPFinderTester(SPFinder):
-    def __init__(self, noise_type='uniform'):
+    def __init__(self):
         super().__init__()
         self.noise_dict = {}
+        self.noise_type = 'uniform'
+        self.noise_argument = 1
+
+    def set_noise_type(self, noise_type, noise_argument):
         self.noise_type = noise_type
+        self.noise_argument = noise_argument
 
     def fit_pattern(self, n_top_genes, n_comp):
         sc.pp.highly_variable_genes(self.adata,
@@ -29,8 +35,7 @@ class SPFinderTester(SPFinder):
                  cut=False):
         gmm_dict = {}
         dropped_genes_count = 0
-        for gene_id in tqdm(gene_name_list,
-                            desc='Fitting GMM...'):
+        for gene_id in tqdm(gene_name_list, desc='Fitting GMM...'):
             try:
                 fit_result = self.fit_gmm(adata,
                                           gene_id,
@@ -63,16 +68,16 @@ class SPFinderTester(SPFinder):
         result = preprocess_array(adata, binary, cut, gene_name, threshold)
         # Add noise
         if self.noise_type == 'gauss':
-            noise = get_gauss_noise(result)
+            noise = get_gauss_noise(result, self.noise_argument)
             noised = result + noise
         elif self.noise_type == 'periodicity':
-            noise = get_periodicity_noise(result)
+            noise = get_periodicity_noise(result, self.noise_argument)
             noised = result * noise
         elif self.noise_type == 'sp':
-            noise = get_salt_pepper_noise(result)
+            noise = get_salt_pepper_noise(result, self.noise_argument)
             noised = result * noise
         else:
-            noise = get_uniform_noise(result, )
+            noise = get_uniform_noise(result, self.noise_argument)
             noised = result + noise
         self.noise_dict[gene_name] = noise
         # Number of unique center must be larger than the number of components.
