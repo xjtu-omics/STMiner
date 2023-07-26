@@ -1,7 +1,7 @@
 from SPFinder import SPFinder
 from test.testUtils import *
 from Algorithm.graph import *
-from Algorithm.distribution import preprocess_array
+from scipy import sparse
 
 
 class SPFinderTester(SPFinder):
@@ -20,12 +20,12 @@ class SPFinderTester(SPFinder):
                                     flavor='seurat_v3',
                                     n_top_genes=n_top_genes)
         self._highly_variable_genes = list(self.adata.var[self.adata.var['highly_variable']].index)
-        self.genes_patterns = self.fit_gmms(self.adata,
-                                            self._highly_variable_genes,
-                                            n_comp=n_comp)
+        self.genes_patterns = self.fit_gmms(
+            self._highly_variable_genes,
+            n_comp=n_comp)
 
     def fit_gmms(self,
-                 adata,
+
                  gene_name_list,
                  n_comp=5,
                  binary=False,
@@ -37,14 +37,14 @@ class SPFinderTester(SPFinder):
         dropped_genes_count = 0
         for gene_id in tqdm(gene_name_list, desc='Fitting GMM...'):
             try:
-                fit_result = self.fit_gmm(adata,
-                                          gene_id,
-                                          n_comp=n_comp,
-                                          binary=binary,
-                                          threshold=threshold,
-                                          max_iter=max_iter,
-                                          reg_covar=reg_covar,
-                                          cut=cut)
+                fit_result = self.fit_gmm(
+                    gene_id,
+                    n_comp=n_comp,
+                    binary=binary,
+                    threshold=threshold,
+                    max_iter=max_iter,
+                    reg_covar=reg_covar,
+                    cut=cut)
                 if fit_result is not None:
                     gmm_dict[gene_id] = fit_result
                 else:
@@ -57,7 +57,6 @@ class SPFinderTester(SPFinder):
         return gmm_dict
 
     def fit_gmm(self,
-                adata: anndata,
                 gene_name: str,
                 n_comp: int = 2,
                 cut: bool = False,
@@ -65,7 +64,7 @@ class SPFinderTester(SPFinder):
                 threshold: int = 95,
                 max_iter: int = 200,
                 reg_covar=1e-3):
-        result = preprocess_array(adata, binary, cut, gene_name, threshold)
+        result = self.preprocess_array(binary, cut, gene_name, threshold)
         # Add noise
         if self.noise_type == 'gauss':
             noise = get_gauss_noise(result, self.noise_argument)
@@ -87,3 +86,27 @@ class SPFinderTester(SPFinder):
             return gmm
         else:
             return None
+
+    def preprocess_array(self, binary, cut, gene_name, threshold):
+        dense_array = self.get_exp_array(gene_name)
+        if binary:
+            if threshold > 100 | threshold < 0:
+                print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
+                threshold = 100
+            binary_arr = np.where(dense_array > np.percentile(dense_array, threshold), 1, 0)
+            result = array_to_list(binary_arr)
+        else:
+            if cut:
+                dense_array[dense_array < np.percentile(dense_array, threshold)] = 0
+            result = array_to_list(dense_array)
+        return result
+
+    def get_exp_array(self, gene_name):
+        exp_array = self.adata[:, self.adata.var_names == gene_name].X
+        if sparse.issparse(exp_array):
+            data = np.array(exp_array.todense())
+        else:
+            data = np.array(exp_array)
+        sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(self.adata.obs['x']), np.array(self.adata.obs['y']))))
+        dense_array = np.array(np.round(sparse_matrix.todense()), dtype=np.int32)
+        return dense_array
