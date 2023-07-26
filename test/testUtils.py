@@ -3,22 +3,21 @@ from typing import Union
 import numpy as np
 
 
-def add_salt_pepper_noise(matrix, noise_percentage: float) -> np.array:
+def get_salt_pepper_noise(matrix, noise_percentage: float) -> np.array:
     probability_array = np.random.random(matrix.shape)
     probability_array[probability_array <= noise_percentage] = 0
     probability_array[probability_array > noise_percentage] = 1
-    matrix = matrix * probability_array
-    return matrix, probability_array
+    return probability_array
 
 
-def add_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
+def get_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
     noise = np.random.normal(loc=mean, scale=.1, size=matrix.shape)
     noise[noise < 0] = 0
     matrix += noise
-    return matrix, noise
+    return noise
 
 
-def add_periodicity_noise(matrix,
+def get_periodicity_noise(matrix,
                           interval: int,
                           multiplier: int = 2,
                           axis=1) -> np.array:
@@ -32,8 +31,8 @@ def add_periodicity_noise(matrix,
     return matrix
 
 
-def add_uniform_noise(matrix, mean):
+def get_uniform_noise(matrix, mean):
     base = np.random.random(matrix.shape)
     noise = base * mean
     matrix += noise
-    return matrix, noise
+    return noise

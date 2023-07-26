@@ -4,18 +4,19 @@ from test.testUtils import *
 
 
 class SPFinderTester(SPFinder):
-    def __init__(self):
+    def __init__(self, noise_type='uniform'):
         super().__init__()
         self.noise_dict = {}
+        self.noise_type = noise_type
 
     def fit_pattern(self, n_top_genes, n_comp):
         sc.pp.highly_variable_genes(self.adata,
                                     flavor='seurat_v3',
                                     n_top_genes=n_top_genes)
         self._highly_variable_genes = list(self.adata.var[self.adata.var['highly_variable']].index)
-        self.genes_patterns = fit_gmms(self.adata,
-                                       self._highly_variable_genes,
-                                       n_comp=n_comp)
+        self.genes_patterns = self.fit_gmms(self.adata,
+                                            self._highly_variable_genes,
+                                            n_comp=n_comp)
 
     def fit_gmms(self,
                  adata,
@@ -61,8 +62,19 @@ class SPFinderTester(SPFinder):
                 reg_covar=1e-3):
         result = preprocess_array(adata, binary, cut, gene_name, threshold)
         # Add noise
-        noised = add_salt_pepper_noise(result, 0.1)
-        self.noise_dict[gene_name] = noised
+        if self.noise_type == 'gauss':
+            noise = get_gauss_noise(result)
+            noised = result + noise
+        elif self.noise_type == 'periodicity':
+            noise = get_periodicity_noise(result)
+            noised = result * noise
+        elif self.noise_type == 'sp':
+            noise = get_salt_pepper_noise(result)
+            noised = result * noise
+        else:
+            noise = get_uniform_noise(result, )
+            noised = result + noise
+        self.noise_dict[gene_name] = noise
         # Number of unique center must be larger than the number of components.
         if len(set(map(tuple, noised))) >= n_comp:
             gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
