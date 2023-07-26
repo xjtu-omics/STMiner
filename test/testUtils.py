@@ -13,7 +13,7 @@ def get_salt_pepper_noise(matrix, noise_percentage: float) -> np.array:
 def get_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
     noise = np.random.normal(loc=mean, scale=.1, size=matrix.shape)
     noise[noise < 0] = 0
-    matrix += noise
+    noise = np.array(noise, dtype=np.float64)
     return noise
 
 
@@ -33,5 +33,5 @@ def get_periodicity_noise(matrix,
 def get_uniform_noise(matrix, mean):
     base = np.random.random(matrix.shape)
     noise = base * mean
-    matrix += noise
+    noise = np.array(noise, dtype=np.float64)
     return noise

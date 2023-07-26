@@ -1,7 +1,6 @@
 from SPFinder import SPFinder
 from test.testUtils import *
 from Algorithm.graph import *
-from Algorithm.distribution import preprocess_array
 
 
 class SPFinderTester(SPFinder):
@@ -57,7 +56,6 @@ class SPFinderTester(SPFinder):
         return gmm_dict
 
     def fit_gmm(self,
-                adata: anndata,
                 gene_name: str,
                 n_comp: int = 2,
                 cut: bool = False,
@@ -65,25 +63,39 @@ class SPFinderTester(SPFinder):
                 threshold: int = 95,
                 max_iter: int = 200,
                 reg_covar=1e-3):
-        result = preprocess_array(adata, binary, cut, gene_name, threshold)
-        # Add noise
-        if self.noise_type == 'gauss':
-            noise = get_gauss_noise(result, self.noise_argument)
-            noised = result + noise
-        elif self.noise_type == 'periodicity':
-            noise = get_periodicity_noise(result, self.noise_argument)
-            noised = result * noise
-        elif self.noise_type == 'sp':
-            noise = get_salt_pepper_noise(result, self.noise_argument)
-            noised = result * noise
-        else:
-            noise = get_uniform_noise(result, self.noise_argument)
-            noised = result + noise
-        self.noise_dict[gene_name] = noise
+        result = self.preprocess_array(self.adata, binary, cut, gene_name, threshold)
         # Number of unique center must be larger than the number of components.
-        if len(set(map(tuple, noised))) >= n_comp:
+        if len(set(map(tuple, result))) >= n_comp:
             gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
-            gmm.fit(noised)
+            gmm.fit(result)
             return gmm
         else:
             return None
+
+    def preprocess_array(self, adata, binary, cut, gene_name, threshold):
+        dense_array = get_exp_array(adata, gene_name)
+        # Add noise
+        if self.noise_type == 'gauss':
+            noise = get_gauss_noise(dense_array, self.noise_argument)
+            noised = dense_array + noise
+        elif self.noise_type == 'periodicity':
+            noise = get_periodicity_noise(dense_array, self.noise_argument)
+            noised = dense_array * noise
+        elif self.noise_type == 'sp':
+            noise = get_salt_pepper_noise(dense_array, self.noise_argument)
+            noised = dense_array * noise
+        else:
+            noise = get_uniform_noise(dense_array, self.noise_argument)
+            noised = dense_array + noise
+        self.noise_dict[gene_name] = noise
+        if binary:
+            if threshold > 100 | threshold < 0:
+                print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
+                threshold = 100
+            binary_arr = np.where(noised > np.percentile(noised, threshold), 1, 0)
+            result = array_to_list(binary_arr)
+        else:
+            if cut:
+                noised[noised < np.percentile(noised, threshold)] = 0
+            result = array_to_list(noised)
+        return result
