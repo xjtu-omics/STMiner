@@ -33,5 +33,4 @@ def get_periodicity_noise(matrix,
 def get_uniform_noise(matrix, mean):
     base = np.random.random(matrix.shape)
     noise = base * mean
-    matrix += noise
     return noise

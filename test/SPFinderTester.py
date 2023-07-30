@@ -12,20 +12,29 @@ class SPFinderTester(SPFinder):
         self.noise_argument = 1
 
     def set_noise_type(self, noise_type, noise_argument):
+        if noise_type == 'gauss':
+            if noise_argument <= 0:
+                raise ValueError('noise_argument should larger than 0')
+        elif noise_type == 'periodicity':
+            if noise_argument <= 1:
+                raise ValueError('noise_argument should larger than 1')
+        elif noise_type == 'sp':
+            if noise_argument >= 1:
+                raise ValueError('noise_argument should smaller than 1')
         self.noise_type = noise_type
         self.noise_argument = noise_argument
 
-    def fit_pattern(self, n_top_genes, n_comp):
-        sc.pp.highly_variable_genes(self.adata,
-                                    flavor='seurat_v3',
-                                    n_top_genes=n_top_genes)
-        self._highly_variable_genes = list(self.adata.var[self.adata.var['highly_variable']].index)
-        self.genes_patterns = self.fit_gmms(
-            self._highly_variable_genes,
-            n_comp=n_comp)
+    def fit_pattern(self, n_top_genes, n_comp, gene_list=None):
+        if gene_list is not None and isinstance(gene_list, list):
+            self.genes_patterns = self.fit_gmms(gene_list, n_comp=n_comp)
+        else:
+            sc.pp.highly_variable_genes(self.adata,
+                                        flavor='seurat_v3',
+                                        n_top_genes=n_top_genes)
+            self._highly_variable_genes = list(self.adata.var[self.adata.var['highly_variable']].index)
+            self.genes_patterns = self.fit_gmms(self._highly_variable_genes, n_comp=n_comp)
 
     def fit_gmms(self,
-
                  gene_name_list,
                  n_comp=5,
                  binary=False,
@@ -65,24 +74,10 @@ class SPFinderTester(SPFinder):
                 max_iter: int = 200,
                 reg_covar=1e-3):
         result = self.preprocess_array(binary, cut, gene_name, threshold)
-        # Add noise
-        if self.noise_type == 'gauss':
-            noise = get_gauss_noise(result, self.noise_argument)
-            noised = result + noise
-        elif self.noise_type == 'periodicity':
-            noise = get_periodicity_noise(result, self.noise_argument)
-            noised = result * noise
-        elif self.noise_type == 'sp':
-            noise = get_salt_pepper_noise(result, self.noise_argument)
-            noised = result * noise
-        else:
-            noise = get_uniform_noise(result, self.noise_argument)
-            noised = result + noise
-        self.noise_dict[gene_name] = noise
         # Number of unique center must be larger than the number of components.
-        if len(set(map(tuple, noised))) >= n_comp:
+        if len(set(map(tuple, result))) >= n_comp:
             gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
-            gmm.fit(noised)
+            gmm.fit(result)
             return gmm
         else:
             return None
@@ -108,5 +103,22 @@ class SPFinderTester(SPFinder):
         else:
             data = np.array(exp_array)
         sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(self.adata.obs['x']), np.array(self.adata.obs['y']))))
-        dense_array = np.array(np.round(sparse_matrix.todense()), dtype=np.int32)
+
+        result = sparse_matrix.todense()
+        # Add noise
+        if self.noise_type == 'gauss':
+            noise = get_gauss_noise(result, self.noise_argument)
+            noised = result + noise
+        elif self.noise_type == 'periodicity':
+            noise = get_periodicity_noise(result, self.noise_argument)
+            noised = np.array(result) * noise
+        elif self.noise_type == 'sp':
+            noise = get_salt_pepper_noise(result, self.noise_argument)
+            noised = np.array(result) * noise
+        else:
+            noise = get_uniform_noise(result, self.noise_argument)
+            noised = result + noise
+        self.noise_dict[gene_name] = noise
+
+        dense_array = np.array(np.round(noised), dtype=np.int32)
         return dense_array

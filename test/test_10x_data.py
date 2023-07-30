@@ -9,7 +9,7 @@ spf.read_10x(file='F://Rep11_MOB_ST.h5ad', amplification=1000, bin_size=80)
 # %%
 spf.normalize()
 spf.fit_pattern(100, n_comp=10)
-spf.cluster(6)
+spf.cluster_gene(6)
 
 # %%
 spf.genes_labels
@@ -21,4 +21,4 @@ spft.read_10x(file='F://Rep11_MOB_ST.h5ad', amplification=1000, bin_size=80)
 # %%
 spft.normalize()
 spft.fit_pattern(100, n_comp=10)
-spft.cluster(6)
+spft.cluster_gene(6)

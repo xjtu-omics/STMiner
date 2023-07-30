@@ -38,7 +38,7 @@ Each GMM model has 10 components.
 ### build distance matrix & clustering
 
 ```python
-spf.cluster(n_clusters=6)
+spf.cluster_gene(n_clusters=6)
 ```
 
 ### Result & Visualization
@@ -101,5 +101,5 @@ plot_heatmap(label=0, vmax=95)
 #### fit model
 - fit_pattern
 #### build distance array & clustering
-- cluster
+- cluster_gene
 #### visualization

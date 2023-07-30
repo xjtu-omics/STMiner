@@ -58,10 +58,13 @@ class SPFinder:
                                        self._highly_variable_genes,
                                        n_comp=n_comp)
 
-    def cluster(self, n_clusters):
+    def build_distance_array(self):
         self.genes_distance_array = build_gmm_distance_array(self.genes_patterns)
+
+    def cluster_gene(self, n_clusters, mds_components=20):
         self.genes_labels, self._kmeans_fit_result = cluster(self.genes_distance_array,
-                                                             n_clusters=n_clusters)
+                                                             n_clusters=n_clusters,
+                                                             mds_components=mds_components)
 
     def plot_pattern(self, vmax=100):
         plot_pattern(self.genes_labels, self.adata, vmax=vmax)
