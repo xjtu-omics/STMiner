@@ -1,7 +1,8 @@
+from scipy import sparse
+
+from Algorithm.graph import *
 from SPFinder import SPFinder
 from test.testUtils import *
-from Algorithm.graph import *
-from scipy import sparse
 
 
 class SPFinderTester(SPFinder):
