@@ -10,13 +10,13 @@ adata = AnnData(X=count)
 adata.obs = position.reindex(adata.obs.index)
 path = "E://result"
 
-for interval in [20, 10, 5, 4, 3, 2]:
+for interval in [20, 15, 10, 5]:
     spft = SPFinderTester()
     spft.set_adata(adata)
     spft.set_noise_output_path(path)
     spft.set_noise_type('periodicity', interval)
     spft.normalize()
-    spft.log1p()
+    # spft.log1p()
     spft.fit_pattern(n_top_genes=300, n_comp=20)
     spft.build_distance_array()
     spft.cluster_gene(n_clusters=3, mds_components=30)

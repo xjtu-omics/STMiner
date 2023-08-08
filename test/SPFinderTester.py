@@ -133,7 +133,7 @@ class SPFinderTester(SPFinder):
         dense_array = np.array(np.round(noised), dtype=np.int32)
 
         if self.noise_output_path is not None:
-            fig = sns.heatmap(dense_array)
+            fig = sns.heatmap(dense_array, cmap='viridis', vmax=np.percentile(dense_array, 99))
             plt.title(gene_name)
             plt.xticks([])
             plt.yticks([])
