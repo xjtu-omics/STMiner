@@ -28,7 +28,7 @@ sc.pp.normalize_total(adata, inplace=True)
 sc.pp.log1p(adata)
 sc.pp.calculate_qc_metrics(adata, inplace=True)
 
-#%%
+# %%
 sc.tl.pca(adata, svd_solver='arpack')
 
 # %%
@@ -46,11 +46,10 @@ hs.create_knn_graph(weighted_graph=False, n_neighbors=30)
 
 # %%
 hs_results = hs.compute_autocorrelations()
-#%%
-hs_genes = hs_results.loc[hs_results.FDR < 0.05].index # Select genes
+# %%
+hs_genes = hs_results.loc[hs_results.FDR < 0.05].index  # Select genes
 
-local_correlations = hs.compute_local_correlations(hs_genes, jobs=1) # jobs for parallelization
-
+local_correlations = hs.compute_local_correlations(hs_genes, jobs=1)  # jobs for parallelization
 
 # %%
 modules = hs.create_modules(
@@ -58,7 +57,7 @@ modules = hs.create_modules(
 )
 module_scores = hs.calculate_module_scores()
 
-#%%
+# %%
 module_scores
-#%%
+# %%
 hs.plot_local_correlations()
