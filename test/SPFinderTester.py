@@ -11,6 +11,7 @@ class SPFinderTester(SPFinder):
         self.noise_dict = {}
         self.noise_type = 'uniform'
         self.noise_argument = 1
+        self.noise_output_path = None
 
     def set_noise_type(self, noise_type, noise_argument):
         if noise_type == 'gauss':
@@ -24,6 +25,14 @@ class SPFinderTester(SPFinder):
                 raise ValueError('noise_argument should smaller than 1')
         self.noise_type = noise_type
         self.noise_argument = noise_argument
+
+    def set_noise_output_path(self, path):
+        if isinstance(path, str):
+            if path[-1] != '/':
+                path += '/'
+            self.noise_output_path = path
+        else:
+            raise Exception('path must be str!')
 
     def fit_pattern(self, n_top_genes, n_comp, gene_list=None):
         if gene_list is not None and isinstance(gene_list, list):
@@ -122,4 +131,16 @@ class SPFinderTester(SPFinder):
         self.noise_dict[gene_name] = noise
 
         dense_array = np.array(np.round(noised), dtype=np.int32)
+
+        if self.noise_output_path is not None:
+            fig = sns.heatmap(dense_array)
+            plt.title(gene_name)
+            plt.xticks([])
+            plt.yticks([])
+            heatmap_fig = fig.get_figure()
+            fig_name = gene_name + '_' + self.noise_type + '_' + str(self.noise_argument) + '.png'
+            output_path = self.noise_output_path + fig_name
+            heatmap_fig.savefig(output_path, dpi=400)
+            plt.clf()
+
         return dense_array
