@@ -43,17 +43,20 @@ class SPFinder:
                                                    self.adata.obs['y'].min(),
                                                    bin_size=bin_width)
 
-    def normalize(self, exclude_highly_expressed=False):
-        sc.pp.normalize_total(self.adata, exclude_highly_expressed=exclude_highly_expressed)
-
-    def log1p(self):
-        sc.pp.log1p(self.adata)
-
-    def fit_pattern(self, n_top_genes, n_comp):
+    def fit_pattern(self,
+                    n_top_genes,
+                    n_comp,
+                    exclude_highly_expressed=False,
+                    log1p=False,
+                    min_cells=200):
+        sc.pp.filter_genes(self.adata, min_cells=min_cells)
         sc.pp.highly_variable_genes(self.adata,
                                     flavor='seurat_v3',
                                     n_top_genes=n_top_genes)
+        if log1p:
+            sc.pp.log1p(self.adata)
         self._highly_variable_genes = list(self.adata.var[self.adata.var['highly_variable']].index)
+        sc.pp.normalize_total(self.adata, exclude_highly_expressed=exclude_highly_expressed)
         self.genes_patterns = fit_gmms(self.adata,
                                        self._highly_variable_genes,
                                        n_comp=n_comp)
