@@ -37,11 +37,12 @@ class SPFinderTester(SPFinder):
     def fit_pattern(self,
                     n_top_genes,
                     n_comp,
+                    normalize=True,
                     exclude_highly_expressed=False,
                     log1p=False,
                     min_cells=200,
                     gene_list=None):
-        self.preprocess(exclude_highly_expressed, log1p, min_cells, n_top_genes)
+        self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes)
         if gene_list is not None and isinstance(gene_list, list):
             self.genes_patterns = self.fit_gmms(gene_list, n_comp=n_comp)
         else:

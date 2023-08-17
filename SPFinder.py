@@ -46,21 +46,23 @@ class SPFinder:
     def fit_pattern(self,
                     n_top_genes,
                     n_comp,
+                    normalize=True,
                     exclude_highly_expressed=False,
                     log1p=False,
                     min_cells=200):
-        self.preprocess(exclude_highly_expressed, log1p, min_cells, n_top_genes)
+        self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes)
         self.genes_patterns = fit_gmms(self.adata,
                                        self._highly_variable_genes,
                                        n_comp=n_comp)
 
-    def preprocess(self, exclude_highly_expressed, log1p, min_cells, n_top_genes):
+    def preprocess(self, normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes):
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
         sc.pp.highly_variable_genes(self.adata,
                                     flavor='seurat_v3',
                                     n_top_genes=n_top_genes)
         self._highly_variable_genes = list(self.adata.var[self.adata.var['highly_variable']].index)
-        sc.pp.normalize_total(self.adata, exclude_highly_expressed=exclude_highly_expressed)
+        if normalize:
+            sc.pp.normalize_total(self.adata, exclude_highly_expressed=exclude_highly_expressed)
         if log1p:
             sc.pp.log1p(self.adata)
 
