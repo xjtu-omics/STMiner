@@ -6,16 +6,16 @@ from test.SPFinderTester import SPFinderTester
 
 count = pd.read_csv('./data/test2/simulate_exp.csv', sep=',', index_col=0)
 position = pd.read_csv('./data/test2/simulate_position.csv', sep=',', index_col=0)
+
 adata = AnnData(X=count)
 adata.obs = position.reindex(adata.obs.index)
-path = "E://result/"
+path = "E://SpatialDE_result/"
 
 for interval in [20, 15, 10, 5]:
     spft = SPFinderTester()
     spft.set_adata(adata)
     spft.set_noise_output_path(path)
     spft.set_noise_type('periodicity', interval)
-    spft.normalize()
     spft.fit_pattern(n_top_genes=300, n_comp=20)
     spft.build_distance_array()
     spft.cluster_gene(n_clusters=3, mds_components=30)
@@ -28,7 +28,6 @@ for mean in np.arange(0.1, 1, 0.2, dtype=np.float32):
     spft.set_noise_output_path(path)
     spft.set_adata(adata)
     spft.set_noise_type('gauss', mean)
-    spft.normalize()
     spft.fit_pattern(n_top_genes=300, n_comp=20)
     spft.build_distance_array()
     spft.cluster_gene(n_clusters=3, mds_components=30)
@@ -41,7 +40,6 @@ for percentage in np.arange(0.1, 1, 0.2, dtype=np.float32):
     spft.set_adata(adata)
     spft.set_noise_output_path(path)
     spft.set_noise_type('sp', percentage)
-    spft.normalize()
     spft.fit_pattern(n_top_genes=300, n_comp=20)
     spft.build_distance_array()
     spft.cluster_gene(n_clusters=3, mds_components=30)
