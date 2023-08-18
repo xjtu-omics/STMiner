@@ -77,12 +77,14 @@ class SPFinder:
     def plot_pattern(self, vmax=100):
         plot_pattern(self.genes_labels, self.adata, vmax=vmax)
 
-    def plot_heatmap(self, label, vmax=100, num_cols=4):
+    def plot_heatmap(self, label, vmax=100, num_cols=4, reverse_y=False, reverse_x=False):
         plot_heatmap(result=self.genes_labels,
                      label=label,
                      adata=self.adata,
                      num_cols=num_cols,
-                     vmax=vmax)
+                     vmax=vmax,
+                     reverse_y=reverse_y,
+                     reverse_x=reverse_x)
 
     def plot_gmm(self, gene_name, cmap=None):
         gmm = self.genes_patterns[gene_name]

@@ -13,27 +13,33 @@ def plot_heatmap(result=None,
                  cmap=None,
                  num_cols=4,
                  vmax=100,
-                 vmin=0):
+                 vmin=0,
+                 reverse_y=False,
+                 reverse_x=False):
     """
-    Plot the heatmap for the given list.
-    :param n_gene:
-    :type n_gene:
-    :param gene_list:
-    :type gene_list:
-    :param cmap:
-    :type cmap:
-    :param result:
-    :type result:
-    :param adata:
-    :type adata:
-    :param label:
-    :type label:
-    :param num_cols:
-    :type num_cols:
-    :param vmax:
-    :type vmax:
-    :param vmin:
-    :type vmin:
+
+    @param result:
+    @type result:
+    @param label:
+    @type label:
+    @param adata:
+    @type adata:
+    @param gene_list:
+    @type gene_list:
+    @param n_gene:
+    @type n_gene:
+    @param cmap:
+    @type cmap:
+    @param num_cols:
+    @type num_cols:
+    @param vmax:
+    @type vmax:
+    @param vmin:
+    @type vmin:
+    @param reverse_y:
+    @type reverse_y:
+    @param reverse_x:
+    @type reverse_x:
     """
     if gene_list is None:
         if label is None or result is None:
@@ -53,6 +59,10 @@ def plot_heatmap(result=None,
         else:
             ax = axes[row, col]
         arr = get_exp_array(adata, gene)
+        if reverse_y:
+            arr = np.flipud(arr)
+        if reverse_x:
+            arr = np.fliplr(arr)
         sns.heatmap(arr,
                     cbar=False,
                     ax=ax,
