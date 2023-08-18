@@ -68,7 +68,7 @@ def fit_gmm_bic(adata: anndata,
 
 def fit_gmm(adata: anndata,
             gene_name: str,
-            n_comp: int = 2,
+            n_comp: int,
             cut: bool = False,
             binary: bool = False,
             threshold: int = 95,
@@ -126,7 +126,7 @@ def preprocess_array(adata, binary, cut, gene_name, threshold):
 
 def fit_gmms(adata,
              gene_name_list,
-             n_comp=5,
+             n_comp=15,
              binary=False,
              threshold=95,
              max_iter=100,

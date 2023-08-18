@@ -45,11 +45,33 @@ class SPFinder:
 
     def fit_pattern(self,
                     n_top_genes,
-                    n_comp,
+                    n_comp=20,
                     normalize=True,
                     exclude_highly_expressed=False,
                     log1p=False,
                     min_cells=200):
+        """
+        Given a distance matrix with the distances between each pair of objects in a set, and a chosen number of
+    dimensions, N, an MDS algorithm places each object into N-dimensional space (a lower-dimensional representation)
+    such that the between-object distances are preserved as well as possible.
+    After that, run **K-Means** clustering and get the labels.
+
+    Ref:
+     - https://scikit-learn.org/stable/modules/manifold.html#multidimensional-scaling
+     - Multidimensional scaling. (2023, March 28). In Wikipedia. https://en.wikipedia.org/wiki/Multidimensional_scaling
+        @param n_top_genes: number of top-genes to fit pattern
+        @type n_top_genes: int
+        @param n_comp: number of components to fit GMM
+        @type n_comp: int
+        @param normalize: Run normalize or not, default: True
+        @type normalize: boolean
+        @param exclude_highly_expressed:
+        @type exclude_highly_expressed: boolean
+        @param log1p: Run log1p or not, default: False
+        @type log1p: boolean
+        @param min_cells: minimum number of cells for gene
+        @type min_cells: int
+        """
         self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes)
         self.genes_patterns = fit_gmms(self.adata,
                                        self._highly_variable_genes,
