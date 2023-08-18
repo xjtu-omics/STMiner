@@ -2,20 +2,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
+from scipy.sparse import csr_matrix
 from Algorithm.distribution import get_exp_array
 
 
-def plot_heatmap(result=None,
-                 label=None,
-                 adata=None,
-                 gene_list=None,
-                 n_gene=12,
-                 cmap=None,
-                 num_cols=4,
-                 vmax=100,
-                 vmin=0,
-                 reverse_y=False,
-                 reverse_x=False):
+def plot_genes(result=None,
+               label=None,
+               adata=None,
+               gene_list=None,
+               n_gene=12,
+               cmap=None,
+               num_cols=4,
+               vmax=100,
+               vmin=0,
+               reverse_y=False,
+               reverse_x=False):
     """
 
     @param result:
@@ -46,8 +47,6 @@ def plot_heatmap(result=None,
             raise 'Error: Parameter [label] and [result] should not be None.'
         else:
             gene_list = list(result[result['labels'] == label]['gene_id'])[:n_gene]
-
-    new_cmap = cmap if cmap is not None else 'viridis'
     genes_count = len(gene_list)
     axes, fig = _get_figure(genes_count, num_cols)
     fig.subplots_adjust(hspace=0.5)
@@ -63,14 +62,14 @@ def plot_heatmap(result=None,
             arr = np.flipud(arr)
         if reverse_x:
             arr = np.fliplr(arr)
-        sns.heatmap(arr,
-                    cbar=False,
-                    ax=ax,
-                    cmap=new_cmap,
-                    vmax=np.percentile(arr, vmax),
-                    vmin=np.percentile(arr, vmin)
-                    )
-        ax.axis('off')
+        sparse_matrix = csr_matrix(arr)
+        sns.set(style="white")
+        cmap = sns.color_palette("Spectral_r", as_cmap=True)
+        sns.scatterplot(x=sparse_matrix.nonzero()[1],
+                        y=sparse_matrix.nonzero()[0],
+                        c=sparse_matrix.data,
+                        cmap=cmap)
+        ax.set_axis_off()
         ax.set_title(gene)
     plt.tight_layout()
     plt.show()
