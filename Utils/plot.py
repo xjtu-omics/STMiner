@@ -64,9 +64,11 @@ def plot_genes(result=None,
             arr = np.fliplr(arr)
         sparse_matrix = csr_matrix(arr)
         sns.set(style="white")
-        cmap = sns.color_palette("Spectral_r", as_cmap=True)
+        if cmap is None:
+            cmap = sns.color_palette("Spectral_r", as_cmap=True)
         sns.scatterplot(x=sparse_matrix.nonzero()[1],
                         y=sparse_matrix.nonzero()[0],
+                        ax=ax,
                         c=sparse_matrix.data,
                         cmap=cmap)
         ax.set_axis_off()

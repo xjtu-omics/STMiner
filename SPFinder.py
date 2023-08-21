@@ -59,18 +59,18 @@ class SPFinder:
     Ref:
      - https://scikit-learn.org/stable/modules/manifold.html#multidimensional-scaling
      - Multidimensional scaling. (2023, March 28). In Wikipedia. https://en.wikipedia.org/wiki/Multidimensional_scaling
-        @param n_top_genes: number of top-genes to fit pattern
-        @type n_top_genes: int
-        @param n_comp: number of components to fit GMM
-        @type n_comp: int
-        @param normalize: Run normalize or not, default: True
-        @type normalize: boolean
-        @param exclude_highly_expressed:
-        @type exclude_highly_expressed: boolean
-        @param log1p: Run log1p or not, default: False
-        @type log1p: boolean
-        @param min_cells: minimum number of cells for gene
-        @type min_cells: int
+        :param n_top_genes: number of top-genes to fit pattern
+        :type n_top_genes: int
+        :param n_comp: number of components to fit GMM
+        :type n_comp: int
+        :param normalize: Run normalize or not, default: True
+        :type normalize: boolean
+        :param exclude_highly_expressed:
+        :type exclude_highly_expressed: boolean
+        :param log1p: Run log1p or not, default: False
+        :type log1p: boolean
+        :param min_cells: minimum number of cells for gene
+        :type min_cells: int
         """
         self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes)
         self.genes_patterns = fit_gmms(self.adata,

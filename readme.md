@@ -74,7 +74,7 @@ spf.plot_pattern(vmax=95)
 To visualize the genes expression heatmap by labels:
 
 ```python
-plot_heatmap(label=0, vmax=95)
+plot_genes(label=0, vmax=95)
 ```
 
 ## API
