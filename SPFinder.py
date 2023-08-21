@@ -5,7 +5,7 @@ from anndata import AnnData
 from Algorithm.distance import build_gmm_distance_array
 from Algorithm.graph import *
 from IO.IOUtil import merge_bin_coordinate
-from IO.read_10X import read_10x_h5ad
+from IO.read_10X import read_h5ad
 from IO.read_stereo import read_gem_file
 from Utils.plot import *
 
@@ -30,7 +30,7 @@ class SPFinder:
         self._old_adata = self.adata.copy()
 
     def read_10x(self, file, amplification=1, bin_size=1):
-        self.set_adata(read_10x_h5ad(file, amplification=amplification, bin_size=bin_size))
+        self.set_adata(read_h5ad(file, amplification=amplification, bin_size=bin_size))
 
     def read_gem(self, file, bin_size=40):
         self.set_adata(read_gem_file(file, bin_size=bin_size))
@@ -99,14 +99,15 @@ class SPFinder:
     def plot_pattern(self, vmax=100):
         plot_pattern(self.genes_labels, self.adata, vmax=vmax)
 
-    def plot_genes(self, label, vmax=100, num_cols=4, reverse_y=False, reverse_x=False):
+    def plot_genes(self, label, vmax=100, num_cols=4, reverse_y=False, reverse_x=False, plot_type="heatmap"):
         plot_genes(result=self.genes_labels,
                    label=label,
                    adata=self.adata,
                    num_cols=num_cols,
                    vmax=vmax,
                    reverse_y=reverse_y,
-                   reverse_x=reverse_x)
+                   reverse_x=reverse_x,
+                   plot_type=plot_type)
 
     def plot_gmm(self, gene_name, cmap=None):
         gmm = self.genes_patterns[gene_name]

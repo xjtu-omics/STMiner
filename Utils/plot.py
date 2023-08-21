@@ -16,32 +16,8 @@ def plot_genes(result=None,
                vmax=100,
                vmin=0,
                reverse_y=False,
-               reverse_x=False):
-    """
-
-    @param result:
-    @type result:
-    @param label:
-    @type label:
-    @param adata:
-    @type adata:
-    @param gene_list:
-    @type gene_list:
-    @param n_gene:
-    @type n_gene:
-    @param cmap:
-    @type cmap:
-    @param num_cols:
-    @type num_cols:
-    @param vmax:
-    @type vmax:
-    @param vmin:
-    @type vmin:
-    @param reverse_y:
-    @type reverse_y:
-    @param reverse_x:
-    @type reverse_x:
-    """
+               reverse_x=False,
+               plot_type='heatmap'):
     if gene_list is None:
         if label is None or result is None:
             raise 'Error: Parameter [label] and [result] should not be None.'
@@ -62,15 +38,23 @@ def plot_genes(result=None,
             arr = np.flipud(arr)
         if reverse_x:
             arr = np.fliplr(arr)
-        sparse_matrix = csr_matrix(arr)
         sns.set(style="white")
         if cmap is None:
             cmap = sns.color_palette("Spectral_r", as_cmap=True)
-        sns.scatterplot(x=sparse_matrix.nonzero()[1],
-                        y=sparse_matrix.nonzero()[0],
+        if plot_type == 'heatmap':
+            sns.heatmap(arr,
+                        cbar=False,
                         ax=ax,
-                        c=sparse_matrix.data,
-                        cmap=cmap)
+                        cmap=cmap,
+                        vmax=np.percentile(arr, vmax),
+                        vmin=np.percentile(arr, vmin))
+        elif plot_type == 'scatter':
+            sparse_matrix = csr_matrix(arr)
+            sns.scatterplot(x=sparse_matrix.nonzero()[1],
+                            y=sparse_matrix.nonzero()[0],
+                            ax=ax,
+                            c=sparse_matrix.data,
+                            cmap=cmap)
         ax.set_axis_off()
         ax.set_title(gene)
     plt.tight_layout()
