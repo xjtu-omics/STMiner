@@ -10,14 +10,22 @@ def plot_gene(adata,
               gene,
               cmap='Spectral_r',
               reverse_y=False,
-              reverse_x=False):
+              reverse_x=False,
+              spot_size=None):
     arr = get_exp_array(adata, gene)
     arr = _adjust_arr(arr, reverse_x, reverse_y)
     sparse_matrix = csr_matrix(arr)
-    sns.scatterplot(x=sparse_matrix.nonzero()[1],
-                    y=sparse_matrix.nonzero()[0],
-                    c=sparse_matrix.data,
-                    cmap=cmap)
+    if spot_size is not None:
+        sns.scatterplot(x=sparse_matrix.nonzero()[1],
+                        y=sparse_matrix.nonzero()[0],
+                        c=sparse_matrix.data,
+                        s=spot_size,
+                        cmap=cmap)
+    else:
+        sns.scatterplot(x=sparse_matrix.nonzero()[1],
+                        y=sparse_matrix.nonzero()[0],
+                        c=sparse_matrix.data,
+                        cmap=cmap)
 
 
 def plot_genes(result=None,
@@ -119,4 +127,3 @@ def _adjust_arr(arr, reverse_x, reverse_y):
     if reverse_x:
         arr = np.fliplr(arr)
     return arr
-
