@@ -99,12 +99,20 @@ class SPFinder:
     def plot_pattern(self, vmax=100):
         plot_pattern(self.genes_labels, self.adata, vmax=vmax)
 
-    def plot_genes(self, label, vmax=100, num_cols=4, reverse_y=False, reverse_x=False, plot_type="heatmap"):
+    def plot_genes(self,
+                   label,
+                   vmax=100,
+                   num_cols=4,
+                   reverse_y=False,
+                   reverse_x=False,
+                   plot_type="heatmap",
+                   cmap=None):
         plot_genes(result=self.genes_labels,
                    label=label,
                    adata=self.adata,
                    num_cols=num_cols,
                    vmax=vmax,
+                   cmap=cmap,
                    reverse_y=reverse_y,
                    reverse_x=reverse_x,
                    plot_type=plot_type)
