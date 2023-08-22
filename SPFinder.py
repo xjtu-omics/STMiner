@@ -7,7 +7,7 @@ from Algorithm.graph import *
 from IO.IOUtil import merge_bin_coordinate
 from IO.read_10X import read_h5ad
 from IO.read_stereo import read_gem_file
-from Utils.plot import *
+from Plot.plot import Plot
 
 
 class SPFinder:
@@ -21,6 +21,7 @@ class SPFinder:
         self._kmeans_fit_result = None
         self._scope = ()
         self._old_adata = None
+        self.plot = Plot(self)
         if adata is not None:
             self.set_adata(adata)
 
@@ -95,30 +96,6 @@ class SPFinder:
         self.genes_labels, self._kmeans_fit_result = cluster(self.genes_distance_array,
                                                              n_clusters=n_clusters,
                                                              mds_components=mds_components)
-
-    def plot_pattern(self, vmax=100):
-        plot_pattern(self.genes_labels, self.adata, vmax=vmax)
-
-    def plot_genes(self,
-                   label,
-                   vmax=100,
-                   num_cols=4,
-                   reverse_y=False,
-                   reverse_x=False,
-                   plot_type="heatmap",
-                   cmap=None):
-        plot_genes(result=self.genes_labels,
-                   label=label,
-                   adata=self.adata,
-                   num_cols=num_cols,
-                   vmax=vmax,
-                   cmap=cmap,
-                   reverse_y=reverse_y,
-                   reverse_x=reverse_x,
-                   plot_type=plot_type)
-
-    def plot_gene(self, gene, cmap, reverse_y, reverse_x):
-        plot_gene(self.adata, gene=gene, cmap=cmap, reverse_x=reverse_x, reverse_y=reverse_y)
 
     def plot_gmm(self, gene_name, cmap=None):
         gmm = self.genes_patterns[gene_name]
