@@ -1,12 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-
 from scipy.sparse import csr_matrix
+
 from Algorithm.distribution import get_exp_array
 
 
-def _adjust_arr(arr, reverse_x, reverse_y):
+def _adjust_arr(arr, rotate, reverse_x, reverse_y):
+    if rotate:
+        arr = np.rot90(arr)
     if reverse_y:
         arr = np.flipud(arr)
     if reverse_x:
@@ -32,21 +34,24 @@ class Plot:
                   cmap='Spectral_r',
                   reverse_y=False,
                   reverse_x=False,
+                  rotate=False,
                   spot_size=None):
         arr = get_exp_array(self.sp.adata, gene)
-        arr = _adjust_arr(arr, reverse_x, reverse_y)
+        arr = _adjust_arr(arr, rotate, reverse_x, reverse_y)
         sparse_matrix = csr_matrix(arr)
         if spot_size is not None:
-            sns.scatterplot(x=sparse_matrix.nonzero()[1],
-                            y=sparse_matrix.nonzero()[0],
-                            c=sparse_matrix.data,
-                            s=spot_size,
-                            cmap=cmap)
+            ax = sns.scatterplot(x=sparse_matrix.nonzero()[1],
+                                 y=sparse_matrix.nonzero()[0],
+                                 c=sparse_matrix.data,
+                                 s=spot_size,
+                                 cmap=cmap)
         else:
-            sns.scatterplot(x=sparse_matrix.nonzero()[1],
-                            y=sparse_matrix.nonzero()[0],
-                            c=sparse_matrix.data,
-                            cmap=cmap)
+            ax = sns.scatterplot(x=sparse_matrix.nonzero()[1],
+                                 y=sparse_matrix.nonzero()[0],
+                                 c=sparse_matrix.data,
+                                 cmap=cmap)
+        ax.set_axis_off()
+        plt.show()
 
     def plot_genes(self,
                    label=None,
@@ -56,6 +61,7 @@ class Plot:
                    num_cols=4,
                    vmax=100,
                    vmin=0,
+                   rotate=False,
                    reverse_y=False,
                    reverse_x=False,
                    plot_type='heatmap'):
@@ -77,7 +83,7 @@ class Plot:
             else:
                 ax = axes[row, col]
             arr = get_exp_array(adata, gene)
-            arr = _adjust_arr(arr, reverse_x, reverse_y)
+            arr = _adjust_arr(arr, rotate, reverse_x, reverse_y)
             sns.set(style="white")
             if cmap is None:
                 cmap = sns.color_palette("Spectral_r", as_cmap=True)
