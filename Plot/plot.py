@@ -51,6 +51,7 @@ class Plot:
                                  c=sparse_matrix.data,
                                  cmap=cmap)
         ax.set_axis_off()
+        ax.set_title(gene)
         plt.show()
 
     def plot_genes(self,
