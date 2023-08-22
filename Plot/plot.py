@@ -35,9 +35,12 @@ class Plot:
                   reverse_y=False,
                   reverse_x=False,
                   rotate=False,
-                  spot_size=None):
+                  spot_size=None,
+                  log1p=False):
         arr = get_exp_array(self.sp.adata, gene)
         arr = _adjust_arr(arr, rotate, reverse_x, reverse_y)
+        if log1p:
+            arr = np.log1p(arr)
         sparse_matrix = csr_matrix(arr)
         if spot_size is not None:
             ax = sns.scatterplot(x=sparse_matrix.nonzero()[1],
@@ -107,7 +110,13 @@ class Plot:
         plt.tight_layout()
         plt.show()
 
-    def plot_pattern(self, cmap=None, vmax=99, num_cols=4):
+    def plot_pattern(self,
+                     cmap=None,
+                     vmax=99,
+                     num_cols=4,
+                     rotate=False,
+                     reverse_y=False,
+                     reverse_x=False):
         result = self.sp.genes_labels
         adata = self.sp.adata
         label_list = set(result['labels'])
@@ -129,7 +138,7 @@ class Plot:
                 scale_factor = 100 / total_sum
                 scaled_matrix = exp_matrix * scale_factor
                 total_count += scaled_matrix
-
+            total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
             sns.heatmap(total_count,
                         ax=ax,
                         cbar=False,
