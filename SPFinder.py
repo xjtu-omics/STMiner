@@ -117,6 +117,9 @@ class SPFinder:
                    reverse_x=reverse_x,
                    plot_type=plot_type)
 
+    def plot_gene(self, gene, cmap, reverse_y, reverse_x):
+        plot_gene(self.adata, gene=gene, cmap=cmap, reverse_x=reverse_x, reverse_y=reverse_y)
+
     def plot_gmm(self, gene_name, cmap=None):
         gmm = self.genes_patterns[gene_name]
         view_gmm(gmm, scope=self._scope, cmap=cmap)

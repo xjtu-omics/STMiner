@@ -6,6 +6,20 @@ from scipy.sparse import csr_matrix
 from Algorithm.distribution import get_exp_array
 
 
+def plot_gene(adata,
+              gene,
+              cmap='Spectral_r',
+              reverse_y=False,
+              reverse_x=False):
+    arr = get_exp_array(adata, gene)
+    arr = _adjust_arr(arr, reverse_x, reverse_y)
+    sparse_matrix = csr_matrix(arr)
+    sns.scatterplot(x=sparse_matrix.nonzero()[1],
+                    y=sparse_matrix.nonzero()[0],
+                    c=sparse_matrix.data,
+                    cmap=cmap)
+
+
 def plot_genes(result=None,
                label=None,
                adata=None,
@@ -34,10 +48,7 @@ def plot_genes(result=None,
         else:
             ax = axes[row, col]
         arr = get_exp_array(adata, gene)
-        if reverse_y:
-            arr = np.flipud(arr)
-        if reverse_x:
-            arr = np.fliplr(arr)
+        arr = _adjust_arr(arr, reverse_x, reverse_y)
         sns.set(style="white")
         if cmap is None:
             cmap = sns.color_palette("Spectral_r", as_cmap=True)
@@ -100,3 +111,12 @@ def _get_figure(fig_count, num_cols):
     for ax in axes.flat:
         ax.axis('off')
     return axes, fig
+
+
+def _adjust_arr(arr, reverse_x, reverse_y):
+    if reverse_y:
+        arr = np.flipud(arr)
+    if reverse_x:
+        arr = np.fliplr(arr)
+    return arr
+
