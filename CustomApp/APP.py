@@ -16,6 +16,7 @@ class App:
         self.canvas = tk.Canvas(self.root, width=800, height=800)
         self.canvas.pack()
         self.canvas.bind("<Button-1>", self.annotate)
+        self.canvas.bind("<Button-3>", self.annotate)
 
         # Create menu
         self.menu = tk.Menu(self.root)
