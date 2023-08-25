@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from scipy.sparse import csr_matrix
-
+from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
+from sklearn.metrics import silhouette_score
 from Algorithm.distribution import get_exp_array
 
 
@@ -147,4 +149,25 @@ class Plot:
             ax.axis('off')
             ax.set_title('Pattern ' + str(label))
         plt.tight_layout()
+        plt.show()
+
+    def plot_score(self, mds_comp, min_cluster, max_cluster):
+        db_dict = {}
+        ch_dict = {}
+        si_dict = {}
+        for cluster_number in range(min_cluster, max_cluster + 1):
+            self.sp.cluster_gene(self, cluster_number, mds_components=mds_comp)
+            db_dict[cluster_number] = 1 / davies_bouldin_score(self.sp.genes_distance_array,
+                                                               self.sp.kmeans_fit_result.labels_)
+            ch_dict[cluster_number] = calinski_harabasz_score(self.sp.genes_distance_array,
+                                                              self.sp.kmeans_fit_result.labels_)
+            si_dict[cluster_number] = silhouette_score(self.sp.genes_distance_array, self.sp.kmeans_fit_result.labels_)
+        score_df = pd.DataFrame([db_dict, si_dict, ch_dict],
+                                index=['Davies-Bouldin', 'Silhouette', 'Calinski-Harabasz']).T
+        norm_score_df = (score_df - score_df.min()) / (score_df.max() - score_df.min())
+        sns.lineplot(norm_score_df, markers=True)
+        plt.xticks(list(range(min_cluster, max_cluster + 1, 1)))
+        plt.title("Evaluate Clustering Performance")
+        plt.xlabel("Number of Clusters")
+        plt.ylabel("Normalized Score")
         plt.show()

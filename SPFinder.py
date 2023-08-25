@@ -16,9 +16,9 @@ class SPFinder:
         self.genes_patterns = None
         self.genes_distance_array = None
         self.genes_labels = None
+        self.kmeans_fit_result = None
         self._gene_expression_edge = {}
         self._highly_variable_genes = []
-        self._kmeans_fit_result = None
         self._scope = ()
         self._old_adata = None
         self.plot = Plot(self)
@@ -93,9 +93,9 @@ class SPFinder:
         self.genes_distance_array = build_gmm_distance_array(self.genes_patterns)
 
     def cluster_gene(self, n_clusters, mds_components=20):
-        self.genes_labels, self._kmeans_fit_result = cluster(self.genes_distance_array,
-                                                             n_clusters=n_clusters,
-                                                             mds_components=mds_components)
+        self.genes_labels, self.kmeans_fit_result = cluster(self.genes_distance_array,
+                                                            n_clusters=n_clusters,
+                                                            mds_components=mds_components)
 
     def plot_gmm(self, gene_name, cmap=None):
         gmm = self.genes_patterns[gene_name]
