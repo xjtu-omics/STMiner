@@ -163,7 +163,7 @@ class Plot:
                                                               self.sp.kmeans_fit_result.labels_)
             si_dict[cluster_number] = silhouette_score(self.sp.genes_distance_array, self.sp.kmeans_fit_result.labels_)
         score_df = pd.DataFrame([db_dict, si_dict, ch_dict],
-                                index=['Davies-Bouldin', 'Silhouette', 'Calinski-Harabasz']).T
+                                index=['1/Davies-Bouldin', 'Silhouette', 'Calinski-Harabasz']).T
         norm_score_df = (score_df - score_df.min()) / (score_df.max() - score_df.min())
         sns.lineplot(norm_score_df, markers=True)
         plt.xticks(list(range(min_cluster, max_cluster + 1, 1)))
