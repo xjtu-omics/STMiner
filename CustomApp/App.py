@@ -4,8 +4,9 @@ from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk, ImageDraw
 from PIL import ImageFile
 
-ImageFile.LOAD_TRUNCATED_IMAGES = True
+# Allow loading large images
 Image.MAX_IMAGE_PIXELS = None
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class App:
@@ -44,6 +45,7 @@ class App:
         self.help_menu.add_command(label="About", command=self.show_about)
 
         self.drawing = False
+        self.radius = 2
 
     def open_image(self):
         file_path = filedialog.askopenfilename()
@@ -55,30 +57,39 @@ class App:
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.img_on_canvas)
             self.root.title("Region Annotation")
 
-    def _annotate(self, event):
-        self.drawing = True
+    def _draw(self, event):
         x, y = event.x, event.y
         draw = ImageDraw.Draw(self.img)
-        draw.ellipse((x - 5, y - 5, x + 5, y + 5), fill="red", outline="red")
-        self.canvas.create_oval(x - 5, y - 5, x + 5, y + 5, fill="red", outline="red")
+        draw.ellipse((x - self.radius, y - self.radius, x + self.radius, y + self.radius),
+                     fill="red",
+                     outline="red")
+        self.canvas.create_oval(x - self.radius, y - self.radius, x + self.radius, y + self.radius,
+                                fill="red",
+                                outline="red")
+
+    def _annotate(self, event):
+        self.drawing = True
+        self._draw(event)
 
     def _continue_drawing(self, event):
         if self.drawing:
-            x, y = event.x, event.y
-            self.canvas.create_oval(x - 5, y - 5, x + 5, y + 5, fill="red", outline="red")
+            self._draw(event)
 
     def _stop_drawing(self, event):
         self.drawing = False
 
     def clear_annotations(self):
         self.canvas.delete("all")
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.img_on_canvas)
+        self.canvas.create_image(0, 0,
+                                 anchor=tk.NW,
+                                 image=self.img_on_canvas)
 
     def reset(self):
         self.canvas.delete("all")
 
     def save_image(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[('*', '.png')])
+        file_path = filedialog.asksaveasfilename(defaultextension=".png",
+                                                 filetypes=[('*', '.png')])
         if file_path:
             self.img.save(file_path)
 
