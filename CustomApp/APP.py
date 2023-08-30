@@ -3,11 +3,14 @@ from tkinter import filedialog, messagebox
 
 from PIL import Image, ImageTk, ImageDraw
 from PIL import ImageFile
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
 
+
 class App:
-    def __init__(self):
+    def __init__(self, instance):
+        self.instance = instance
         self.img = None
         self.img_on_canvas = None
 
@@ -46,7 +49,7 @@ class App:
         if file_path:
             self.root.title("Loading image... please wait.")
             self.img = Image.open(file_path)
-            self.img = self.img.resize((800, 800), Image.ANTIALIAS)  # adjust img size
+            self.img = self.img.resize((800, 800), Image.ANTIALIAS)
             self.img_on_canvas = ImageTk.PhotoImage(self.img)
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.img_on_canvas)
             self.root.title("Region Annotation")

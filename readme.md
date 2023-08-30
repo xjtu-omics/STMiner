@@ -12,7 +12,7 @@ from SPFinder import SPFinder
 
 ```python
 spf = SPFinder()
-spf.read_10x(file='F://Rep11_MOB_ST.h5ad', amplification=1000, bin_size=80)
+spf.read_h5ad(file='F://Rep11_MOB_ST.h5ad', amplification=1000, bin_size=80)
 ```
 
 ### Preprocess
@@ -92,7 +92,7 @@ plot_genes(label=0, vmax=95)
 
 #### load data
 
-- read_10x
+- read_h5ad
 - read_gem
 - merge_bin
 

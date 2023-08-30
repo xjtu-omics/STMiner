@@ -8,6 +8,7 @@ from IO.IOUtil import merge_bin_coordinate
 from IO.read_10X import read_h5ad
 from IO.read_stereo import read_gem_file
 from Plot.plot import Plot
+from CustomApp.APP import App
 
 
 class SPFinder:
@@ -20,17 +21,16 @@ class SPFinder:
         self._gene_expression_edge = {}
         self._highly_variable_genes = []
         self._scope = ()
-        self._old_adata = None
         self.plot = Plot(self)
+        self.app = App(self.adata)
         if adata is not None:
             self.set_adata(adata)
 
     def set_adata(self, adata):
         self.adata = adata
         self._scope = (0, max(adata.obs['y'].max(), adata.obs['x'].max()))
-        self._old_adata = self.adata.copy()
 
-    def read_10x(self, file, amplification=1, bin_size=1):
+    def read_h5ad(self, file, amplification=1, bin_size=1):
         self.set_adata(read_h5ad(file, amplification=amplification, bin_size=bin_size))
 
     def read_gem(self, file, bin_size=40):
@@ -100,6 +100,3 @@ class SPFinder:
     def plot_gmm(self, gene_name, cmap=None):
         gmm = self.genes_patterns[gene_name]
         view_gmm(gmm, scope=self._scope, cmap=cmap)
-
-    def clean_up(self):
-        self.__init__(adata=self._old_adata)
