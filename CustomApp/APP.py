@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 
 from PIL import Image, ImageTk, ImageDraw
-
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+Image.MAX_IMAGE_PIXELS = None
 
 class App:
     def __init__(self):
