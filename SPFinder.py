@@ -26,6 +26,9 @@ class SPFinder:
         if adata is not None:
             self.set_adata(adata)
 
+    def flush_app(self):
+        self.app = App()
+
     def set_adata(self, adata):
         self.adata = adata
         self._scope = (0, max(adata.obs['y'].max(), adata.obs['x'].max()))
