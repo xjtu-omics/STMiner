@@ -10,7 +10,6 @@ Image.MAX_IMAGE_PIXELS = None
 
 class App:
     def __init__(self):
-        self.shape = None
         self.img = None
         self.img_on_canvas = None
 
@@ -40,19 +39,16 @@ class App:
         help_menu = tk.Menu(self.menu)
         self.menu.add_cascade(label="Help", menu=help_menu)
         help_menu.add_command(label="Help", command=self.show_help)
-        help_menu.add_command(label="About", command=self.show_help)
+        help_menu.add_command(label="About", command=self.show_about)
 
         self.help_menu = tk.Menu(self.menu)
-
-    def set_shape(self, shape):
-        self.shape = shape
 
     def open_image(self):
         file_path = filedialog.askopenfilename()
         if file_path:
             self.root.title("Loading image... please wait.")
             self.img = Image.open(file_path)
-            self.img = self.img.resize(self.shape, Image.ANTIALIAS)
+            self.img = self.img.resize((800, 800), Image.ANTIALIAS)
             self.img_on_canvas = ImageTk.PhotoImage(self.img)
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.img_on_canvas)
             self.root.title("Region Annotation")
@@ -82,6 +78,13 @@ class App:
                     "3. Use “File” -> “Save image” to save the annotated image.\n\n" \
                     "Check the documentation for more details."
         messagebox.showinfo("Help", help_text)
+
+    def show_about(self):
+        about_text = "Specifies the region on tissue.\n" \
+                     "Author: Peisen Sun\n" \
+                     "E-mail: sunpeisen@stu.xjtu.edu.cn\n" \
+                     "Check the documentation for more details."
+        messagebox.showinfo("About", about_text)
 
     def run(self):
         self.root.mainloop()
