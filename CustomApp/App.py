@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
-
+from tkinter import simpledialog
 from PIL import Image, ImageTk, ImageDraw
 from PIL import ImageFile
 
@@ -35,7 +35,10 @@ class App:
         self.file_menu.add_command(label="Save image", command=self.save_image)
 
         self.op_menu = tk.Menu(self.menu)
-        self.menu.add_cascade(label="Operation", menu=self.op_menu)
+        self.menu.add_cascade(label="Edit", menu=self.op_menu)
+        self.op_menu.add_command(label="Brush +", command=self._upper)
+        self.op_menu.add_command(label="Brush -", command=self._lower)
+        self.op_menu.add_command(label="Cut image", command=self._cut)
         self.op_menu.add_command(label="Clean up annotations", command=self.clear_annotations)
         self.op_menu.add_command(label="Reset", command=self.reset)
 
@@ -45,14 +48,48 @@ class App:
         self.help_menu.add_command(label="About", command=self.show_about)
 
         self.drawing = False
-        self.radius = 2
+        self.radius = 5
+        self.left = None
+        self.right = None
+        self.top = None
+        self.bottom = None
+        self.origin_img = None
+
+    def _cut(self):
+        user_input = simpledialog.askstring("Input edge",
+                                            "Input 'left,right,top,bottom' (Comma separated):")
+        if user_input:
+            params = user_input.split(',')
+            if len(params) == 4:
+                self.left, self.right, self.top, self.bottom = params
+                self.root.title("Cutting image... Please wait.")
+                self.img = self.origin_img.crop((int(self.left),
+                                                 int(self.top),
+                                                 int(self.right),
+                                                 int(self.bottom)))
+                self.img = self.img.resize((800, 800), Image.ANTIALIAS)
+                self.img_on_canvas = ImageTk.PhotoImage(self.img)
+                # self.canvas.delete("all")
+                self.canvas.create_image(0, 0,
+                                         anchor=tk.NW,
+                                         image=self.img_on_canvas)
+                self.root.title("Region Annotation")
+            else:
+                messagebox.showinfo("Error", 'Format Error!')
+
+    def _upper(self):
+        self.radius += 1
+
+    def _lower(self):
+        if self.radius > 1:
+            self.radius -= 1
 
     def open_image(self):
         file_path = filedialog.askopenfilename()
         if file_path:
-            self.root.title("Loading image... please wait.")
-            self.img = Image.open(file_path)
-            self.img = self.img.resize((800, 800), Image.ANTIALIAS)
+            self.root.title("Loading image... Please wait.")
+            self.origin_img = Image.open(file_path)
+            self.img = self.origin_img.resize((800, 800), Image.ANTIALIAS)
             self.img_on_canvas = ImageTk.PhotoImage(self.img)
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.img_on_canvas)
             self.root.title("Region Annotation")
