@@ -9,8 +9,8 @@ Image.MAX_IMAGE_PIXELS = None
 
 
 class App:
-    def __init__(self, instance):
-        self.instance = instance
+    def __init__(self):
+        self.shape = None
         self.img = None
         self.img_on_canvas = None
 
@@ -44,12 +44,15 @@ class App:
 
         self.help_menu = tk.Menu(self.menu)
 
+    def set_shape(self, shape):
+        self.shape = shape
+
     def open_image(self):
         file_path = filedialog.askopenfilename()
         if file_path:
             self.root.title("Loading image... please wait.")
             self.img = Image.open(file_path)
-            self.img = self.img.resize((800, 800), Image.ANTIALIAS)
+            self.img = self.img.resize(self.shape, Image.ANTIALIAS)
             self.img_on_canvas = ImageTk.PhotoImage(self.img)
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.img_on_canvas)
             self.root.title("Region Annotation")

@@ -22,9 +22,13 @@ class SPFinder:
         self._highly_variable_genes = []
         self._scope = ()
         self.plot = Plot(self)
-        self.app = App(self.adata)
+        self.app = App()
         if adata is not None:
             self.set_adata(adata)
+            self.app.set_shape(self.get_shape())
+
+    def get_shape(self):
+        return get_exp_array(self.adata, self.adata.var.index[0]).shape
 
     def set_adata(self, adata):
         self.adata = adata
@@ -43,6 +47,7 @@ class SPFinder:
         self.adata.obs['y'] = merge_bin_coordinate(self.adata.obs['y'],
                                                    self.adata.obs['y'].min(),
                                                    bin_size=bin_width)
+        self.app.set_shape(self.get_shape())
 
     def fit_pattern(self,
                     n_top_genes,
