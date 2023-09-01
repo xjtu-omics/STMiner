@@ -26,9 +26,6 @@ class SPFinder:
         if adata is not None:
             self.set_adata(adata)
 
-    def flush_app(self):
-        self.app = App()
-
     def set_adata(self, adata):
         self.adata = adata
         self._scope = (0, max(adata.obs['y'].max(), adata.obs['x'].max()))
@@ -103,3 +100,6 @@ class SPFinder:
     def plot_gmm(self, gene_name, cmap=None):
         gmm = self.genes_patterns[gene_name]
         view_gmm(gmm, scope=self._scope, cmap=cmap)
+
+    def flush_app(self):
+        self.app = App()
