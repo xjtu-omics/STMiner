@@ -4,11 +4,11 @@ from anndata import AnnData
 
 from Algorithm.distance import build_gmm_distance_array
 from Algorithm.graph import *
+from CustomApp.App import App
 from IO.IOUtil import merge_bin_coordinate
 from IO.read_10X import read_h5ad
 from IO.read_stereo import read_gem_file
 from Plot.plot import Plot
-from CustomApp.App import App
 
 
 class SPFinder:

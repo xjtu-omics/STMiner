@@ -3,13 +3,14 @@ import warnings
 
 import anndata
 import matplotlib.pyplot as plt
+import numpy as np
 import scanpy as sc
 import seaborn as sns
+from PIL import Image
 from numba import njit
 from sklearn import mixture
 from tqdm import tqdm
 
-from Algorithm.algorithm import *
 from Algorithm.distance import get_exp_array
 
 # Ignore the unnecessary warnings
@@ -338,6 +339,20 @@ def array_to_list(matrix) -> np.array:
     counts = matrix[matrix > 0].flatten()
     result = np.repeat(coords, counts, axis=0)
     return result
+
+
+def get_gmm_from_image(file):
+    image = Image.open(file)
+    image_array = np.array(image.resize(get_exp_array(sp.adata, sp.adata.var.index[0]).shape))
+
+    red_channel = image_array[:, :, 0]
+    threshold = 255
+    binary_matrix = (red_channel == threshold).astype(int)
+
+    arr = np.array(binary_matrix, dtype=np.int32)
+    result = array_to_list(arr)
+    gmm = mixture.GaussianMixture(n_components=20, max_iter=200).fit(result)
+    return gmm
 
 
 class GMM:
