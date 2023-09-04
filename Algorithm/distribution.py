@@ -341,9 +341,9 @@ def array_to_list(matrix) -> np.array:
     return result
 
 
-def get_gmm_from_image(file):
+def get_gmm_from_image(file, adata):
     image = Image.open(file)
-    image_array = np.array(image.resize(get_exp_array(sp.adata, sp.adata.var.index[0]).shape))
+    image_array = np.array(image.resize(get_exp_array(adata, adata.var.index[0]).shape))
 
     red_channel = image_array[:, :, 0]
     threshold = 255

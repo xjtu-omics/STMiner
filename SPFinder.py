@@ -18,6 +18,7 @@ class SPFinder:
         self.genes_distance_array = None
         self.genes_labels = None
         self.kmeans_fit_result = None
+        self.image_gmm = None
         self._gene_expression_edge = {}
         self._highly_variable_genes = []
         self._scope = ()
@@ -43,6 +44,9 @@ class SPFinder:
         self.adata.obs['y'] = merge_bin_coordinate(self.adata.obs['y'],
                                                    self.adata.obs['y'].min(),
                                                    bin_size=bin_width)
+
+    def load_marked_image(self, file):
+        self.image_gmm = get_gmm_from_image(file, self.adata)
 
     def fit_pattern(self,
                     n_top_genes,
