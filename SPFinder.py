@@ -2,7 +2,7 @@ from typing import Optional
 
 from anndata import AnnData
 
-from Algorithm.distance import build_gmm_distance_array
+from Algorithm.distance import build_gmm_distance_array, compare_gmm_distance
 from Algorithm.graph import *
 from CustomApp.App import App
 from IO.IOUtil import merge_bin_coordinate
@@ -47,6 +47,9 @@ class SPFinder:
 
     def load_marked_image(self, file):
         self.image_gmm = get_gmm_from_image(file, self.adata)
+
+    def compare_to_genes(self):
+        return compare_gmm_distance(self.image_gmm, self.genes_patterns)
 
     def fit_pattern(self,
                     n_top_genes,
