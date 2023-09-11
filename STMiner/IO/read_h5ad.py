@@ -12,7 +12,7 @@ def read_h5ad(file, amplification=1, bin_size=1):
     :type file: str
     :param amplification:
     :type amplification: int
-    :return:
+    :return: anndata
     :rtype: Anndata
     """
     amplification = np.int32(amplification)

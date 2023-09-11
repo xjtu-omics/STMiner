@@ -1,13 +1,16 @@
 from typing import Optional
 
+import scanpy as sc
 from anndata import AnnData
 
-from STMiner.Algorithm import build_gmm_distance_array, compare_gmm_distance
 from CustomApp.App import App
-from STMiner.IO import merge_bin_coordinate
-from STMiner.IO import read_h5ad
-from STMiner.IO.read_stereo import read_gem_file
 from Plot.plot import Plot
+from STMiner.Algorithm.algorithm import cluster
+from STMiner.Algorithm.distance import build_gmm_distance_array, compare_gmm_distance
+from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
+from STMiner.IO import read_h5ad
+from STMiner.IO.IOUtil import merge_bin_coordinate
+from STMiner.IO.read_stereo import read_gem_file
 
 
 class SPFinder:
