@@ -2,12 +2,11 @@ from typing import Optional
 
 from anndata import AnnData
 
-from Algorithm.distance import build_gmm_distance_array, compare_gmm_distance
-from Algorithm.graph import *
+from STMiner.Algorithm import build_gmm_distance_array, compare_gmm_distance
 from CustomApp.App import App
-from IO.IOUtil import merge_bin_coordinate
-from IO.read_10X import read_h5ad
-from IO.read_stereo import read_gem_file
+from STMiner.IO import merge_bin_coordinate
+from STMiner.IO import read_h5ad
+from STMiner.IO.read_stereo import read_gem_file
 from Plot.plot import Plot
 
 

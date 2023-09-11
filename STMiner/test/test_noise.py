@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from anndata import AnnData
 
-from test.SPFinderTester import SPFinderTester
+from STMiner.test.SPFinderTester import SPFinderTester
 
 count = pd.read_csv('./data/test2/simulate_exp.csv', sep=',', index_col=0)
 position = pd.read_csv('./data/test2/simulate_position.csv', sep=',', index_col=0)

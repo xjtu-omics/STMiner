@@ -1,7 +1,7 @@
 import pandas as pd
 from anndata import AnnData
 
-from SPFinder import SPFinder
+from STMiner.SPFinder import SPFinder
 
 count = pd.read_csv('E://SpatialDE/Analysis/MouseOB/data/Rep11_MOB_0.csv', sep=',', index_col=0)
 position = pd.read_csv('E://SpatialDE/Analysis/MouseOB/MOB_sample_info.csv', sep=',', index_col=0)

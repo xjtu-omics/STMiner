@@ -7,8 +7,8 @@ from scipy.spatial.distance import cdist
 from scipy.spatial.distance import cosine
 from tqdm import tqdm
 
-from Algorithm.algorithm import linear_sum
-from Utils.utils import issparse
+from STMiner.Algorithm.algorithm import linear_sum
+from STMiner.Utils.utils import issparse
 
 
 def distribution_distance(first_gmm, second_gmm):

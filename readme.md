@@ -5,7 +5,7 @@
 ### import package
 
 ```python
-from SPFinder import SPFinder
+from STMiner.SPFinder import SPFinder
 ```
 
 ### Load data

@@ -3,8 +3,8 @@ import pandas as pd
 import scanpy as sc
 from anndata import AnnData
 
-from IO.IOUtil import merge_bin_coordinate
-from SPFinder import SPFinder
+from STMiner.IO.IOUtil import merge_bin_coordinate
+from STMiner.SPFinder import SPFinder
 
 # %%
 raw_df = pd.read_csv("E:/data/brain10x.csv",

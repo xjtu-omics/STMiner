@@ -11,7 +11,7 @@ from numba import njit
 from sklearn import mixture
 from tqdm import tqdm
 
-from Algorithm.distance import get_exp_array
+from STMiner.Algorithm.distance import get_exp_array
 
 # Ignore the unnecessary warnings
 warnings.filterwarnings("ignore")

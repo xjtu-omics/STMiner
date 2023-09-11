@@ -5,7 +5,7 @@ from anndata import AnnData
 from scipy.sparse import csr_matrix
 from scipy.stats import wasserstein_distance
 
-from IO.IOUtil import *
+from STMiner.IO.IOUtil import *
 
 
 def read_gem_file(gem_file, bin_size=40):

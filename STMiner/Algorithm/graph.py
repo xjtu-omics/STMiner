@@ -1,6 +1,6 @@
 import networkx as nx
 
-from Algorithm.distribution import *
+from STMiner.Algorithm.distribution import *
 
 
 class Graph:

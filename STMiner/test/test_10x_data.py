@@ -1,6 +1,6 @@
 # %%
-from SPFinder import SPFinder
-from test.SPFinderTester import SPFinderTester
+from STMiner.SPFinder import SPFinder
+from STMiner.test.SPFinderTester import SPFinderTester
 
 # %%
 spf = SPFinder()

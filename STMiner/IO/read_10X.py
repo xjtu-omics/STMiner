@@ -1,6 +1,6 @@
 import scanpy as sc
 
-from IO.IOUtil import *
+from STMiner.IO.IOUtil import *
 
 
 def read_h5ad(file, amplification=1, bin_size=1):
