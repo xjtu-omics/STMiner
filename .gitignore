@@ -10,5 +10,5 @@
 .idea/Wukong.iml
 *.pickle
 *.pyc
-.idea/SEP.iml
-.idea/SPFinder.iml
+.idea
+.idea/STMiner.iml
