@@ -6,7 +6,7 @@ from scipy.sparse import csr_matrix
 from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
 from sklearn.metrics import silhouette_score
 
-from STMiner.Algorithm import get_exp_array
+from STMiner.Algorithm.distance import get_exp_array
 
 
 def _adjust_arr(arr, rotate, reverse_x, reverse_y):

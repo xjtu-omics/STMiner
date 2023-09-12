@@ -3,8 +3,9 @@ from typing import Optional
 import scanpy as sc
 from anndata import AnnData
 
-from CustomApp.App import App
-from Plot.plot import Plot
+
+from STMiner.CustomApp.App import App
+from STMiner.Plot.plot import Plot
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import build_gmm_distance_array, compare_gmm_distance
 from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
