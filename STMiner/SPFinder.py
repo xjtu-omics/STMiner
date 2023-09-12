@@ -52,6 +52,10 @@ class SPFinder:
         self.image_gmm = get_gmm_from_image(file, self.adata)
 
     def compare_to_genes(self):
+        """
+        Compares the GMM between the marked image and the gene expression matrix.
+        :return: pd.DataFrame
+        """
         return compare_gmm_distance(self.image_gmm, self.genes_patterns)
 
     def fit_pattern(self,
