@@ -14,5 +14,21 @@ setup(
               'gaussian mixture models',
               'GMM',
               'hellinger distance',
-              'Spatial transcriptomics']
+              'Spatial transcriptomics'],
+    install_requires=['anndata>=0.9.2',
+                      'bioservices>=1.11.2',
+                      'matplotlib>=3.7.1',
+                      'networkx>=3.1',
+                      'numba>=0.57.0',
+                      'numpy>=1.24.3',
+                      'pandas>=2.0.3',
+                      'Pillow>=9.4.0',
+                      'plotly>=5.16.1',
+                      'scanpy>=1.9.5',
+                      'scikit_learn>=1.3.0',
+                      'scipy>=1.11.1',
+                      'seaborn>=0.12.2',
+                      'setuptools>=68.0.0',
+                      'tifffile>=2021.4.8',
+                      'tqdm']
 )
