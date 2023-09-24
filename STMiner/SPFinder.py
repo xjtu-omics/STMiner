@@ -3,7 +3,6 @@ from typing import Optional
 import scanpy as sc
 from anndata import AnnData
 
-
 from STMiner.CustomApp.App import App
 from STMiner.Plot.plot import Plot
 from STMiner.Algorithm.algorithm import cluster
@@ -51,12 +50,16 @@ class SPFinder:
     def load_marked_image(self, file):
         self.image_gmm = get_gmm_from_image(file, self.adata)
 
-    def compare_to_genes(self):
+    def compare_image_to_genes(self):
         """
         Compares the GMM between the marked image and the gene expression matrix.
         :return: pd.DataFrame
         """
         return compare_gmm_distance(self.image_gmm, self.genes_patterns)
+
+    def compare_gene_to_genes(self, gene_name):
+        gene_gmm = self.genes_patterns[gene_name]
+        return compare_gmm_distance(gene_gmm, self.genes_patterns)
 
     def fit_pattern(self,
                     n_top_genes,

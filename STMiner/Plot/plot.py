@@ -39,7 +39,9 @@ class Plot:
                   reverse_x=False,
                   rotate=False,
                   spot_size=None,
-                  log1p=False):
+                  log1p=False,
+                  save_path='',
+                  dpi=400):
         arr = get_exp_array(self.sp.adata, gene)
         arr = _adjust_arr(arr, rotate, reverse_x, reverse_y)
         if log1p:
@@ -58,6 +60,13 @@ class Plot:
                                  cmap=cmap)
         ax.set_axis_off()
         ax.set_title(gene)
+        if len(save_path) > 0:
+            fig = ax.get_figure()
+            if save_path[-1] != '/':
+                save_path += '/'
+            save_path += gene
+            save_path += '.png'
+            fig.savefig(fname=save_path, dpi=dpi)
         plt.show()
 
     def plot_genes(self,
