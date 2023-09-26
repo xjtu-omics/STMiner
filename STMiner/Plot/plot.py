@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import umap
 import pandas as pd
 import seaborn as sns
 from scipy.sparse import csr_matrix
@@ -183,7 +184,7 @@ class Plot:
         plt.ylabel("Normalized Score")
         plt.show()
 
-    def plot_tsne(self):
+    def plot_tsne(self, method='tsne'):
         n_clusters = len(set(self.sp.kmeans_fit_result.labels_))
         if n_clusters <= 10:
             cmap = 'tab10'
@@ -191,8 +192,12 @@ class Plot:
             cmap = 'tab20'
         else:
             cmap = 'viridis'
-        tsne = TSNE(n_components=2, random_state=42)
-        embedded_data = tsne.fit_transform(self.sp.mds_features)
+        if method == 'tsne':
+            tsne = TSNE(n_components=2, random_state=42)
+            embedded_data = tsne.fit_transform(self.sp.mds_features)
+        else:
+            umap_model = umap.UMAP(n_neighbors=5, min_dist=0.3, n_components=2)
+            embedded_data = umap_model.fit_transform(sp.mds_features)
         plt.figure(figsize=(8, 6))
         plt.scatter(embedded_data[:, 0],
                     embedded_data[:, 1],

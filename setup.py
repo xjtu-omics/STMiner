@@ -30,5 +30,6 @@ setup(
                       'seaborn>=0.12.2',
                       'setuptools>=68.0.0',
                       'tifffile>=2021.4.8',
-                      'tqdm']
+                      'tqdm',
+                      'umap']
 )
