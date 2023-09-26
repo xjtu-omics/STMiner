@@ -5,6 +5,7 @@ import seaborn as sns
 from scipy.sparse import csr_matrix
 from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
 from sklearn.metrics import silhouette_score
+from sklearn.manifold import TSNE
 
 from STMiner.Algorithm.distance import get_exp_array
 
@@ -161,7 +162,7 @@ class Plot:
         plt.tight_layout()
         plt.show()
 
-    def plot_score(self, mds_comp, min_cluster, max_cluster):
+    def plot_cluster_score(self, mds_comp, min_cluster, max_cluster):
         db_dict = {}
         ch_dict = {}
         si_dict = {}
@@ -180,4 +181,24 @@ class Plot:
         plt.title("Evaluate Clustering Performance")
         plt.xlabel("Number of Clusters")
         plt.ylabel("Normalized Score")
+        plt.show()
+
+    def plot_tsne(self):
+        n_clusters = len(set(self.sp.kmeans_fit_result.labels_))
+        if n_clusters <= 10:
+            cmap = 'tab10'
+        elif 10 < n_clusters & n_clusters <= 20:
+            cmap = 'tab20'
+        else:
+            cmap = 'viridis'
+        tsne = TSNE(n_components=2, random_state=42)
+        embedded_data = tsne.fit_transform(self.sp.mds_features)
+        plt.figure(figsize=(8, 6))
+        plt.scatter(embedded_data[:, 0],
+                    embedded_data[:, 1],
+                    c=self.sp.kmeans_fit_result.labels_,
+                    cmap=cmap)
+        plt.title("T-SNE")
+        plt.xlabel("Dimension 1")
+        plt.ylabel("Dimension 2")
         plt.show()
