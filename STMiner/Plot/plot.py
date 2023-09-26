@@ -201,4 +201,7 @@ class Plot:
         plt.title("T-SNE")
         plt.xlabel("Dimension 1")
         plt.ylabel("Dimension 2")
+        plt.grid(False)
+        plt.xticks([])
+        plt.yticks([])
         plt.show()
