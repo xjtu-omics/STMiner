@@ -16,7 +16,6 @@ setup(
               'hellinger distance',
               'Spatial transcriptomics'],
     install_requires=['anndata>=0.9.2',
-                      'bioservices>=1.11.2',
                       'matplotlib>=3.7.1',
                       'networkx>=3.1',
                       'numba>=0.57.0',
