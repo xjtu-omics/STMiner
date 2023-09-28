@@ -68,7 +68,8 @@ class SPFinder:
                     normalize=True,
                     exclude_highly_expressed=False,
                     log1p=False,
-                    min_cells=200):
+                    min_cells=200,
+                    gene_list=None):
         """
         Given a distance matrix with the distances between each pair of objects in a set, and a chosen number of
     dimensions, N, an MDS algorithm places each object into N-dimensional space (a lower-dimensional representation)
@@ -90,13 +91,19 @@ class SPFinder:
         :type log1p: boolean
         :param min_cells: minimum number of cells for gene
         :type min_cells: int
+        :param gene_list:
+        :type min_cells: list
         """
         self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes)
+        if gene_list is not None and isinstance(gene_list, list) and len(gene_list) > 0:
+            gene_to_fit = gene_list
+        else:
+            gene_to_fit = self._highly_variable_genes
         self.genes_patterns = fit_gmms(self.adata,
-                                       self._highly_variable_genes,
+                                       gene_to_fit,
                                        n_comp=n_comp)
 
-    def preprocess(self, normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes):
+    def preprocess(self, normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes=200):
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
         sc.pp.highly_variable_genes(self.adata,
                                     flavor='seurat_v3',
