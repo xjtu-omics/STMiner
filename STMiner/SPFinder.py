@@ -63,7 +63,7 @@ class SPFinder:
         return compare_gmm_distance(gene_gmm, self.genes_patterns)
 
     def fit_pattern(self,
-                    n_top_genes,
+                    n_top_genes=500,
                     n_comp=20,
                     normalize=True,
                     exclude_highly_expressed=False,
@@ -103,7 +103,7 @@ class SPFinder:
                                        gene_to_fit,
                                        n_comp=n_comp)
 
-    def preprocess(self, normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes=200):
+    def preprocess(self, normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes=500):
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
         sc.pp.highly_variable_genes(self.adata,
                                     flavor='seurat_v3',
