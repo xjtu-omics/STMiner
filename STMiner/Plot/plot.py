@@ -197,7 +197,7 @@ class Plot:
             embedded_data = tsne.fit_transform(self.sp.mds_features)
         else:
             umap_model = umap.UMAP(n_neighbors=5, min_dist=0.3, n_components=2)
-            embedded_data = umap_model.fit_transform(sp.mds_features)
+            embedded_data = umap_model.fit_transform(self.sp.mds_features)
         plt.figure(figsize=(8, 6))
         plt.scatter(embedded_data[:, 0],
                     embedded_data[:, 1],
