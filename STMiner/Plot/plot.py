@@ -104,7 +104,7 @@ class Plot:
             arr = _adjust_arr(arr, rotate, reverse_x, reverse_y)
             sns.set(style="white")
             if cmap is None:
-                cmap = sns.color_palette("Spectral_r", as_cmap=True)
+                cmap = sns.color_palette("viridis", as_cmap=True)
             if plot_type == 'heatmap':
                 sns.heatmap(arr,
                             cbar=False,
@@ -168,7 +168,7 @@ class Plot:
         ch_dict = {}
         si_dict = {}
         for cluster_number in range(min_cluster, max_cluster + 1):
-            self.sp.cluster_gene(self, cluster_number, mds_components=mds_comp)
+            self.sp.cluster_gene(self, n_clusters=cluster_number, mds_components=mds_comp)
             db_dict[cluster_number] = 1 / davies_bouldin_score(self.sp.genes_distance_array,
                                                                self.sp.kmeans_fit_result.labels_)
             ch_dict[cluster_number] = calinski_harabasz_score(self.sp.genes_distance_array,
