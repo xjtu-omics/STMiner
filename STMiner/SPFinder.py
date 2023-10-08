@@ -123,8 +123,8 @@ class SPFinder:
             hv_gene_list = list(df[:500].index)
             self.filtered_distance_array = self.genes_distance_array.loc[hv_gene_list, hv_gene_list]
 
-    def cluster_gene(self, n_clusters, mds_components=20):
-        if self.filtered_distance_array is not None:
+    def cluster_gene(self, n_clusters, mds_components=20, use_selected_gene=False):
+        if use_selected_gene:
             self.genes_labels, self.kmeans_fit_result, self.mds_features = cluster(self.filtered_distance_array,
                                                                                    n_clusters=n_clusters,
                                                                                    mds_components=mds_components)
