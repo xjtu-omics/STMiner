@@ -1,5 +1,5 @@
 from typing import Optional
-
+import pandas as pd
 import scanpy as sc
 from anndata import AnnData
 
@@ -18,6 +18,7 @@ class SPFinder:
         self.adata = None
         self.genes_patterns = None
         self.genes_distance_array = None
+        self.filtered_distance_array = None
         self.genes_labels = None
         self.kmeans_fit_result = None
         self.mds_features = None
@@ -114,13 +115,23 @@ class SPFinder:
         if log1p:
             sc.pp.log1p(self.adata)
 
-    def build_distance_array(self):
+    def build_distance_array(self, spatial_highly_variable=True):
         self.genes_distance_array = build_gmm_distance_array(self.genes_patterns)
+        if spatial_highly_variable:
+            df = pd.DataFrame(self.genes_distance_array.mean(axis=1), columns=['mean'])
+            df = df.sort_values(by='mean')
+            hv_gene_list = list(df[:500].index)
+            self.filtered_distance_array = self.genes_distance_array.loc[hv_gene_list, hv_gene_list]
 
     def cluster_gene(self, n_clusters, mds_components=20):
-        self.genes_labels, self.kmeans_fit_result, self.mds_features = cluster(self.genes_distance_array,
-                                                                               n_clusters=n_clusters,
-                                                                               mds_components=mds_components)
+        if self.filtered_distance_array is not None:
+            self.genes_labels, self.kmeans_fit_result, self.mds_features = cluster(self.filtered_distance_array,
+                                                                                   n_clusters=n_clusters,
+                                                                                   mds_components=mds_components)
+        else:
+            self.genes_labels, self.kmeans_fit_result, self.mds_features = cluster(self.genes_distance_array,
+                                                                                   n_clusters=n_clusters,
+                                                                                   mds_components=mds_components)
 
     def plot_gmm(self, gene_name, cmap=None):
         gmm = self.genes_patterns[gene_name]
