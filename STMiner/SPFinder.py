@@ -115,16 +115,15 @@ class SPFinder:
         if log1p:
             sc.pp.log1p(self.adata)
 
-    def build_distance_array(self, spatial_highly_variable=True, n_top_genes=500):
+    def build_distance_array(self):
         self.genes_distance_array = build_gmm_distance_array(self.genes_patterns)
-        if spatial_highly_variable:
+
+    def cluster_gene(self, n_clusters, mds_components=20, use_highly_variable_gene=False, n_top_genes=500):
+        if use_highly_variable_gene:
             df = pd.DataFrame(self.genes_distance_array.mean(axis=1), columns=['mean'])
             df = df.sort_values(by='mean')
             hv_gene_list = list(df[:n_top_genes].index)
             self.filtered_distance_array = self.genes_distance_array.loc[hv_gene_list, hv_gene_list]
-
-    def cluster_gene(self, n_clusters, mds_components=20, use_selected_gene=False):
-        if use_selected_gene:
             self.genes_labels, self.kmeans_fit_result, self.mds_features = cluster(self.filtered_distance_array,
                                                                                    n_clusters=n_clusters,
                                                                                    mds_components=mds_components)
