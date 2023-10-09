@@ -114,9 +114,7 @@ def fit_gmm(adata: anndata,
 
 
 def preprocess_array(adata, binary, cut, gene_name, threshold, remove_low_exp_spots):
-    dense_array = get_exp_array(adata, gene_name)
-    if remove_low_exp_spots:
-        dense_array = np.maximum(dense_array - np.mean(dense_array[dense_array != 0]), 0)
+    dense_array = get_exp_array(adata, gene_name, remove_low_exp_spots)
     if binary:
         if threshold > 100 | threshold < 0:
             print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')

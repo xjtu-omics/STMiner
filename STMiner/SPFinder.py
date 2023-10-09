@@ -81,7 +81,7 @@ class SPFinder:
     Ref:
      - https://scikit-learn.org/stable/modules/manifold.html#multidimensional-scaling
      - Multidimensional scaling. (2023, March 28). In Wikipedia. https://en.wikipedia.org/wiki/Multidimensional_scaling
-        :param n_top_genes: number of top-genes to fit pattern
+        :param n_top_genes: number of top high variable genes to fit pattern, if n_top_genes <= 0, fit all the genes.
         :type n_top_genes: int
         :param n_comp: number of components to fit GMM
         :type n_comp: int
