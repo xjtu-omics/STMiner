@@ -99,7 +99,10 @@ class SPFinder:
         if gene_list is not None and isinstance(gene_list, list) and len(gene_list) > 0:
             gene_to_fit = gene_list
         else:
-            gene_to_fit = self._highly_variable_genes
+            if n_top_genes > 0:
+                gene_to_fit = self._highly_variable_genes
+            else:
+                gene_to_fit = list(self.adata.var.index)
         self.genes_patterns = fit_gmms(self.adata,
                                        gene_to_fit,
                                        n_comp=n_comp)
@@ -121,7 +124,7 @@ class SPFinder:
     def cluster_gene(self, n_clusters, mds_components=20, use_highly_variable_gene=False, n_top_genes=500):
         if use_highly_variable_gene:
             df = pd.DataFrame(self.genes_distance_array.mean(axis=1), columns=['mean'])
-            df = df.sort_values(by='mean')
+            df = df.sort_values(by='mean', ascending=False)
             hv_gene_list = list(df[:n_top_genes].index)
             self.filtered_distance_array = self.genes_distance_array.loc[hv_gene_list, hv_gene_list]
             self.genes_labels, self.kmeans_fit_result, self.mds_features = cluster(self.filtered_distance_array,
