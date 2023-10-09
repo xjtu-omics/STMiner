@@ -74,7 +74,8 @@ def fit_gmm(adata: anndata,
             binary: bool = False,
             threshold: int = 95,
             max_iter: int = 200,
-            reg_covar=1e-3):
+            reg_covar=1e-3,
+            remove_low_exp_spots=False):
     """
     Representation of a Gaussian mixture model probability distribution.
     Estimate the parameters of a Gaussian mixture distribution.
@@ -99,8 +100,10 @@ def fit_gmm(adata: anndata,
     :type max_iter: int
     :return: The number of components and the fitted mixture.
     :rtype: GaussianMixture
+    :param remove_low_exp_spots:
     """
-    processed_arr = preprocess_array(adata, binary, cut, gene_name, threshold)
+    processed_arr = preprocess_array(adata, binary, cut, gene_name, threshold, remove_low_exp_spots)
+
     # Number of unique center must be larger than the number of components.
     if len(set(map(tuple, processed_arr))) >= n_comp:
         gmm = mixture.GaussianMixture(n_components=n_comp, max_iter=max_iter, reg_covar=reg_covar)
@@ -110,8 +113,10 @@ def fit_gmm(adata: anndata,
         return None
 
 
-def preprocess_array(adata, binary, cut, gene_name, threshold):
+def preprocess_array(adata, binary, cut, gene_name, threshold, remove_low_exp_spots):
     dense_array = get_exp_array(adata, gene_name)
+    if remove_low_exp_spots:
+        dense_array = np.maximum(dense_array - np.mean(dense_array[dense_array != 0]), 0)
     if binary:
         if threshold > 100 | threshold < 0:
             print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
@@ -132,7 +137,8 @@ def fit_gmms(adata,
              threshold=95,
              max_iter=100,
              reg_covar=1e-3,
-             cut=False):
+             cut=False,
+             remove_low_exp_spots=False):
     """
     Same as fit_gmm_bic, accepts a list of gene name.
     Representation of a Gaussian mixture model probability distribution.
@@ -156,6 +162,7 @@ def fit_gmms(adata,
     :return: A Python dict of given genes list, key is gene name, value is GMM object.
     :return:
     :rtype: dict
+    :param remove_low_exp_spots:
     """
     gmm_dict = {}
     dropped_genes_count = 0
@@ -169,7 +176,8 @@ def fit_gmms(adata,
                                  threshold=threshold,
                                  max_iter=max_iter,
                                  reg_covar=reg_covar,
-                                 cut=cut)
+                                 cut=cut,
+                                 remove_low_exp_spots=remove_low_exp_spots)
             if fit_result is not None:
                 gmm_dict[gene_id] = fit_result
             else:
