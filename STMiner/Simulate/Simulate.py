@@ -2,6 +2,8 @@ from STMiner.Simulate.simUtils import *
 import numpy as np
 from random import choice
 from anndata import AnnData
+from scipy.sparse import csr_matrix
+import pandas as pd
 
 
 class Simulator:
@@ -24,14 +26,16 @@ class Simulator:
         self.noise_argument = noise_argument
 
     def generate(self, offset_radius, count, add_noise=True, offset_probability=0.5):
-        indices = np.column_stack(np.where(self.gene_exp_array >= 0))
+        df = None
         for i in range(count):
-            scale_factor = np.random.uniform(0.5, 2)
             sim_array = np.zeros(self.gene_exp_array.shape)
             row_count = sim_array.shape[0]
             col_count = sim_array.shape[1]
 
+            # Random adjust the expression level, from 1/2 to 2 times.
+            scale_factor = np.random.uniform(0.5, 2)
             scaled_arr = self.gene_exp_array * scale_factor
+
             for index, value in np.ndenumerate(scaled_arr):
                 if value != 0:
                     if np.random.rand() > (1 - offset_probability):
@@ -56,7 +60,18 @@ class Simulator:
                 else:
                     noise = get_uniform_noise(sim_array, self.noise_argument)
                     sim_array = sim_array + noise
-
-            values = sim_array[indices[:, 0], indices[:, 1]]
-            adata = AnnData()
+            sparse_array = csr_matrix(sim_array)
+            row_indices, col_indices = sparse_array.nonzero()
+            index = list(zip(row_indices, col_indices))
+            gene_name = 'gene_' + str(i)
+            if df is not None:
+                tmp = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
+                df = pd.concat([df, tmp], axis=1)
+            else:
+                df = pd.DataFrame(sparse_array.data, index=index)
+        adata = AnnData(df)
+        adata.obs['cell_id'] = list(df.index)
+        adata.obs['x'] = [x[0] for x in list(df.index)]
+        adata.obs['y'] = [x[1] for x in list(df.index)]
+        adata.var['gene_ids'] = list(df.columns)
         return adata
