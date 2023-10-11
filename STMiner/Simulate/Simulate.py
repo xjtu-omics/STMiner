@@ -12,8 +12,8 @@ class Simulator:
 
     def set_noise_type(self, noise_type, noise_argument):
         if noise_type == 'gauss':
-            if noise_argument <= 0:
-                raise ValueError('noise_argument should larger than 0')
+            if noise_argument <= 0 or noise_argument > 1:
+                raise ValueError('noise_argument should be between 0 and 1')
         elif noise_type == 'periodicity':
             if noise_argument <= 1:
                 raise ValueError('noise_argument should larger than 1')
@@ -24,7 +24,7 @@ class Simulator:
         self.noise_argument = noise_argument
 
     def generate(self, offset_radius, count, add_noise=True, offset_probability=0.5):
-        indices = np.column_stack(np.where(self.gene_exp_array))
+        indices = np.column_stack(np.where(self.gene_exp_array >= 0))
         for i in range(count):
             scale_factor = np.random.uniform(0.5, 2)
             sim_array = np.zeros(self.gene_exp_array.shape)
@@ -45,7 +45,7 @@ class Simulator:
 
             if add_noise:
                 if self.noise_type == 'gauss':
-                    noise = get_gauss_noise(sim_array, self.noise_argument)
+                    noise = get_gauss_noise(sim_array, sim_array.mean(), self.noise_argument)
                     sim_array = sim_array + noise
                 elif self.noise_type == 'periodicity':
                     noise = get_periodicity_noise(sim_array, self.noise_argument)
@@ -56,7 +56,6 @@ class Simulator:
                 else:
                     noise = get_uniform_noise(sim_array, self.noise_argument)
                     sim_array = sim_array + noise
-
 
             values = sim_array[indices[:, 0], indices[:, 1]]
             adata = AnnData()

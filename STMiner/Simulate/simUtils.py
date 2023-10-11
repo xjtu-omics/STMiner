@@ -10,8 +10,8 @@ def get_salt_pepper_noise(matrix, noise_percentage: float) -> np.array:
     return probability_array
 
 
-def get_gauss_noise(matrix, mean: Union[float, int]) -> np.array:
-    noise = np.random.normal(loc=mean, scale=.1, size=matrix.shape)
+def get_gauss_noise(matrix, mean: Union[float, int], scale) -> np.array:
+    noise = np.random.normal(loc=mean, scale=scale, size=matrix.shape)
     noise[noise < 0] = 0
     matrix += noise
     return noise
