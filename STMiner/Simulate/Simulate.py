@@ -17,8 +17,8 @@ class Simulator:
             if noise_argument <= 0 or noise_argument > 1:
                 raise ValueError('noise_argument should be between 0 and 1')
         elif noise_type == 'periodicity':
-            if noise_argument <= 1:
-                raise ValueError('noise_argument should larger than 1')
+            if noise_argument < 0:
+                raise ValueError('noise_argument should larger than 0')
         elif noise_type == 'sp':
             if noise_argument >= 1:
                 raise ValueError('noise_argument should smaller than 1')
@@ -68,10 +68,12 @@ class Simulator:
                 tmp = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
                 df = pd.concat([df, tmp], axis=1)
             else:
-                df = pd.DataFrame(sparse_array.data, index=index)
-        adata = AnnData(df)
+                df = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
+        arr_no_nan = np.nan_to_num(df.values)
+        adata = AnnData(arr_no_nan)
         adata.obs['cell_id'] = list(df.index)
         adata.obs['x'] = [x[0] for x in list(df.index)]
         adata.obs['y'] = [x[1] for x in list(df.index)]
         adata.var['gene_ids'] = list(df.columns)
+        adata.var_names = list(df.columns)
         return adata

@@ -19,14 +19,14 @@ def get_gauss_noise(matrix, mean: Union[float, int], scale) -> np.array:
 
 def get_periodicity_noise(matrix,
                           interval: int,
-                          multiplier: int = 2) -> np.array:
+                          scale_factor: int = 0.1) -> np.array:
     noise_arr = np.ones(matrix.shape)
     n_row = matrix.shape[0]
     n_col = matrix.shape[1]
     for i in range(0, n_row, interval):
-        noise_arr[i, :] = multiplier
+        noise_arr[i, :] = scale_factor
     for i in range(0, n_col, interval):
-        noise_arr[:, i] = multiplier
+        noise_arr[:, i] = scale_factor
     return noise_arr
 
 
