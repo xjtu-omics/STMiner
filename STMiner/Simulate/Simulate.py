@@ -8,7 +8,7 @@ import pandas as pd
 
 class Simulator:
     def __init__(self, gene_exp_array):
-        self.gene_exp_array = gene_exp_array
+        self.gene_exp_array_list = gene_exp_array
         self.noise_type = None
         self.noise_argument = None
 
@@ -27,48 +27,53 @@ class Simulator:
 
     def generate(self, offset_radius, count, add_noise=True, offset_probability=0.5):
         df = None
-        for i in range(count):
-            sim_array = np.zeros(self.gene_exp_array.shape)
-            row_count = sim_array.shape[0]
-            col_count = sim_array.shape[1]
+        if not isinstance(self.gene_exp_array_list, list):
+            self.gene_exp_array_list = [self.gene_exp_array_list]
+        for gene in self.gene_exp_array_list:
+            for i in range(count):
+                sim_array = np.zeros(gene.shape)
+                row_count = sim_array.shape[0]
+                col_count = sim_array.shape[1]
 
-            # Random adjust the expression level, from 1/2 to 2 times.
-            scale_factor = np.random.uniform(0.5, 2)
-            scaled_arr = self.gene_exp_array * scale_factor
+                # Random adjust the expression level, from 1/2 to 2 times.
+                scale_factor = np.random.uniform(0.5, 2)
+                scaled_arr = self.gene_exp_array_list * scale_factor
 
-            for index, value in np.ndenumerate(scaled_arr):
-                if value != 0:
-                    if np.random.rand() > (1 - offset_probability):
-                        row_index = choice(
-                            list(range(max(index[0] - offset_radius, 0), min(index[0] + offset_radius + 1, row_count))))
-                        col_index = choice(
-                            list(range(max(index[1] - offset_radius, 0), min(index[1] + offset_radius + 1, col_count))))
-                        sim_array[row_index, col_index] = value
+                for index, value in np.ndenumerate(scaled_arr):
+                    if value != 0:
+                        if np.random.rand() > (1 - offset_probability):
+                            row_index = choice(
+                                list(range(max(index[0] - offset_radius, 0),
+                                           min(index[0] + offset_radius + 1, row_count))))
+                            col_index = choice(
+                                list(range(max(index[1] - offset_radius, 0),
+                                           min(index[1] + offset_radius + 1, col_count))))
+                            sim_array[row_index, col_index] = value
+                        else:
+                            sim_array[index] = value
+
+                if add_noise:
+                    if self.noise_type == 'gauss':
+                        noise = get_gauss_noise(sim_array, sim_array.mean(), self.noise_argument)
+                        sim_array = sim_array + noise
+                    elif self.noise_type == 'periodicity':
+                        noise = get_periodicity_noise(sim_array, self.noise_argument)
+                        sim_array = np.array(sim_array) * noise
+                    elif self.noise_type == 'sp':
+                        noise = get_salt_pepper_noise(sim_array, self.noise_argument)
+                        sim_array = np.array(sim_array) * noise
                     else:
-                        sim_array[index] = value
-
-            if add_noise:
-                if self.noise_type == 'gauss':
-                    noise = get_gauss_noise(sim_array, sim_array.mean(), self.noise_argument)
-                    sim_array = sim_array + noise
-                elif self.noise_type == 'periodicity':
-                    noise = get_periodicity_noise(sim_array, self.noise_argument)
-                    sim_array = np.array(sim_array) * noise
-                elif self.noise_type == 'sp':
-                    noise = get_salt_pepper_noise(sim_array, self.noise_argument)
-                    sim_array = np.array(sim_array) * noise
+                        noise = get_uniform_noise(sim_array, self.noise_argument)
+                        sim_array = sim_array + noise
+                sparse_array = csr_matrix(sim_array)
+                row_indices, col_indices = sparse_array.nonzero()
+                index = list(zip(row_indices, col_indices))
+                gene_name = 'gene_' + str(i)
+                if df is not None:
+                    tmp = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
+                    df = pd.concat([df, tmp], axis=1)
                 else:
-                    noise = get_uniform_noise(sim_array, self.noise_argument)
-                    sim_array = sim_array + noise
-            sparse_array = csr_matrix(sim_array)
-            row_indices, col_indices = sparse_array.nonzero()
-            index = list(zip(row_indices, col_indices))
-            gene_name = 'gene_' + str(i)
-            if df is not None:
-                tmp = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
-                df = pd.concat([df, tmp], axis=1)
-            else:
-                df = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
+                    df = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
         arr_no_nan = np.nan_to_num(df.values)
         adata = AnnData(arr_no_nan)
         adata.obs['cell_id'] = list(df.index)
