@@ -29,15 +29,15 @@ class Simulator:
         df = None
         if not isinstance(self.gene_exp_array_list, list):
             self.gene_exp_array_list = [self.gene_exp_array_list]
-        for gene in self.gene_exp_array_list:
+        for gene_arr in self.gene_exp_array_list:
             for i in range(count):
-                sim_array = np.zeros(gene.shape)
+                sim_array = np.zeros(gene_arr.shape)
                 row_count = sim_array.shape[0]
                 col_count = sim_array.shape[1]
 
                 # Random adjust the expression level, from 1/2 to 2 times.
                 scale_factor = np.random.uniform(0.5, 2)
-                scaled_arr = self.gene_exp_array_list * scale_factor
+                scaled_arr = gene_arr * scale_factor
 
                 for index, value in np.ndenumerate(scaled_arr):
                     if value != 0:
