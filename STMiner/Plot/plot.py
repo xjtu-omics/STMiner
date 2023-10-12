@@ -7,7 +7,7 @@ from scipy.sparse import csr_matrix
 from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
 from sklearn.metrics import silhouette_score
 from sklearn.manifold import TSNE
-
+from collections import Counter
 from STMiner.Algorithm.distance import get_exp_array
 
 
@@ -146,12 +146,24 @@ class Plot:
                 ax = axes[row, col]
             gene_list = list(result[result['labels'] == label]['gene_id'])
             total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
+            total_coo_list = []
+            vote_array = np.zeros(get_exp_array(adata, gene_list[0]).shape)
             for gene in gene_list:
                 exp_matrix = get_exp_array(adata, gene)
+                # calculate nonzero index
+                non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
+                for coo in non_zero_coo_list:
+                    total_coo_list.append(tuple(coo))
+
                 total_sum = np.sum(exp_matrix)
                 scale_factor = 100 / total_sum
                 scaled_matrix = exp_matrix * scale_factor
                 total_count += scaled_matrix
+            count_result = Counter(total_coo_list)
+            for ele, count in count_result.items():
+                if int(count) / len(gene_list) >= 0.5:
+                    vote_array[ele] = 1
+            total_count = total_count * vote_array
             total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
             sns.heatmap(total_count,
                         ax=ax,
