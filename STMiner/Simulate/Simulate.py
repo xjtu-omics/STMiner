@@ -29,7 +29,8 @@ class Simulator:
         df = None
         if not isinstance(self.gene_exp_array_list, list):
             self.gene_exp_array_list = [self.gene_exp_array_list]
-        for gene_arr in self.gene_exp_array_list:
+        for gene_index, gene_arr in enumerate(self.gene_exp_array_list):
+
             for i in range(count):
                 sim_array = np.zeros(gene_arr.shape)
                 row_count = sim_array.shape[0]
@@ -68,7 +69,7 @@ class Simulator:
                 sparse_array = csr_matrix(sim_array)
                 row_indices, col_indices = sparse_array.nonzero()
                 index = list(zip(row_indices, col_indices))
-                gene_name = 'gene_' + str(i)
+                gene_name = 'gene_' + str(gene_index) + '_' + str(i)
                 if df is not None:
                     tmp = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
                     df = pd.concat([df, tmp], axis=1)
