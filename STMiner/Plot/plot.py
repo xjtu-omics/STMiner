@@ -130,7 +130,8 @@ class Plot:
                      num_cols=4,
                      rotate=False,
                      reverse_y=False,
-                     reverse_x=False):
+                     reverse_x=False,
+                     vote_rate=0.2):
         result = self.sp.genes_labels
         adata = self.sp.adata
         label_list = set(result['labels'])
@@ -161,7 +162,7 @@ class Plot:
                 total_count += scaled_matrix
             count_result = Counter(total_coo_list)
             for ele, count in count_result.items():
-                if int(count) / len(gene_list) >= 0.5:
+                if int(count) / len(gene_list) >= vote_rate:
                     vote_array[ele] = 1
             total_count = total_count * vote_array
             total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
