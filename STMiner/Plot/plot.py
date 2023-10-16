@@ -9,6 +9,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.manifold import TSNE
 from collections import Counter
 from STMiner.Algorithm.distance import get_exp_array
+import matplotlib.image as mpimg
 
 
 def _adjust_arr(arr, rotate, reverse_x, reverse_y):
@@ -133,7 +134,11 @@ class Plot:
                      reverse_x=False,
                      vote_rate=0.2,
                      heatmap=True,
-                     s=1):
+                     s=1,
+                     image_path=None,
+                     rotate_img=False,
+                     k=1,
+                     aspect=1):
         result = self.sp.genes_labels
         adata = self.sp.adata
         label_list = set(result['labels'])
@@ -175,6 +180,11 @@ class Plot:
                             cmap=cmap if cmap is not None else 'viridis',
                             vmax=np.percentile(total_count, vmax))
             else:
+                if isinstance(image_path, str):
+                    bg_img = mpimg.imread(image_path)
+                    if rotate_img:
+                        bg_img = np.rot90(bg_img, k=k)
+                    ax.imshow(bg_img, extent=[0, total_count.shape[0], 0, total_count.shape[1]], aspect=aspect)
                 sparse_matrix = csr_matrix(total_count)
                 sns.scatterplot(x=sparse_matrix.nonzero()[0],
                                 y=sparse_matrix.nonzero()[1],
@@ -184,9 +194,76 @@ class Plot:
                                 s=s)
                 ax.set_xlim(0, total_count.shape[0])
                 ax.set_ylim(0, total_count.shape[1])
-            ax.axis('off')
             ax.set_title('Pattern ' + str(label))
         plt.tight_layout()
+        plt.show()
+
+    def plot_pattern_1(self,
+                       cmap=None,
+                       vmax=99,
+                       num_cols=4,
+                       rotate=False,
+                       reverse_y=False,
+                       reverse_x=False,
+                       vote_rate=0.2,
+                       heatmap=True,
+                       s=1,
+                       image_path=None,
+                       rotate_img=False,
+                       k=1):
+        result = self.sp.genes_labels
+        adata = self.sp.adata
+        label_list = set(result['labels'])
+
+        col_names = ['x', 'y', 'c', 'label']
+        df = pd.DataFrame(columns=col_names)
+
+        for i, label in enumerate(label_list):
+            gene_list = list(result[result['labels'] == label]['gene_id'])
+            total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
+            total_coo_list = []
+            vote_array = np.zeros(get_exp_array(adata, gene_list[0]).shape)
+            for gene in gene_list:
+                exp_matrix = get_exp_array(adata, gene)
+                # calculate nonzero index
+                non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
+                for coo in non_zero_coo_list:
+                    total_coo_list.append(tuple(coo))
+                total_sum = np.sum(exp_matrix)
+                scale_factor = 100 / total_sum
+                scaled_matrix = exp_matrix * scale_factor
+                total_count += scaled_matrix
+            count_result = Counter(total_coo_list)
+            for ele, count in count_result.items():
+                if int(count) / len(gene_list) >= vote_rate:
+                    vote_array[ele] = 1
+            total_count = total_count * vote_array
+            total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
+
+            # if isinstance(image_path, str):
+            #     bg_img = mpimg.imread(image_path)
+            #     if rotate_img:
+            #         bg_img = np.rot90(bg_img, k=k)
+            #     ax.imshow(bg_img, extent=[0, total_count.shape[0], 0, total_count.shape[1]])
+
+            sparse_matrix = csr_matrix(total_count)
+            tmp_df = {'x': sparse_matrix.nonzero()[0],
+                      'y': sparse_matrix.nonzero()[1],
+                      'c': sparse_matrix.data,
+                      'label': label}
+            tmp_df = pd.DataFrame(tmp_df)
+            df = pd.concat([df, tmp_df], axis=0)
+            # sns.scatterplot(x=sparse_matrix.nonzero()[0],
+            #                 y=sparse_matrix.nonzero()[1],
+            #                 c=sparse_matrix.data,
+            #                 cmap=cmap if cmap is not None else 'viridis',
+            #                 s=s)
+            # ax.set_xlim(0, total_count.shape[0])
+            # ax.set_ylim(0, total_count.shape[1])
+            # ax.set_title('Pattern ' + str(label))
+        sns.relplot(df, x='x', y='y', col='label', col_wrap=num_cols)
+        with open('df.pkl', 'wb') as file:
+            pickle.dump(df, file)
         plt.show()
 
     def plot_cluster_score(self, mds_comp, min_cluster, max_cluster):
