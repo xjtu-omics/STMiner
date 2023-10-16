@@ -182,8 +182,8 @@ class Plot:
                                 ax=ax,
                                 cmap=cmap if cmap is not None else 'viridis',
                                 s=s)
-                plt.xlim(total_count.shape[0])
-                plt.ylim(total_count.shape[1])
+                ax.set_xlim(0, total_count.shape[0])
+                ax.set_ylim(0, total_count.shape[1])
             ax.axis('off')
             ax.set_title('Pattern ' + str(label))
         plt.tight_layout()
