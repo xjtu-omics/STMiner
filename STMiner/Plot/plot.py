@@ -131,7 +131,9 @@ class Plot:
                      rotate=False,
                      reverse_y=False,
                      reverse_x=False,
-                     vote_rate=0.2):
+                     vote_rate=0.2,
+                     heatmap=True,
+                     s=1):
         result = self.sp.genes_labels
         adata = self.sp.adata
         label_list = set(result['labels'])
@@ -166,11 +168,22 @@ class Plot:
                     vote_array[ele] = 1
             total_count = total_count * vote_array
             total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
-            sns.heatmap(total_count,
-                        ax=ax,
-                        cbar=False,
-                        cmap=cmap if cmap is not None else 'viridis',
-                        vmax=np.percentile(total_count, vmax))
+            if heatmap:
+                sns.heatmap(total_count,
+                            ax=ax,
+                            cbar=False,
+                            cmap=cmap if cmap is not None else 'viridis',
+                            vmax=np.percentile(total_count, vmax))
+            else:
+                sparse_matrix = csr_matrix(total_count)
+                sns.scatterplot(x=sparse_matrix.nonzero()[0],
+                                y=sparse_matrix.nonzero()[1],
+                                c=sparse_matrix.data,
+                                ax=ax,
+                                cmap=cmap if cmap is not None else 'viridis',
+                                s=s)
+                plt.xlim(total_count.shape[0])
+                plt.ylim(total_count.shape[1])
             ax.axis('off')
             ax.set_title('Pattern ' + str(label))
         plt.tight_layout()
