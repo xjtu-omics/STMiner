@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import umap
@@ -138,7 +139,8 @@ class Plot:
                      image_path=None,
                      rotate_img=False,
                      k=1,
-                     aspect=1):
+                     aspect=1,
+                     output_path=None):
         result = self.sp.genes_labels
         adata = self.sp.adata
         label_list = set(result['labels'])
@@ -180,7 +182,7 @@ class Plot:
                             cmap=cmap if cmap is not None else 'viridis',
                             vmax=np.percentile(total_count, vmax))
             else:
-                if isinstance(image_path, str):
+                if isinstance(image_path, str) and os.path.isfile(image_path):
                     bg_img = mpimg.imread(image_path)
                     if rotate_img:
                         bg_img = np.rot90(bg_img, k=k)
@@ -194,7 +196,9 @@ class Plot:
                                 s=s)
                 ax.set_xlim(0, total_count.shape[0])
                 ax.set_ylim(0, total_count.shape[1])
-            ax.set_title('Pattern ' + str(label))
+                ax.set_title('Pattern ' + str(label))
+        if output_path is not None and os.path.isdir(output_path):
+            plt.savefig(os.path.join(output_path, "./scatterplot.png"), dpi=1000)
         plt.tight_layout()
         plt.show()
 
@@ -261,9 +265,7 @@ class Plot:
             # ax.set_xlim(0, total_count.shape[0])
             # ax.set_ylim(0, total_count.shape[1])
             # ax.set_title('Pattern ' + str(label))
-        sns.relplot(df, x='x', y='y', col='label', col_wrap=num_cols)
-        with open('df.pkl', 'wb') as file:
-            pickle.dump(df, file)
+        sns.relplot(df, x='x', y='y', col='label', col_wrap=num_cols, hue='c', hue_norm=plt.Normalize(0, 50))
         plt.show()
 
     def plot_cluster_score(self, mds_comp, min_cluster, max_cluster):

@@ -6,7 +6,7 @@ from anndata import AnnData
 from STMiner.CustomApp.App import App
 from STMiner.Plot.plot import Plot
 from STMiner.Algorithm.algorithm import cluster
-from STMiner.Algorithm.distance import build_gmm_distance_array, compare_gmm_distance
+from STMiner.Algorithm.distance import *
 from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
 from STMiner.IO.read_h5ad import read_h5ad
 from STMiner.IO.IOUtil import merge_bin_coordinate
@@ -121,8 +121,15 @@ class SPFinder:
         if log1p:
             sc.pp.log1p(self.adata)
 
-    def build_distance_array(self):
-        self.genes_distance_array = build_gmm_distance_array(self.genes_patterns)
+    def build_distance_array(self, method='gmm', gene_list=None):
+        if gene_list is None:
+            gene_list = list(self.adata.var.index)
+        if method == 'gmm':
+            self.genes_distance_array = build_gmm_distance_array(self.genes_patterns)
+        elif method == 'mse':
+            self.genes_distance_array = build_mse_distance_array(self.adata, gene_list)
+        elif method == 'cs':
+            self.genes_distance_array = build_cosine_similarity_array(self.adata, gene_list)
 
     def cluster_gene(self, n_clusters, mds_components=20, use_highly_variable_gene=False, n_top_genes=500):
         if use_highly_variable_gene:
