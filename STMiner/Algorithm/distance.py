@@ -113,28 +113,41 @@ def compare_gmm_distance(gmm, gmm_dict):
 
 
 def build_cosine_similarity_array(adata, gene_list):
+    gene_arr_dict = {}
     gene_list = list(gene_list)
+    for gene in gene_list:
+        gene_arr_dict[gene] = get_exp_array(adata, gene)
     gene_counts = len(gene_list)
     distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
-                distance = cosine(get_exp_array(adata, gene_list[i]).flatten(),
-                                  get_exp_array(adata, gene_list[j]).flatten())
+                distance = cosine(gene_arr_dict[gene_list[i]].flatten(),
+                                  gene_arr_dict[gene_list[j]].flatten())
                 distance_array.loc[gene_list[i], gene_list[j]] = distance
     return distance_array
 
 
 def build_mse_distance_array(adata, gene_list):
+    gene_arr_dict = {}
     gene_list = list(gene_list)
+    for gene in gene_list:
+        gene_arr_dict[gene] = get_exp_array(adata, gene)
     gene_counts = len(gene_list)
     distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
-                distance = np.mean(np.square(adata[:, [gene_list[i]]].X - adata[:, [gene_list[j]]].X))
+                arr_i = gene_arr_dict[gene_list[i]]
+                arr_j = gene_arr_dict[gene_list[j]]
+                distance = mse(arr_i, arr_j)
                 distance_array.loc[gene_list[i], gene_list[j]] = distance
     return distance_array
+
+
+@njit()
+def mse(arr_i, arr_j):
+    return np.mean(np.square(arr_i - arr_j))
 
 
 def build_mix_distance_array(adata, gmm_dict):

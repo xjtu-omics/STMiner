@@ -193,12 +193,13 @@ class Plot:
                                 c=sparse_matrix.data,
                                 ax=ax,
                                 cmap=cmap if cmap is not None else 'viridis',
-                                s=s)
+                                s=s,
+                                edgecolor='none')
                 ax.set_xlim(0, total_count.shape[0])
                 ax.set_ylim(0, total_count.shape[1])
                 ax.set_title('Pattern ' + str(label))
         if output_path is not None and os.path.isdir(output_path):
-            plt.savefig(os.path.join(output_path, "./scatterplot.png"), dpi=1000)
+            plt.savefig(os.path.join(output_path, "./scatterplot.eps"), dpi=1000, format='eps')
         plt.tight_layout()
         plt.show()
 
