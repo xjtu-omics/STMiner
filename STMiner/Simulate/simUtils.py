@@ -3,10 +3,10 @@ from typing import Union
 import numpy as np
 
 
-def get_salt_pepper_noise(matrix, noise_percentage: float) -> np.array:
+def under_sampling(matrix, percentage: float) -> np.array:
     probability_array = np.random.random(matrix.shape)
-    probability_array[probability_array <= noise_percentage] = 0
-    probability_array[probability_array > noise_percentage] = 1
+    probability_array[probability_array <= percentage] = 0
+    probability_array[probability_array > percentage] = 1
     return probability_array
 
 

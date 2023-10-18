@@ -4,10 +4,11 @@ from random import choice
 from anndata import AnnData
 from scipy.sparse import csr_matrix
 import pandas as pd
+from typing import List
 
 
 class Simulator:
-    def __init__(self, gene_exp_array):
+    def __init__(self, gene_exp_array: Union[np.array, List[np.array]]):
         self.gene_exp_array_list = gene_exp_array
         self.noise_type = None
         self.noise_argument = None
@@ -19,7 +20,7 @@ class Simulator:
         elif noise_type == 'periodicity':
             if noise_argument < 0:
                 raise ValueError('noise_argument should larger than 0')
-        elif noise_type == 'sp':
+        elif noise_type == 'undersampling':
             if noise_argument >= 1:
                 raise ValueError('noise_argument should smaller than 1')
         self.noise_type = noise_type
@@ -60,8 +61,8 @@ class Simulator:
                     elif self.noise_type == 'periodicity':
                         noise = get_periodicity_noise(sim_array, self.noise_argument)
                         sim_array = np.array(sim_array) * noise
-                    elif self.noise_type == 'sp':
-                        noise = get_salt_pepper_noise(sim_array, self.noise_argument)
+                    elif self.noise_type == 'undersampling':
+                        noise = under_sampling(sim_array, self.noise_argument)
                         sim_array = np.array(sim_array) * noise
                     else:
                         noise = get_uniform_noise(sim_array, self.noise_argument)
@@ -69,7 +70,7 @@ class Simulator:
                 sparse_array = csr_matrix(sim_array)
                 row_indices, col_indices = sparse_array.nonzero()
                 index = list(zip(row_indices, col_indices))
-                gene_name = 'gene_' + str(gene_index) + '_' + str(i)
+                gene_name = 'gene_P' + str(gene_index) + '_N' + str(i)
                 if df is not None:
                     tmp = pd.DataFrame(sparse_array.data, index=index, columns=[gene_name])
                     df = pd.concat([df, tmp], axis=1)
