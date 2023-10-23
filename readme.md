@@ -1,3 +1,10 @@
+![Static Badge](https://img.shields.io/badge/License-MIT-blue) 
+![Static Badge](https://img.shields.io/badge/readthedocs-blue?logo=readthedocs&label=Documents)
+![Static Badge](https://img.shields.io/badge/3.10-green?logo=python&label=Python&labelColor=yellow)
+![Static Badge](https://img.shields.io/badge/Linux-blue?logo=Linux&logoColor=white)
+![Static Badge](https://img.shields.io/badge/Windows-blue?logo=Windows&logoColor=white)
+![Static Badge](https://img.shields.io/badge/macos-blue?logo=apple&logoColor=white)
+
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
 
 # Introduction
