@@ -1,4 +1,5 @@
-![STMiner](./logo.png)
+<div align=center><img src="./logo.png" height = "200"/></div>
+
 
 # Usage
 
