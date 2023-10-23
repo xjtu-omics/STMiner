@@ -11,9 +11,8 @@ def under_sampling(matrix, percentage: float) -> np.array:
 
 
 def get_gauss_noise(matrix, mean: Union[float, int], scale) -> np.array:
-    noise = np.random.normal(loc=mean, scale=scale, size=matrix.shape)
+    noise = np.random.normal(loc=mean * 0.1, scale=scale, size=matrix.shape)
     noise[noise < 0] = 0
-    matrix += noise
     return noise
 
 

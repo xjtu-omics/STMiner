@@ -1,3 +1,5 @@
+![STMiner](./logo.png)
+
 # Usage
 
 ## Quick start by example

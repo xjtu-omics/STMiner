@@ -131,7 +131,13 @@ class SPFinder:
         elif method == 'cs':
             self.genes_distance_array = build_cosine_similarity_array(self.adata, gene_list)
 
-    def cluster_gene(self, n_clusters, mds_components=20, use_highly_variable_gene=False, n_top_genes=500):
+    def cluster_gene(self,
+                     n_clusters,
+                     mds_components=20,
+                     use_highly_variable_gene=False,
+                     n_top_genes=500,
+                     gene_list=None):
+        # TODO: genes_labels should be int not float
         if use_highly_variable_gene:
             df = pd.DataFrame(self.genes_distance_array.mean(axis=1), columns=['mean'])
             df = df.sort_values(by='mean', ascending=False)

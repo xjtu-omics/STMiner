@@ -84,7 +84,8 @@ class Plot:
                    rotate=False,
                    reverse_y=False,
                    reverse_x=False,
-                   plot_type='heatmap'):
+                   plot_type='heatmap',
+                   s=1):
         result = self.sp.genes_labels
         adata = self.sp.adata
         if gene_list is None:
@@ -120,7 +121,8 @@ class Plot:
                                 y=sparse_matrix.nonzero()[0],
                                 ax=ax,
                                 c=sparse_matrix.data,
-                                cmap=cmap)
+                                cmap=cmap,
+                                s=s)
             ax.set_axis_off()
             ax.set_title(gene)
         plt.tight_layout()
@@ -197,7 +199,7 @@ class Plot:
                                 edgecolor='none')
                 ax.set_xlim(0, total_count.shape[0])
                 ax.set_ylim(0, total_count.shape[1])
-                ax.set_title('Pattern ' + str(label))
+            ax.set_title('Pattern ' + str(label))
         if output_path is not None and os.path.isdir(output_path):
             plt.savefig(os.path.join(output_path, "./scatterplot.eps"), dpi=1000, format='eps')
         plt.tight_layout()
@@ -266,6 +268,11 @@ class Plot:
             # ax.set_xlim(0, total_count.shape[0])
             # ax.set_ylim(0, total_count.shape[1])
             # ax.set_title('Pattern ' + str(label))
+        import pickle
+        import pickle
+        with open('da.pkl', 'wb') as file:
+            sp.genes_distance_array = pickle.load(file)
+        sp.cluster_gene(n_clusters=7, mds_components=20, use_highly_variable_gene=True, n_top_genes=800)
         sns.relplot(df, x='x', y='y', col='label', col_wrap=num_cols, hue='c', hue_norm=plt.Normalize(0, 50))
         plt.show()
 

@@ -31,7 +31,6 @@ class Simulator:
         if not isinstance(self.gene_exp_array_list, list):
             self.gene_exp_array_list = [self.gene_exp_array_list]
         for gene_index, gene_arr in enumerate(self.gene_exp_array_list):
-
             for i in range(count):
                 sim_array = np.zeros(gene_arr.shape)
                 row_count = sim_array.shape[0]
