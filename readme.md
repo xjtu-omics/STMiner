@@ -20,8 +20,8 @@ algorithm. It is initiated by fitting a parametric model of gene spatial distrib
 between them utilizing the Hellinger distance. Genes are clustered, thereby recognizing spatial co-expression patterns
 across distinct gene classes.
 
-Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for
-details.
+**Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for
+details.**
 
 ## Quick start by example
 
