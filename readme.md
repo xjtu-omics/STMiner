@@ -58,7 +58,7 @@ sp.cluster_gene(n_clusters=6, mds_components=20)
 The result are stored in **genes_labels**:
 
 ```python
-spf.genes_labels
+sp.genes_labels
 ```
 
 The output looks like the following:
