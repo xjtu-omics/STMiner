@@ -32,6 +32,14 @@ def _get_figure(fig_count, num_cols):
     return axes, fig
 
 
+def scale_array(exp_matrix, total_count):
+    total_sum = np.sum(exp_matrix)
+    scale_factor = 100 / total_sum
+    scaled_matrix = exp_matrix * scale_factor
+    total_count += scaled_matrix
+    return total_count
+
+
 class Plot:
     def __init__(self, sp):
         self.sp = sp
@@ -144,6 +152,9 @@ class Plot:
                      k=1,
                      aspect=1,
                      output_path=None):
+        # clean up count array
+        self.count_array = None
+        # initialize values
         result = self.sp.genes_labels
         adata = self.sp.adata
         label_list = set(result['labels'])
@@ -169,13 +180,9 @@ class Plot:
                 non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
                 for coo in non_zero_coo_list:
                     total_coo_list.append(tuple(coo))
-
-                total_sum = np.sum(exp_matrix)
-                scale_factor = 100 / total_sum
-                scaled_matrix = exp_matrix * scale_factor
-                total_count += scaled_matrix
-            count_result = Counter(total_coo_list)
-            for ele, count in count_result.items():
+                total_count = scale_array(exp_matrix, total_count)
+            count_dict = Counter(total_coo_list)
+            for ele, count in count_dict.items():
                 if int(count) / len(gene_list) >= vote_rate:
                     vote_array[ele] = 1
             total_count = total_count * vote_array
@@ -250,10 +257,7 @@ class Plot:
                 non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
                 for coo in non_zero_coo_list:
                     total_coo_list.append(tuple(coo))
-                total_sum = np.sum(exp_matrix)
-                scale_factor = 100 / total_sum
-                scaled_matrix = exp_matrix * scale_factor
-                total_count += scaled_matrix
+                total_count = scale_array(exp_matrix, total_count)
             count_result = Counter(total_coo_list)
             for ele, count in count_result.items():
                 if int(count) / len(gene_list) >= vote_rate:
