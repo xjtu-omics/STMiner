@@ -1,3 +1,10 @@
+![Static Badge](https://img.shields.io/badge/License-MIT-blue) 
+![Static Badge](https://img.shields.io/badge/readthedocs-blue?logo=readthedocs&label=Documents)
+![Static Badge](https://img.shields.io/badge/3.10-green?logo=python&label=Python&labelColor=yellow)
+![Static Badge](https://img.shields.io/badge/Linux-blue?logo=Linux&logoColor=white)
+![Static Badge](https://img.shields.io/badge/Windows-blue?logo=Windows&logoColor=white)
+![Static Badge](https://img.shields.io/badge/macos-blue?logo=apple&logoColor=white)
+
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
 
 # Introduction
@@ -13,8 +20,8 @@ algorithm. It is initiated by fitting a parametric model of gene spatial distrib
 between them utilizing the Hellinger distance. Genes are clustered, thereby recognizing spatial co-expression patterns
 across distinct gene classes.
 
-Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for
-details.
+**Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for
+details.**
 
 ## Quick start by example
 
@@ -51,7 +58,7 @@ sp.cluster_gene(n_clusters=6, mds_components=20)
 The result are stored in **genes_labels**:
 
 ```python
-spf.genes_labels
+sp.genes_labels
 ```
 
 The output looks like the following:
