@@ -43,7 +43,7 @@ def scale_array(exp_matrix, total_count):
 class Plot:
     def __init__(self, sp):
         self.sp = sp
-        self.count_array = None
+        self.count_array = {}
 
     def plot_gene(self,
                   gene,
@@ -188,7 +188,7 @@ class Plot:
             total_count = total_count * vote_array
             total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
             binary_arr = np.where(total_count != 0, 1, total_count)
-            self.count_array += binary_arr
+            self.count_array[label] = binary_arr
             if heatmap:
                 sns.heatmap(total_count,
                             ax=ax,
@@ -217,82 +217,19 @@ class Plot:
         plt.tight_layout()
         plt.show()
 
-    def plot_count(self, cmap=None, s=None):
-        sparse_matrix = csr_matrix(self.count_array)
+    def plot_count(self, pattern_list, cmap=None, s=None):
+
+        sum_array = np.zeros(self.count_array[pattern_list[0]].shape)
+        for i in pattern_list:
+            sum_array += self.count_array[i]
+
+        sparse_matrix = csr_matrix(sum_array)
         sns.scatterplot(x=sparse_matrix.nonzero()[0],
                         y=sparse_matrix.nonzero()[1],
                         c=sparse_matrix.data,
                         cmap=cmap if cmap is not None else 'viridis',
                         s=s if s is not None else 10,
                         edgecolor='none')
-
-    def plot_pattern_1(self,
-                       cmap=None,
-                       vmax=99,
-                       num_cols=4,
-                       rotate=False,
-                       reverse_y=False,
-                       reverse_x=False,
-                       vote_rate=0.2,
-                       heatmap=True,
-                       s=1,
-                       image_path=None,
-                       rotate_img=False,
-                       k=1):
-        result = self.sp.genes_labels
-        adata = self.sp.adata
-        label_list = set(result['labels'])
-
-        col_names = ['x', 'y', 'c', 'label']
-        df = pd.DataFrame(columns=col_names)
-
-        for i, label in enumerate(label_list):
-            gene_list = list(result[result['labels'] == label]['gene_id'])
-            total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
-            total_coo_list = []
-            vote_array = np.zeros(get_exp_array(adata, gene_list[0]).shape)
-            for gene in gene_list:
-                exp_matrix = get_exp_array(adata, gene)
-                # calculate nonzero index
-                non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
-                for coo in non_zero_coo_list:
-                    total_coo_list.append(tuple(coo))
-                total_count = scale_array(exp_matrix, total_count)
-            count_result = Counter(total_coo_list)
-            for ele, count in count_result.items():
-                if int(count) / len(gene_list) >= vote_rate:
-                    vote_array[ele] = 1
-            total_count = total_count * vote_array
-            total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
-
-            # if isinstance(image_path, str):
-            #     bg_img = mpimg.imread(image_path)
-            #     if rotate_img:
-            #         bg_img = np.rot90(bg_img, k=k)
-            #     ax.imshow(bg_img, extent=[0, total_count.shape[0], 0, total_count.shape[1]])
-
-            sparse_matrix = csr_matrix(total_count)
-            tmp_df = {'x': sparse_matrix.nonzero()[0],
-                      'y': sparse_matrix.nonzero()[1],
-                      'c': sparse_matrix.data,
-                      'label': label}
-            tmp_df = pd.DataFrame(tmp_df)
-            df = pd.concat([df, tmp_df], axis=0)
-            # sns.scatterplot(x=sparse_matrix.nonzero()[0],
-            #                 y=sparse_matrix.nonzero()[1],
-            #                 c=sparse_matrix.data,
-            #                 cmap=cmap if cmap is not None else 'viridis',
-            #                 s=s)
-            # ax.set_xlim(0, total_count.shape[0])
-            # ax.set_ylim(0, total_count.shape[1])
-            # ax.set_title('Pattern ' + str(label))
-        import pickle
-        import pickle
-        with open('da.pkl', 'wb') as file:
-            sp.genes_distance_array = pickle.load(file)
-        sp.cluster_gene(n_clusters=7, mds_components=20, use_highly_variable_gene=True, n_top_genes=800)
-        sns.relplot(df, x='x', y='y', col='label', col_wrap=num_cols, hue='c', hue_norm=plt.Normalize(0, 50))
-        plt.show()
 
     def plot_cluster_score(self, mds_comp, min_cluster, max_cluster):
         db_dict = {}
