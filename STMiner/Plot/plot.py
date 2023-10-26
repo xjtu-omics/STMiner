@@ -35,6 +35,7 @@ def _get_figure(fig_count, num_cols):
 class Plot:
     def __init__(self, sp):
         self.sp = sp
+        self.count_array = None
 
     def plot_gene(self,
                   gene,
@@ -149,6 +150,8 @@ class Plot:
         plot_count = len(label_list)
         axes, fig = _get_figure(plot_count, num_cols=num_cols)
         fig.subplots_adjust(hspace=0.5)
+        # initialize the count_array
+        self.count_array = np.zeros(get_exp_array(adata, self.sp.adata.var.index[0]).shape)
         for i, label in enumerate(label_list):
             row = i // num_cols
             col = i % num_cols
@@ -177,6 +180,8 @@ class Plot:
                     vote_array[ele] = 1
             total_count = total_count * vote_array
             total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
+            binary_arr = np.where(total_count != 0, 1, total_count)
+            self.count_array += binary_arr
             if heatmap:
                 sns.heatmap(total_count,
                             ax=ax,
@@ -204,6 +209,15 @@ class Plot:
             plt.savefig(os.path.join(output_path, "./scatterplot.eps"), dpi=1000, format='eps')
         plt.tight_layout()
         plt.show()
+
+    def plot_count(self, cmap=None, s=None):
+        sparse_matrix = csr_matrix(self.count_array)
+        sns.scatterplot(x=sparse_matrix.nonzero()[0],
+                        y=sparse_matrix.nonzero()[1],
+                        c=sparse_matrix.data,
+                        cmap=cmap if cmap is not None else 'viridis',
+                        s=s if s is not None else 10,
+                        edgecolor='none')
 
     def plot_pattern_1(self,
                        cmap=None,
