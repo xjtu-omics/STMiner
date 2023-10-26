@@ -153,7 +153,7 @@ class Plot:
                      aspect=1,
                      output_path=None):
         # clean up count array
-        self.count_array = None
+        self.count_array = {}
         # initialize values
         result = self.sp.genes_labels
         adata = self.sp.adata
@@ -161,8 +161,7 @@ class Plot:
         plot_count = len(label_list)
         axes, fig = _get_figure(plot_count, num_cols=num_cols)
         fig.subplots_adjust(hspace=0.5)
-        # initialize the count_array
-        self.count_array = np.zeros(get_exp_array(adata, self.sp.adata.var.index[0]).shape)
+
         for i, label in enumerate(label_list):
             row = i // num_cols
             col = i % num_cols
