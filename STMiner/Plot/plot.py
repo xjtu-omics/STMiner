@@ -40,6 +40,10 @@ def scale_array(exp_matrix, total_count):
     return total_count
 
 
+def is_path(image_path):
+    return isinstance(image_path, str) and os.path.isfile(image_path)
+
+
 class Plot:
     def __init__(self, sp):
         self.sp = sp
@@ -195,7 +199,7 @@ class Plot:
                             cmap=cmap if cmap is not None else 'viridis',
                             vmax=np.percentile(total_count, vmax))
             else:
-                if isinstance(image_path, str) and os.path.isfile(image_path):
+                if is_path(image_path):
                     bg_img = mpimg.imread(image_path)
                     if rotate_img:
                         bg_img = np.rot90(bg_img, k=k)
@@ -216,19 +220,38 @@ class Plot:
         plt.tight_layout()
         plt.show()
 
-    def plot_count(self, pattern_list, cmap=None, s=None, rotate=False, reverse_x=False, reverse_y=False):
+    def plot_count(self,
+                   pattern_list,
+                   cmap=None,
+                   s=None,
+                   rotate=False,
+                   reverse_x=False,
+                   reverse_y=False,
+                   figsize=(12, 8),
+                   image_path=None,
+                   rotate_img=False,
+                   k=1,
+                   aspect=1):
 
         sum_array = np.zeros(self.count_array[pattern_list[0]].shape)
         for i in pattern_list:
             sum_array += self.count_array[i]
         sum_array = _adjust_arr(sum_array, rotate=rotate, reverse_x=reverse_x, reverse_y=reverse_y)
         sparse_matrix = csr_matrix(sum_array)
+        plt.figure(figsize=figsize)
+        sns.set_style('white')
+        if is_path(image_path):
+            bg_img = mpimg.imread(image_path)
+            if rotate_img:
+                bg_img = np.rot90(bg_img, k=k)
+            plt.imshow(bg_img, extent=[0, sum_array.shape[0], 0, sum_array.shape[1]], aspect=aspect)
         sns.scatterplot(x=sparse_matrix.nonzero()[0],
                         y=sparse_matrix.nonzero()[1],
                         c=sparse_matrix.data,
                         cmap=cmap if cmap is not None else 'viridis',
                         s=s if s is not None else 10,
                         edgecolor='none')
+        plt.axis('off')
 
     def plot_cluster_score(self, mds_comp, min_cluster, max_cluster):
         db_dict = {}
