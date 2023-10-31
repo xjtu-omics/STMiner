@@ -1,16 +1,19 @@
 import os
+from collections import Counter
+
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
-import umap
 import pandas as pd
 import seaborn as sns
+import umap
+from matplotlib.colors import ListedColormap
 from scipy.sparse import csr_matrix
+from sklearn.manifold import TSNE
 from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
 from sklearn.metrics import silhouette_score
-from sklearn.manifold import TSNE
-from collections import Counter
+
 from STMiner.Algorithm.distance import get_exp_array
-import matplotlib.image as mpimg
 
 
 def _adjust_arr(arr, rotate, reverse_x, reverse_y):
@@ -245,10 +248,11 @@ class Plot:
             if rotate_img:
                 bg_img = np.rot90(bg_img, k=k)
             plt.imshow(bg_img, extent=[0, sum_array.shape[0], 0, sum_array.shape[1]], aspect=aspect)
+        default_cmap = ListedColormap(['#06d6a0', '#fb8500', '#ff006e'])
         sns.scatterplot(x=sparse_matrix.nonzero()[0],
                         y=sparse_matrix.nonzero()[1],
                         c=sparse_matrix.data,
-                        cmap=cmap if cmap is not None else 'viridis',
+                        cmap=cmap if cmap is not None else default_cmap,
                         s=s if s is not None else 10,
                         edgecolor='none')
         plt.axis('off')
