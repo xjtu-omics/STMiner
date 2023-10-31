@@ -216,12 +216,12 @@ class Plot:
         plt.tight_layout()
         plt.show()
 
-    def plot_count(self, pattern_list, cmap=None, s=None):
+    def plot_count(self, pattern_list, cmap=None, s=None, rotate=False, reverse_x=False, reverse_y=False):
 
         sum_array = np.zeros(self.count_array[pattern_list[0]].shape)
         for i in pattern_list:
             sum_array += self.count_array[i]
-
+        sum_array = _adjust_arr(sum_array, rotate=rotate, reverse_x=reverse_x, reverse_y=reverse_y)
         sparse_matrix = csr_matrix(sum_array)
         sns.scatterplot(x=sparse_matrix.nonzero()[0],
                         y=sparse_matrix.nonzero()[1],
