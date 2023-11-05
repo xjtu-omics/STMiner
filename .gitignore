@@ -12,3 +12,5 @@
 *.pyc
 .idea
 .idea/STMiner.iml
+*.eps
+*.pkl
