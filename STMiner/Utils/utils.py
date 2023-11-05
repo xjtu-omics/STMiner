@@ -8,8 +8,6 @@ from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix, issparse
 from tqdm import tqdm
-from STMiner.Algorithm.distribution import get_gmm
-from STMiner.Algorithm.distance import distribution_distance, build_gmm_distance_array
 
 
 def get_3d_matrix(adata: anndata):
@@ -115,21 +113,6 @@ def add_spatial_position(adata: anndata, position_file: str):
                             cell_info_df['pxl_col_in_fullres'].to_numpy()]).T
     # adata.uns['spatial'] = pixel_array
     adata.obsm['spatial'] = pixel_array
-
-
-def compare_pattern(sp_list, n_comp=20):
-    result_dict = {}
-    # Fit gmm
-    slide_number = 0
-    for sp in sp_list:
-        pattern_number = 0
-        for key in sp.patterns_matrix_dict:
-            name = 's' + str(slide_number) + '_p' + str(pattern_number)
-            result_dict[name] = get_gmm(sp.patterns_matrix_dict[key], n_comp=n_comp)
-            pattern_number += 1
-        slide_number += 1
-    # Compare gmm
-    return build_gmm_distance_array(result_dict)
 
 
 def add_image(adata, image, spatial_key='spatial', library_id='tissue',

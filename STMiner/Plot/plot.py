@@ -1,5 +1,4 @@
 import os
-from collections import Counter
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt

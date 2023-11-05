@@ -1,7 +1,6 @@
 from random import choice
 from typing import List
 
-import numpy as np
 import pandas as pd
 from anndata import AnnData
 from scipy.sparse import csr_matrix

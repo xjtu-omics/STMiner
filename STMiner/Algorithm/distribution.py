@@ -11,10 +11,24 @@ from numba import njit
 from sklearn import mixture
 from tqdm import tqdm
 
-from STMiner.Algorithm.distance import get_exp_array
+from STMiner.Algorithm.AlgUtils import get_exp_array
 
 # Ignore the unnecessary warnings
 warnings.filterwarnings("ignore")
+
+
+def compare_pattern(sp_list, n_comp=20):
+    result_dict = {}
+    # Fit gmm
+    slide_number = 0
+    for sp in sp_list:
+        pattern_number = 0
+        for key in sp.patterns_matrix_dict:
+            name = 's' + str(slide_number) + '_p' + str(pattern_number)
+            result_dict[name] = get_gmm(sp.patterns_matrix_dict[key], n_comp=n_comp)
+            pattern_number += 1
+        slide_number += 1
+    return result_dict
 
 
 def get_gmm(matrix, n_comp=10):
