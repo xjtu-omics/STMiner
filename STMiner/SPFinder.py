@@ -28,6 +28,7 @@ class SPFinder:
         self.adata = None
         self.patterns = None
         self.patterns_matrix_dict = {}
+        self.patterns_binary_matrix_dict = {}
         self.genes_distance_array = None
         self.filtered_distance_array = None
         self.genes_labels = None
@@ -162,7 +163,8 @@ class SPFinder:
                     vote_array[ele] = 1
             total_count = total_count * vote_array
             binary_arr = np.where(total_count != 0, 1, total_count)
-            self.patterns_matrix_dict[label] = binary_arr
+            self.patterns_matrix_dict[label] = total_count
+            self.patterns_binary_matrix_dict[label] = binary_arr
 
     def cluster_gene(self,
                      n_clusters,

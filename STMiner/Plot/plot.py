@@ -141,7 +141,6 @@ class Plot:
                      rotate=False,
                      reverse_y=False,
                      reverse_x=False,
-                     vote_rate=0.2,
                      heatmap=True,
                      s=1,
                      image_path=None,
@@ -204,10 +203,11 @@ class Plot:
                           rotate_img=False,
                           k=1,
                           aspect=1):
-
-        sum_array = np.zeros(self.sp.patterns_matrix_dict[pattern_list[0]].shape)
+        sum_array = np.zeros(self.sp.patterns_binary_matrix_dict[pattern_list[0]].shape)
+        flag = 1
         for i in pattern_list:
-            sum_array += self.sp.patterns_matrix_dict[i]
+            sum_array += np.where(self.sp.patterns_binary_matrix_dict[i] > 0, flag, 0)
+            flag += 1
         sum_array = _adjust_arr(sum_array, rotate=rotate, reverse_x=reverse_x, reverse_y=reverse_y)
         sparse_matrix = csr_matrix(sum_array)
         plt.figure(figsize=figsize)
