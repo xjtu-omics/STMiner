@@ -8,6 +8,8 @@ from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix, issparse
 from tqdm import tqdm
+from STMiner.Algorithm.distribution import get_gmm
+from STMiner.Algorithm.distance import distribution_distance, build_gmm_distance_array
 
 
 def get_3d_matrix(adata: anndata):
@@ -115,11 +117,23 @@ def add_spatial_position(adata: anndata, position_file: str):
     adata.obsm['spatial'] = pixel_array
 
 
+def compare_pattern(sp_list, n_comp=20):
+    result_dict = {}
+    # Fit gmm
+    slide_number = 0
+    for sp in sp_list:
+        pattern_number = 0
+        for key in sp.patterns_matrix_dict:
+            name = 's' + str(slide_number) + '_p' + str(pattern_number)
+            result_dict[name] = get_gmm(sp.patterns_matrix_dict[key], n_comp=n_comp)
+            pattern_number += 1
+        slide_number += 1
+    # Compare gmm
+    return build_gmm_distance_array(result_dict)
+
+
 def add_image(adata, image, spatial_key='spatial', library_id='tissue',
               tissue_hires_scalef=1, spot_diameter_fullres=89):
-    adata: anndata
-    image: str
-
     # spot_diameter_fullres:
     # this is the diameter of the capture area for each observation.
     # In the case of Visium, we usually call them “spots” and this value is set to ~89.
