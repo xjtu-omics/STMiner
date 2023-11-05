@@ -35,14 +35,6 @@ def _get_figure(fig_count, num_cols):
     return axes, fig
 
 
-def scale_array(exp_matrix, total_count):
-    total_sum = np.sum(exp_matrix)
-    scale_factor = 100 / total_sum
-    scaled_matrix = exp_matrix * scale_factor
-    total_count += scaled_matrix
-    return total_count
-
-
 def is_path(image_path):
     return isinstance(image_path, str) and os.path.isfile(image_path)
 
@@ -50,7 +42,6 @@ def is_path(image_path):
 class Plot:
     def __init__(self, sp):
         self.sp = sp
-        self.count_array = {}
 
     def plot_gene(self,
                   gene,
@@ -159,11 +150,7 @@ class Plot:
                      k=1,
                      aspect=1,
                      output_path=None):
-        # clean up count array
-        self.count_array = {}
-        # initialize values
         result = self.sp.genes_labels
-        adata = self.sp.adata
         label_list = set(result['labels'])
         plot_count = len(label_list)
         axes, fig = _get_figure(plot_count, num_cols=num_cols)
@@ -176,25 +163,8 @@ class Plot:
                 ax = axes[i]
             else:
                 ax = axes[row, col]
-            gene_list = list(result[result['labels'] == label]['gene_id'])
-            total_count = np.zeros(get_exp_array(adata, gene_list[0]).shape)
-            total_coo_list = []
-            vote_array = np.zeros(get_exp_array(adata, gene_list[0]).shape)
-            for gene in gene_list:
-                exp_matrix = get_exp_array(adata, gene)
-                # calculate nonzero index
-                non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
-                for coo in non_zero_coo_list:
-                    total_coo_list.append(tuple(coo))
-                total_count = scale_array(exp_matrix, total_count)
-            count_dict = Counter(total_coo_list)
-            for ele, count in count_dict.items():
-                if int(count) / len(gene_list) >= vote_rate:
-                    vote_array[ele] = 1
-            total_count = total_count * vote_array
+            total_count = self.sp.patterns_matrix_dict[label]
             total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
-            binary_arr = np.where(total_count != 0, 1, total_count)
-            self.count_array[label] = binary_arr
             if heatmap:
                 sns.heatmap(total_count,
                             ax=ax,
@@ -236,9 +206,9 @@ class Plot:
                           k=1,
                           aspect=1):
 
-        sum_array = np.zeros(self.count_array[pattern_list[0]].shape)
+        sum_array = np.zeros(self.sp.patterns_matrix_dict[pattern_list[0]].shape)
         for i in pattern_list:
-            sum_array += self.count_array[i]
+            sum_array += self.sp.patterns_matrix_dict[i]
         sum_array = _adjust_arr(sum_array, rotate=rotate, reverse_x=reverse_x, reverse_y=reverse_y)
         sparse_matrix = csr_matrix(sum_array)
         plt.figure(figsize=figsize)

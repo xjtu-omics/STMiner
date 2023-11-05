@@ -15,4 +15,4 @@ spf.merge_bin(bin_width=50, amplification=1000)
 spf.normalize()
 spf.fit_pattern(n_top_genes=100, n_comp=20)
 spf.cluster_gene(n_clusters=3, mds_components=30)
-spf.genes_patterns
+spf.patterns

@@ -1,3 +1,4 @@
+from collections import Counter
 from typing import Optional
 
 import scanpy as sc
@@ -13,10 +14,19 @@ from STMiner.IO.read_stereo import read_gem_file
 from STMiner.Plot.plot import Plot
 
 
+def scale_array(exp_matrix, total_count):
+    total_sum = np.sum(exp_matrix)
+    scale_factor = 100 / total_sum
+    scaled_matrix = exp_matrix * scale_factor
+    total_count += scaled_matrix
+    return total_count
+
+
 class SPFinder:
     def __init__(self, adata: Optional[AnnData] = None):
         self.adata = None
-        self.genes_patterns = None
+        self.patterns = None
+        self.patterns_matrix_dict = {}
         self.genes_distance_array = None
         self.filtered_distance_array = None
         self.genes_labels = None
@@ -57,11 +67,11 @@ class SPFinder:
         Compares the GMM between the marked image and the gene expression matrix.
         :return: pd.DataFrame
         """
-        return compare_gmm_distance(self.image_gmm, self.genes_patterns)
+        return compare_gmm_distance(self.image_gmm, self.patterns)
 
     def compare_gene_to_genes(self, gene_name):
-        gene_gmm = self.genes_patterns[gene_name]
-        return compare_gmm_distance(gene_gmm, self.genes_patterns)
+        gene_gmm = self.patterns[gene_name]
+        return compare_gmm_distance(gene_gmm, self.patterns)
 
     def fit_pattern(self,
                     n_top_genes=500,
@@ -105,10 +115,10 @@ class SPFinder:
                 gene_to_fit = self._highly_variable_genes
             else:
                 gene_to_fit = list(self.adata.var.index)
-        self.genes_patterns = fit_gmms(self.adata,
-                                       gene_to_fit,
-                                       n_comp=n_comp,
-                                       remove_low_exp_spots=remove_low_exp_spots)
+        self.patterns = fit_gmms(self.adata,
+                                 gene_to_fit,
+                                 n_comp=n_comp,
+                                 remove_low_exp_spots=remove_low_exp_spots)
 
     def preprocess(self, normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes=500):
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
@@ -125,11 +135,33 @@ class SPFinder:
         if gene_list is None:
             gene_list = list(self.adata.var.index)
         if method == 'gmm':
-            self.genes_distance_array = build_gmm_distance_array(self.genes_patterns)
+            self.genes_distance_array = build_gmm_distance_array(self.patterns)
         elif method == 'mse':
             self.genes_distance_array = build_mse_distance_array(self.adata, gene_list)
         elif method == 'cs':
             self.genes_distance_array = build_cosine_similarity_array(self.adata, gene_list)
+
+    def get_pattern_array(self, vote_rate=0.2):
+        label_list = set(self.genes_labels['labels'])
+        for label in label_list:
+            gene_list = list(self.genes_labels[self.genes_labels['labels'] == label]['gene_id'])
+            total_count = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
+            total_coo_list = []
+            vote_array = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
+            for gene in gene_list:
+                exp_matrix = get_exp_array(self.adata, gene)
+                # calculate nonzero index
+                non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
+                for coo in non_zero_coo_list:
+                    total_coo_list.append(tuple(coo))
+                total_count = scale_array(exp_matrix, total_count)
+            count_dict = Counter(total_coo_list)
+            for ele, count in count_dict.items():
+                if int(count) / len(gene_list) >= vote_rate:
+                    vote_array[ele] = 1
+            total_count = total_count * vote_array
+            binary_arr = np.where(total_count != 0, 1, total_count)
+            self.patterns_matrix_dict[label] = binary_arr
 
     def cluster_gene(self,
                      n_clusters,
@@ -152,7 +184,7 @@ class SPFinder:
                                                                                    mds_components=mds_components)
 
     def plot_gmm(self, gene_name, cmap=None):
-        gmm = self.genes_patterns[gene_name]
+        gmm = self.patterns[gene_name]
         view_gmm(gmm, scope=self._scope, cmap=cmap)
 
     def flush_app(self):
