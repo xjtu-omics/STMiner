@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from STMiner.Algorithm.algorithm import linear_sum
 from STMiner.Utils.utils import issparse
-
+from STMiner.Algorithm.AlgUtils import get_exp_array
 
 def distribution_distance(first_gmm, second_gmm):
     """

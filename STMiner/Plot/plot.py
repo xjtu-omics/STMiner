@@ -12,7 +12,7 @@ from sklearn.manifold import TSNE
 from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
 from sklearn.metrics import silhouette_score
 
-from STMiner.Algorithm.distance import get_exp_array
+from STMiner.Algorithm.AlgUtils import get_exp_array
 
 
 def _adjust_arr(arr, rotate, reverse_x, reverse_y):

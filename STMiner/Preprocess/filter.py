@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from STMiner.Algorithm import get_exp_array
+from STMiner.Algorithm.AlgUtils import get_exp_array
 
 
 def get_high_var_genes(adata, n_top_genes=200):

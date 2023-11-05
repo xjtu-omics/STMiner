@@ -1,4 +1,7 @@
 import networkx as nx
+from sklearn.cluster import SpectralClustering
+
+from STMiner.Algorithm.distance import distribution_distance
 
 from STMiner.Algorithm.distribution import *
 

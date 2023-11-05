@@ -6,6 +6,7 @@ from anndata import AnnData
 
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
+from STMiner.Algorithm.AlgUtils import get_exp_array
 from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
 from STMiner.CustomApp.App import App
 from STMiner.IO.IOUtil import merge_bin_coordinate
