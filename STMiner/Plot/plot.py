@@ -80,7 +80,7 @@ class Plot:
                                  cmap=cmap)
         ax.set_axis_off()
         ax.set_title(gene)
-        if len(save_path) > 0:
+        if is_path(save_path):
             fig = ax.get_figure()
             if save_path[-1] != '/':
                 save_path += '/'
@@ -223,18 +223,18 @@ class Plot:
         plt.tight_layout()
         plt.show()
 
-    def plot_count(self,
-                   pattern_list,
-                   cmap=None,
-                   s=None,
-                   rotate=False,
-                   reverse_x=False,
-                   reverse_y=False,
-                   figsize=(12, 8),
-                   image_path=None,
-                   rotate_img=False,
-                   k=1,
-                   aspect=1):
+    def plot_intersection(self,
+                          pattern_list,
+                          cmap=None,
+                          s=None,
+                          rotate=False,
+                          reverse_x=False,
+                          reverse_y=False,
+                          figsize=(12, 8),
+                          image_path=None,
+                          rotate_img=False,
+                          k=1,
+                          aspect=1):
 
         sum_array = np.zeros(self.count_array[pattern_list[0]].shape)
         for i in pattern_list:
