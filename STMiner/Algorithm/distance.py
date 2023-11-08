@@ -3,12 +3,17 @@ import pandas as pd
 from numba import njit
 
 from scipy.optimize import linear_sum_assignment
+from scipy.sparse import csr_matrix
 from scipy.spatial.distance import cdist, cosine
 from tqdm import tqdm
 
 from STMiner.Algorithm.algorithm import linear_sum
 from STMiner.Utils.utils import issparse
 from STMiner.Algorithm.AlgUtils import get_exp_array
+
+import ot
+import networkx as nx
+
 
 def distribution_distance(first_gmm, second_gmm):
     """
@@ -92,10 +97,10 @@ def build_gmm_distance_array(gmm_dict):
     gene_counts = len(gene_list)
     distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
-        for j in range(gene_counts):
-            if i != j:
-                distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
-                distance_array.loc[gene_list[i], gene_list[j]] = distance
+        for j in range(i + 1, gene_counts):
+            distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
+            distance_array.loc[gene_list[i], gene_list[j]] = distance
+            distance_array.loc[gene_list[j], gene_list[i]] = distance
     return distance_array
 
 
@@ -176,7 +181,7 @@ def build_mix_distance_array(adata, gmm_dict):
     return distance_array
 
 
-def build_ot_distance_array(adata, gene_list):
+def build_ot_distance_array(array_dict):
     gene_list = list(gene_list)
     gene_counts = len(gene_list)
     distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
@@ -188,3 +193,17 @@ def build_ot_distance_array(adata, gene_list):
                 distance = d[assignment].sum()
                 distance_array.loc[gene_list[i], gene_list[j]] = distance
     return distance_array
+
+
+def calculate_ot_distance(source, target):
+    xsd = source.data
+    xtd = target.data
+    xs = np.array(source.nonzero()).T
+    xt = np.array(target.nonzero()).T
+    # uniform distribution on samples
+    a = source.data[source.data > 0] / xsd.sum()
+    b = target.data[target.data > 0] / xtd.sum()
+    # loss matrix
+    loss_matrix = ot.dist(xs, xt)
+    distance = ot.emd2(a, b, loss_matrix)
+    return distance

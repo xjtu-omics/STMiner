@@ -17,7 +17,7 @@ from STMiner.Algorithm.AlgUtils import get_exp_array
 warnings.filterwarnings("ignore")
 
 
-def compare_pattern(sp_list, n_comp=20):
+def get_pattern_gmm_dict(sp_list, n_comp=20):
     result_dict = {}
     # Fit gmm
     slide_number = 0
