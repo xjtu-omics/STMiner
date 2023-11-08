@@ -35,6 +35,8 @@ class SPFinder:
         self.kmeans_fit_result = None
         self.mds_features = None
         self.image_gmm = None
+        self.csr_dict = {}
+        self.global_distance = None
         self._gene_expression_edge = {}
         self._highly_variable_genes = []
         self._scope = ()
@@ -74,6 +76,27 @@ class SPFinder:
     def compare_gene_to_genes(self, gene_name):
         gene_gmm = self.patterns[gene_name]
         return compare_gmm_distance(gene_gmm, self.patterns)
+
+    def get_genes_array(self):
+        arr_list = list(self.adata.var.index)
+        for gene in tqdm(arr_list, desc='Parsing distance array...'):
+            gene_adata = self.adata[:, gene]
+            row_indices = np.array(gene_adata.obs['x'].values).flatten()
+            column_indices = np.array(gene_adata.obs['y'].values).flatten()
+            data = np.array(gene_adata.X.todense()).flatten()
+            gene_csr = csr_matrix((data, (row_indices, column_indices)))
+            self.csr_dict[gene] = gene_csr
+
+    def spatial_high_variable_genes(self, ):
+        data = np.array(self.adata.X.sum(axis=1)).flatten()
+        row_indices = np.array(self.adata.obs['x'].values).flatten()
+        column_indices = np.array(self.adata.obs['y'].values).flatten()
+        global_matrix = csr_matrix((data, (row_indices, column_indices)))
+        # Compare
+        distance_dict = {}
+        for key in self.csr_dict.keys():
+            distance_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
+        self.global_distance = pd.DataFrame(list(distance_dict.items()), columns=['Gene', 'Distance'])
 
     def fit_pattern(self,
                     n_top_genes=500,
@@ -142,6 +165,8 @@ class SPFinder:
             self.genes_distance_array = build_mse_distance_array(self.adata, gene_list)
         elif method == 'cs':
             self.genes_distance_array = build_cosine_similarity_array(self.adata, gene_list)
+        elif method == 'ot':
+            self.genes_distance_array = build_ot_distance_array(self.csr_dict)
 
     def get_pattern_array(self, vote_rate=0.2):
         label_list = set(self.genes_labels['labels'])

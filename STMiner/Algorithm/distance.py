@@ -181,17 +181,15 @@ def build_mix_distance_array(adata, gmm_dict):
     return distance_array
 
 
-def build_ot_distance_array(array_dict):
-    gene_list = list(gene_list)
+def build_ot_distance_array(csr_dict):
+    gene_list = list(csr_dict.keys())
     gene_counts = len(gene_list)
     distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
-        for j in range(gene_counts):
-            if i != j:
-                d = cdist(get_exp_array(adata, gene_list[i]), get_exp_array(adata, gene_list[j]))
-                assignment = linear_sum_assignment(d)
-                distance = d[assignment].sum()
-                distance_array.loc[gene_list[i], gene_list[j]] = distance
+        for j in range(i + 1, gene_counts):
+            distance = calculate_ot_distance(csr_dict[gene_list[i]], csr_dict[gene_list[j]])
+            distance_array.loc[gene_list[i], gene_list[j]] = distance
+            distance_array.loc[gene_list[j], gene_list[i]] = distance
     return distance_array
 
 
