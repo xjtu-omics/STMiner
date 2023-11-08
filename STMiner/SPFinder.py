@@ -77,7 +77,9 @@ class SPFinder:
         gene_gmm = self.patterns[gene_name]
         return compare_gmm_distance(gene_gmm, self.patterns)
 
-    def get_genes_array(self):
+    def get_genes_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False):
+        self.csr_dict = {}
+        self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes=-1)
         arr_list = list(self.adata.var.index)
         for gene in tqdm(arr_list, desc='Parsing distance array...'):
             gene_adata = self.adata[:, gene]
@@ -87,16 +89,18 @@ class SPFinder:
             gene_csr = csr_matrix((data, (row_indices, column_indices)))
             self.csr_dict[gene] = gene_csr
 
-    def spatial_high_variable_genes(self, ):
+    def spatial_high_variable_genes(self):
         data = np.array(self.adata.X.sum(axis=1)).flatten()
         row_indices = np.array(self.adata.obs['x'].values).flatten()
         column_indices = np.array(self.adata.obs['y'].values).flatten()
         global_matrix = csr_matrix((data, (row_indices, column_indices)))
         # Compare
         distance_dict = {}
-        for key in self.csr_dict.keys():
+        for key in tqdm(list(self.csr_dict.keys()), desc='Computing distances...'):
             distance_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
-        self.global_distance = pd.DataFrame(list(distance_dict.items()), columns=['Gene', 'Distance'])
+        self.global_distance = pd.DataFrame(list(distance_dict.items()),
+                                            columns=['Gene', 'Distance']).sort_values(by='Distance',
+                                                                                      ascending=False)
 
     def fit_pattern(self,
                     n_top_genes=500,
