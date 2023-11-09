@@ -77,9 +77,9 @@ class SPFinder:
         gene_gmm = self.patterns[gene_name]
         return compare_gmm_distance(gene_gmm, self.patterns)
 
-    def get_genes_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False):
+    def get_genes_csr_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False):
         self.csr_dict = {}
-        self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes=-1)
+        self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells)
         arr_list = list(self.adata.var.index)
         for gene in tqdm(arr_list, desc='Parsing distance array...'):
             gene_adata = self.adata[:, gene]
@@ -170,7 +170,7 @@ class SPFinder:
         elif method == 'cs':
             self.genes_distance_array = build_cosine_similarity_array(self.adata, gene_list)
         elif method == 'ot':
-            self.genes_distance_array = build_ot_distance_array(self.csr_dict)
+            self.genes_distance_array = build_ot_distance_array(self.csr_dict, gene_list)
 
     def get_pattern_array(self, vote_rate=0.2):
         label_list = set(self.genes_labels['labels'])
