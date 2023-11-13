@@ -96,7 +96,7 @@ class SPFinder:
         global_matrix = csr_matrix((data, (row_indices, column_indices)))
         # Compare
         distance_dict = {}
-        for key in tqdm(list(self.csr_dict.keys()), desc='Computing distances...'):
+        for key in tqdm(list(self.csr_dict.keys()), desc='Computing ot distances...'):
             distance_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
         self.global_distance = pd.DataFrame(list(distance_dict.items()),
                                             columns=['Gene', 'Distance']).sort_values(by='Distance',
