@@ -52,6 +52,18 @@ class Plot:
                   log1p=False,
                   save_path='',
                   dpi=400):
+
+        data = np.array(self.sp.adata.X.sum(axis=1)).flatten()
+        row_indices = np.array(self.sp.adata.obs['x'].values).flatten()
+        column_indices = np.array(self.sp.adata.obs['y'].values).flatten()
+        global_matrix = csr_matrix((data, (row_indices, column_indices)))
+        global_matrix = _adjust_arr(global_matrix.todense(), rotate, reverse_x, reverse_y)
+        global_matrix = csr_matrix(global_matrix)
+        sns.scatterplot(x=global_matrix.nonzero()[1],
+                        y=global_matrix.nonzero()[0],
+                        s=15,
+                        color='#ced4da')
+
         arr = get_exp_array(self.sp.adata, gene)
         arr = _adjust_arr(arr, rotate, reverse_x, reverse_y)
         if log1p:
@@ -247,7 +259,7 @@ class Plot:
         plt.ylabel("Normalized Score")
         plt.show()
 
-    def plot_tsne(self, method='tsne'):
+    def plot_tsne(self, method='tsne', s=10, show_bar=False):
         n_clusters = len(set(self.sp.kmeans_fit_result.labels_))
         if n_clusters <= 10:
             cmap = 'tab10'
@@ -262,14 +274,17 @@ class Plot:
             umap_model = umap.UMAP(n_neighbors=5, min_dist=0.3, n_components=2)
             embedded_data = umap_model.fit_transform(self.sp.mds_features)
         plt.figure(figsize=(8, 6))
-        plt.scatter(embedded_data[:, 0],
-                    embedded_data[:, 1],
-                    c=self.sp.kmeans_fit_result.labels_,
-                    cmap=cmap)
+        scatter = plt.scatter(embedded_data[:, 0],
+                              embedded_data[:, 1],
+                              c=self.sp.kmeans_fit_result.labels_,
+                              cmap=cmap,
+                              s=s)
         plt.title("T-SNE")
         plt.xlabel("Dimension 1")
         plt.ylabel("Dimension 2")
         plt.grid(False)
         plt.xticks([])
         plt.yticks([])
+        if show_bar:
+            plt.colorbar(scatter, label='Labels')
         plt.show()
