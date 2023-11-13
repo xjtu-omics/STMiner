@@ -32,10 +32,11 @@ from STMiner.SPFinder import SPFinder
 ```
 
 ### Load data
-
+You can download test data [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133).
 ```python
 sp = SPFinder()
-sp.read_h5ad(file='I://zebrafish/10X_Visium_hunter2021spatially_sample_C_data.h5ad')
+file_path = 'D://10X_Visium_hunter2021spatially_sample_C_data.h5ad'
+sp.read_h5ad(file=file_path)
 ```
 
 ### Preprocess and Fit GMM
