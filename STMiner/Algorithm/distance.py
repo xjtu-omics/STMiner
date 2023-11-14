@@ -205,3 +205,7 @@ def calculate_ot_distance(source, target):
     loss_matrix = ot.dist(xs, xt)
     distance = ot.emd2(a, b, loss_matrix)
     return distance
+
+def domain_alignment(source, target):
+    for i in range(len(source.patterns_matrix_dict)):
+        source.patterns_matrix_dict[0]
