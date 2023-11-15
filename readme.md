@@ -23,15 +23,15 @@ across distinct gene classes.
 **Please visit STMiner [Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for
 details.**
 
-## Quick start by example
+# Quick start by example
 
-### import package
+## import package
 
 ```python
 from STMiner import SPFinder
 ```
 
-### Load data
+## Load data
 
 You can download test data [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133).
 
@@ -41,7 +41,7 @@ file_path = 'D://10X_Visium_hunter2021spatially_sample_C_data.h5ad'
 sp.read_h5ad(file=file_path)
 ```
 
-### Find spatial high variable genes
+## Find spatial high variable genes
 
 ```python
 sp.get_genes_csr_array(min_cells=500, log1p=False)
@@ -49,7 +49,7 @@ sp.spatial_high_variable_genes()
 
 ```
 
-### Preprocess and Fit GMM
+## Preprocess and Fit GMM
 
 ```python
 sp1.fit_pattern(n_comp=20, gene_list=list(sp.global_distance['Gene'][:500]))
@@ -57,14 +57,14 @@ sp1.fit_pattern(n_comp=20, gene_list=list(sp.global_distance['Gene'][:500]))
 
 Each GMM model has 20 components.
 
-### Build distance matrix & clustering
+## Build distance matrix & clustering
 
 ```python
 sp.build_distance_array()
 sp.cluster_gene(n_clusters=6, mds_components=20)
 ```
 
-### Result & Visualization
+## Result & Visualization
 
 The result is stored in **genes_labels**:
 
@@ -88,7 +88,7 @@ The output looks like the following:
 | 98 | Rbp4           | 4      |
 | 99 | Hist1h1e       | 4      |
 
-To visualize the patterns by heatmap:
+### To visualize the patterns:
 
 ```python
 sp.get_pattern_array(vote_rate=0.3)
@@ -105,14 +105,23 @@ sp.plot.plot_pattern(vmax=99,
 
 ![STMiner](./pic/scatterplot.png)
 
+### Visualize the intersections between patterns 0 & 1:
+```python
+sp.plot.plot_intersection(pattern_list=[0, 1],
+                          image_path='E://OneDrive - stu.xjtu.edu.cn/paper/cut_img.png',
+                          reverse_y=True,
+                          reverse_x=True,
+                          aspect=0.55,
+                          s=20)
+```
 
-To visualize the genes expression heatmap by labels:
+### To visualize the genes expression by labels:
 
 ```python
 sp.plot.plot_genes(label=0, vmax=99)
 ```
 
-### Attribute of STMiner Object
+## Attribute of STMiner Object
 
 | Attribute            | Type         | Description                        |
 |----------------------|--------------|------------------------------------|
