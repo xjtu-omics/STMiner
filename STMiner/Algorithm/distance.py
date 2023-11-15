@@ -193,7 +193,7 @@ def build_ot_distance_array(csr_dict, gene_list=None):
     return distance_array
 
 
-def calculate_ot_distance(source, target):
+def calculate_ot_distance(source, target) -> float:
     xsd = source.data
     xtd = target.data
     xs = np.array(source.nonzero()).T
@@ -206,6 +206,22 @@ def calculate_ot_distance(source, target):
     distance = ot.emd2(a, b, loss_matrix)
     return distance
 
-def domain_alignment(source, target):
-    for i in range(len(source.patterns_matrix_dict)):
-        source.patterns_matrix_dict[0]
+
+def domain_alignment(source_domain_dict, target_domain_dict):
+    """
+    Returns the distance between two domains, index is source domain and column is target domain.
+    :param source_domain_dict: dict
+    :param target_domain_dict: dict
+    :return: pd.DataFrame
+    """
+    source_keys = list(source_domain_dict.keys())
+    target_keys = list(target_domain_dict.keys())
+    distance_array = pd.DataFrame(0, index=source_keys, columns=target_keys, dtype=np.float64)
+    for i in range(len(source_domain_dict)):
+        for j in range(len(target_domain_dict)):
+            csr_source = csr_matrix(source_domain_dict[i])
+            csr_target = csr_matrix(target_domain_dict[j])
+            ot_dist = calculate_ot_distance(csr_source, csr_target)
+            distance_array.loc[source_keys[i], target_keys[j]] = ot_dist
+            distance_array.loc[source_keys[j], target_keys[i]] = ot_dist
+    return distance_array
