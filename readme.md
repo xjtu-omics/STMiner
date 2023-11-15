@@ -20,7 +20,7 @@ algorithm. It is initiated by fitting a parametric model of gene spatial distrib
 between them utilizing the Hellinger distance. Genes are clustered, thereby recognizing spatial co-expression patterns
 across distinct gene classes.
 
-**Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for
+**Please visit STMiner [Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for
 details.**
 
 ## Quick start by example
@@ -47,7 +47,7 @@ sp.fit_pattern(n_comp=20, min_cells=200, n_top_genes=1000)
 
 Each GMM model has 20 components.
 
-### build distance matrix & clustering
+### Build distance matrix & clustering
 
 ```python
 sp.build_distance_array()
@@ -56,7 +56,7 @@ sp.cluster_gene(n_clusters=6, mds_components=20)
 
 ### Result & Visualization
 
-The result are stored in **genes_labels**:
+The result is stored in **genes_labels**:
 
 ```python
 sp.genes_labels
