@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/License-MIT-blue) 
+![Static Badge](https://img.shields.io/badge/License-MIT-blue)
 ![Static Badge](https://img.shields.io/badge/readthedocs-blue?logo=readthedocs&label=Documents)
 ![Static Badge](https://img.shields.io/badge/3.10-green?logo=python&label=Python&labelColor=yellow)
 ![Static Badge](https://img.shields.io/badge/Linux-blue?logo=Linux&logoColor=white)
@@ -28,21 +28,31 @@ details.**
 ### import package
 
 ```python
-from STMiner.SPFinder import SPFinder
+from STMiner import SPFinder
 ```
 
 ### Load data
+
 You can download test data [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133).
+
 ```python
 sp = SPFinder()
 file_path = 'D://10X_Visium_hunter2021spatially_sample_C_data.h5ad'
 sp.read_h5ad(file=file_path)
 ```
 
+### Find spatial high variable genes
+
+```python
+sp.get_genes_csr_array(min_cells=500, log1p=False)
+sp.spatial_high_variable_genes()
+
+```
+
 ### Preprocess and Fit GMM
 
 ```python
-sp.fit_pattern(n_comp=20, min_cells=200, n_top_genes=1000)
+sp1.fit_pattern(n_comp=20, gene_list=list(sp.global_distance['Gene'][:500]))
 ```
 
 Each GMM model has 20 components.
@@ -81,18 +91,20 @@ The output looks like the following:
 To visualize the patterns by heatmap:
 
 ```python
+sp.get_pattern_array(vote_rate=0.3)
 sp.plot.plot_pattern(vmax=99,
-                     vote_rate=0.4,
                      heatmap=False,
-                     s=4,
+                     s=5,
                      reverse_y=True,
                      reverse_x=True,
-                     image_path='E://OneDrive - stu.xjtu.edu.cn/paper/cut_img.png',
+                     image_path='E://cut_img.png',
                      rotate_img=True,
                      k=4,
-                     aspect=0.55,
-                     output_path='./')
+                     aspect=0.55)
 ```
+
+![STMiner](./pic/scatterplot.png)
+
 
 To visualize the genes expression heatmap by labels:
 
