@@ -105,7 +105,7 @@ sp.plot.plot_pattern(vmax=99,
 
 ![STMiner](./pic/scatterplot.png)
 
-### Visualize the intersections between patterns 0 & 1:
+### Visualize the intersections between patterns 3 & 1:
 ```python
 sp.plot.plot_intersection(pattern_list=[0, 1],
                           image_path='E://OneDrive - stu.xjtu.edu.cn/paper/cut_img.png',
@@ -115,6 +115,7 @@ sp.plot.plot_intersection(pattern_list=[0, 1],
                           s=20)
 ```
 
+![mx](./pic/scatterplot_mx.png)
 ### To visualize the genes expression by labels:
 
 ```python
