@@ -35,7 +35,7 @@ def _get_figure(fig_count, num_cols):
 
 
 def is_path(image_path):
-    return isinstance(image_path, str) and os.path.isfile(image_path)
+    return isinstance(image_path, str) and (os.path.isfile(image_path) or os.path.isdir(image_path))
 
 
 class Plot:
@@ -48,17 +48,19 @@ class Plot:
                   reverse_y=False,
                   reverse_x=False,
                   rotate=False,
+                  figsize=(8, 6),
                   spot_size=None,
                   log1p=False,
                   save_path='',
                   dpi=400):
 
-        data = np.array(self.sp.adata.X.sum(axis=1)).flatten()
+        expression_data = np.array(self.sp.adata.X.sum(axis=1)).flatten()
         row_indices = np.array(self.sp.adata.obs['x'].values).flatten()
         column_indices = np.array(self.sp.adata.obs['y'].values).flatten()
-        global_matrix = csr_matrix((data, (row_indices, column_indices)))
+        global_matrix = csr_matrix((expression_data, (row_indices, column_indices)))
         global_matrix = _adjust_arr(global_matrix.todense(), rotate, reverse_x, reverse_y)
         global_matrix = csr_matrix(global_matrix)
+        plt.figure(figsize=figsize)
         sns.scatterplot(x=global_matrix.nonzero()[1],
                         y=global_matrix.nonzero()[0],
                         s=15,
@@ -74,11 +76,13 @@ class Plot:
                                  y=sparse_matrix.nonzero()[0],
                                  c=sparse_matrix.data,
                                  s=spot_size,
+                                 edgecolor='none',
                                  cmap=cmap)
         else:
             ax = sns.scatterplot(x=sparse_matrix.nonzero()[1],
                                  y=sparse_matrix.nonzero()[0],
                                  c=sparse_matrix.data,
+                                 edgecolor='none',
                                  cmap=cmap)
         ax.set_axis_off()
         ax.set_title(gene)
@@ -87,8 +91,8 @@ class Plot:
             if save_path[-1] != '/':
                 save_path += '/'
             save_path += gene
-            save_path += '.png'
-            fig.savefig(fname=save_path, dpi=dpi)
+            save_path += '.eps'
+            fig.savefig(fname=save_path, dpi=dpi, format='eps')
         plt.show()
 
     def plot_genes(self,

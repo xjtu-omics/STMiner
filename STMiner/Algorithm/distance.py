@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from scipy.optimize import linear_sum_assignment
 from scipy.sparse import csr_matrix
 from scipy.spatial.distance import cdist, cosine
 from tqdm import tqdm

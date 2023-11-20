@@ -85,7 +85,10 @@ class SPFinder:
             gene_adata = self.adata[:, gene]
             row_indices = np.array(gene_adata.obs['x'].values).flatten()
             column_indices = np.array(gene_adata.obs['y'].values).flatten()
-            data = np.array(gene_adata.X.todense()).flatten()
+            try:
+                data = np.array(gene_adata.X.todense()).flatten()
+            except AttributeError as e:
+                data = np.array(gene_adata.X).flatten()
             gene_csr = csr_matrix((data, (row_indices, column_indices)))
             self.csr_dict[gene] = gene_csr
 
