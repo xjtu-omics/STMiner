@@ -50,20 +50,15 @@ class Plot:
                   rotate=False,
                   figsize=(8, 6),
                   spot_size=None,
+                  global_matrix_spot_size=15,
                   log1p=False,
                   save_path='',
                   dpi=400):
-
-        expression_data = np.array(self.sp.adata.X.sum(axis=1)).flatten()
-        row_indices = np.array(self.sp.adata.obs['x'].values).flatten()
-        column_indices = np.array(self.sp.adata.obs['y'].values).flatten()
-        global_matrix = csr_matrix((expression_data, (row_indices, column_indices)))
-        global_matrix = _adjust_arr(global_matrix.todense(), rotate, reverse_x, reverse_y)
-        global_matrix = csr_matrix(global_matrix)
+        global_matrix = self.get_global_matrix(reverse_x, reverse_y, rotate)
         plt.figure(figsize=figsize)
         sns.scatterplot(x=global_matrix.nonzero()[1],
                         y=global_matrix.nonzero()[0],
-                        s=15,
+                        s=global_matrix_spot_size,
                         color='#ced4da')
 
         arr = get_exp_array(self.sp.adata, gene)
@@ -94,6 +89,16 @@ class Plot:
             save_path += '.eps'
             fig.savefig(fname=save_path, dpi=dpi, format='eps')
         plt.show()
+
+    def get_global_matrix(self, reverse_x, reverse_y, rotate):
+        adata = self.sp.adata
+        expression_data = np.array(adata.X.sum(axis=1)).flatten()
+        row_indices = np.array(adata.obs['x'].values).flatten()
+        column_indices = np.array(adata.obs['y'].values).flatten()
+        global_matrix = csr_matrix((expression_data, (row_indices, column_indices)))
+        global_matrix = _adjust_arr(global_matrix.todense(), rotate, reverse_x, reverse_y)
+        global_matrix = csr_matrix(global_matrix)
+        return global_matrix
 
     def plot_genes(self,
                    label=None,
@@ -159,17 +164,19 @@ class Plot:
                      reverse_x=False,
                      heatmap=True,
                      s=1,
+                     global_matrix_spot_size=15,
                      image_path=None,
                      rotate_img=False,
                      k=1,
                      aspect=1,
-                     output_path=None):
+                     output_path=None,
+                     plot_bg=False):
         result = self.sp.genes_labels
         label_list = set(result['labels'])
         plot_count = len(label_list)
         axes, fig = _get_figure(plot_count, num_cols=num_cols)
         fig.subplots_adjust(hspace=0.5)
-
+        global_matrix = self.get_global_matrix(reverse_x, reverse_y, rotate)
         for i, label in enumerate(label_list):
             row = i // num_cols
             col = i % num_cols
@@ -191,6 +198,12 @@ class Plot:
                     if rotate_img:
                         bg_img = np.rot90(bg_img, k=k)
                     ax.imshow(bg_img, extent=[0, total_count.shape[0], 0, total_count.shape[1]], aspect=aspect)
+                if plot_bg:
+                    # plt.figure(figsize=figsize)
+                    sns.scatterplot(x=global_matrix.nonzero()[1],
+                                    y=global_matrix.nonzero()[0],
+                                    s=global_matrix_spot_size,
+                                    color='#ced4da')
                 sparse_matrix = csr_matrix(total_count)
                 sns.scatterplot(x=sparse_matrix.nonzero()[0],
                                 y=sparse_matrix.nonzero()[1],
