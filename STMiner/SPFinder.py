@@ -12,7 +12,7 @@ from STMiner.CustomApp.App import App
 from STMiner.IO.IOUtil import merge_bin_coordinate
 from STMiner.IO.read_h5ad import read_h5ad
 from STMiner.IO.read_stereo import read_gem_file
-from STMiner.Plot.plot import Plot
+from STMiner.Plot import Plot
 
 
 def scale_array(exp_matrix, total_count):
