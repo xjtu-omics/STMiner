@@ -56,8 +56,8 @@ class Plot:
                   dpi=400):
         global_matrix = self.get_global_matrix(reverse_x, reverse_y, rotate)
         plt.figure(figsize=figsize)
-        sns.scatterplot(x=global_matrix.nonzero()[1],
-                        y=global_matrix.nonzero()[0],
+        sns.scatterplot(x=global_matrix.nonzero()[0],
+                        y=global_matrix.nonzero()[1],
                         s=global_matrix_spot_size,
                         color='#ced4da')
 
@@ -67,15 +67,15 @@ class Plot:
             arr = np.log1p(arr)
         sparse_matrix = csr_matrix(arr)
         if spot_size is not None:
-            ax = sns.scatterplot(x=sparse_matrix.nonzero()[1],
-                                 y=sparse_matrix.nonzero()[0],
+            ax = sns.scatterplot(x=sparse_matrix.nonzero()[0],
+                                 y=sparse_matrix.nonzero()[1],
                                  c=sparse_matrix.data,
                                  s=spot_size,
                                  edgecolor='none',
                                  cmap=cmap)
         else:
-            ax = sns.scatterplot(x=sparse_matrix.nonzero()[1],
-                                 y=sparse_matrix.nonzero()[0],
+            ax = sns.scatterplot(x=sparse_matrix.nonzero()[0],
+                                 y=sparse_matrix.nonzero()[1],
                                  c=sparse_matrix.data,
                                  edgecolor='none',
                                  cmap=cmap)
@@ -144,8 +144,8 @@ class Plot:
                             vmin=np.percentile(arr, vmin))
             elif plot_type == 'scatter':
                 sparse_matrix = csr_matrix(arr)
-                sns.scatterplot(x=sparse_matrix.nonzero()[1],
-                                y=sparse_matrix.nonzero()[0],
+                sns.scatterplot(x=sparse_matrix.nonzero()[0],
+                                y=sparse_matrix.nonzero()[1],
                                 ax=ax,
                                 c=sparse_matrix.data,
                                 cmap=cmap,
@@ -200,8 +200,8 @@ class Plot:
                     ax.imshow(bg_img, extent=[0, total_count.shape[0], 0, total_count.shape[1]], aspect=aspect)
                 if plot_bg:
                     # plt.figure(figsize=figsize)
-                    sns.scatterplot(x=global_matrix.nonzero()[1],
-                                    y=global_matrix.nonzero()[0],
+                    sns.scatterplot(x=global_matrix.nonzero()[0],
+                                    y=global_matrix.nonzero()[1],
                                     s=global_matrix_spot_size,
                                     color='#ced4da')
                 sparse_matrix = csr_matrix(total_count)
@@ -230,7 +230,9 @@ class Plot:
                           figsize=(12, 8),
                           image_path=None,
                           rotate_img=False,
+                          plot_bg=True,
                           k=1,
+                          bgs=5,
                           aspect=1):
         sum_array = np.zeros(self.sp.patterns_binary_matrix_dict[pattern_list[0]].shape)
         flag = 1
@@ -246,6 +248,12 @@ class Plot:
             if rotate_img:
                 bg_img = np.rot90(bg_img, k=k)
             plt.imshow(bg_img, extent=[0, sum_array.shape[0], 0, sum_array.shape[1]], aspect=aspect)
+        if plot_bg:
+            global_matrix = self.get_global_matrix(reverse_x, reverse_y, rotate)
+            sns.scatterplot(x=global_matrix.nonzero()[0],
+                            y=global_matrix.nonzero()[1],
+                            s=bgs,
+                            color='#ced4da')
         default_cmap = ListedColormap(['#06d6a0', '#fb8500', '#ff006e'])
         sns.scatterplot(x=sparse_matrix.nonzero()[0],
                         y=sparse_matrix.nonzero()[1],
