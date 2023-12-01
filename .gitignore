@@ -7,7 +7,6 @@
 *.png
 *.jpg
 *.xml
-.idea/Wukong.iml
 *.pickle
 *.pyc
 .idea
