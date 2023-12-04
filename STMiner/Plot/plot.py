@@ -253,7 +253,8 @@ class Plot:
             sns.scatterplot(x=global_matrix.nonzero()[0],
                             y=global_matrix.nonzero()[1],
                             s=bgs,
-                            color='#ced4da')
+                            color='#ced4da',
+                            edgecolor='none')
         default_cmap = ListedColormap(['#06d6a0', '#fb8500', '#ff006e'])
         sns.scatterplot(x=sparse_matrix.nonzero()[0],
                         y=sparse_matrix.nonzero()[1],
