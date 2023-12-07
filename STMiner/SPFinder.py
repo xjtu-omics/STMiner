@@ -111,7 +111,7 @@ class SPFinder:
                     normalize=True,
                     exclude_highly_expressed=False,
                     log1p=False,
-                    min_cells=200,
+                    min_cells=20,
                     gene_list=None,
                     remove_low_exp_spots=False):
         """
@@ -176,6 +176,7 @@ class SPFinder:
             self.genes_distance_array = build_ot_distance_array(self.csr_dict, gene_list)
 
     def get_pattern_array(self, vote_rate=0.2):
+        self.patterns_binary_matrix_dict = {}
         label_list = set(self.genes_labels['labels'])
         for label in label_list:
             gene_list = list(self.genes_labels[self.genes_labels['labels'] == label]['gene_id'])
