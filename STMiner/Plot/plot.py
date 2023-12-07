@@ -53,13 +53,15 @@ class Plot:
                   global_matrix_spot_size=15,
                   log1p=False,
                   save_path='',
+                  format='eps',
                   dpi=400):
         global_matrix = self.get_global_matrix(reverse_x, reverse_y, rotate)
         plt.figure(figsize=figsize)
         sns.scatterplot(x=global_matrix.nonzero()[0],
                         y=global_matrix.nonzero()[1],
                         s=global_matrix_spot_size,
-                        color='#ced4da')
+                        color='#ced4da',
+                        edgecolor='none')
 
         arr = get_exp_array(self.sp.adata, gene)
         arr = _adjust_arr(arr, rotate, reverse_x, reverse_y)
@@ -86,8 +88,8 @@ class Plot:
             if save_path[-1] != '/':
                 save_path += '/'
             save_path += gene
-            save_path += '.eps'
-            fig.savefig(fname=save_path, dpi=dpi, format='eps')
+            save_path += '.' + format
+            fig.savefig(fname=save_path, dpi=dpi, format=format)
         plt.show()
 
     def get_global_matrix(self, reverse_x, reverse_y, rotate):
@@ -294,7 +296,7 @@ class Plot:
         else:
             cmap = 'viridis'
         if method == 'tsne':
-            tsne = TSNE(n_components=2, random_state=42)
+            tsne = TSNE(n_components=2)
             embedded_data = tsne.fit_transform(self.sp.mds_features)
         else:
             umap_model = umap.UMAP(n_neighbors=5, min_dist=0.3, n_components=2)
