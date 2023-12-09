@@ -106,7 +106,7 @@ class SPFinder:
                                                                                       ascending=False)
 
     def fit_pattern(self,
-                    n_top_genes=500,
+                    n_top_genes=-1,
                     n_comp=20,
                     normalize=True,
                     exclude_highly_expressed=False,
