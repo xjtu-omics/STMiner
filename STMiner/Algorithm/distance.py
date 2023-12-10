@@ -107,7 +107,7 @@ def compare_gmm_distance(gmm, gmm_dict):
     gene_list = list(gmm_dict.keys())
     gene_counts = len(gene_list)
     distance_dict = {}
-    for gene in tqdm(range(gene_counts), desc='Building distance array...'):
+    for gene in tqdm(range(gene_counts), desc='Comparing distance...'):
         distance = distribution_distance(gmm, gmm_dict[gene_list[gene]])
         distance_dict[gene_list[gene]] = distance
     df = pd.DataFrame.from_dict(distance_dict, orient='index')
