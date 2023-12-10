@@ -13,6 +13,8 @@ from STMiner.IO.IOUtil import merge_bin_coordinate
 from STMiner.IO.read_h5ad import read_h5ad
 from STMiner.IO.read_stereo import read_gem_file
 from STMiner.Plot import Plot
+from STMiner.Algorithm.distance import compare_gmm_distance
+from STMiner.Algorithm.distribution import get_gmm
 
 
 def scale_array(exp_matrix, total_count):
@@ -37,11 +39,12 @@ class SPFinder:
         self.image_gmm = None
         self.csr_dict = {}
         self.global_distance = None
+        self.all_labels = None
         self._gene_expression_edge = {}
         self._highly_variable_genes = []
         self._scope = ()
         self.plot = Plot(self)
-        self.app = App()
+        # self.app = App()
         if adata is not None:
             self.set_adata(adata)
 
@@ -223,5 +226,19 @@ class SPFinder:
         gmm = self.patterns[gene_name]
         view_gmm(gmm, scope=self._scope, cmap=cmap)
 
-    def flush_app(self):
-        self.app = App()
+    def get_all_labels(self):
+        df_list = []
+        for i in self.patterns_binary_matrix_dict:
+            gmm = get_gmm(self.patterns_binary_matrix_dict[i], n_comp=20)
+            df = compare_gmm_distance(gmm, self.patterns)
+            df.rename(columns={0: i}, inplace=True)
+            df_list.append(df)
+        total = pd.concat(df_list, axis=1)
+        label = total.idxmin(axis=1)
+        all_labels = pd.DataFrame(label, columns=['label'])
+        all_labels['value'] = [total.iloc[i, col_index] for i, col_index in enumerate(all_labels['label'].to_list())]
+        self.all_labels = all_labels
+
+        
+    # def flush_app(self):
+    #     self.app = App()
