@@ -86,14 +86,22 @@ class SPFinder:
         arr_list = list(self.adata.var.index)
         for gene in tqdm(arr_list, desc='Parsing distance array...'):
             gene_adata = self.adata[:, gene]
+            # Sometimes more than 1 genes has same name.
+            if gene_adata.var.shape[0] != 1:
+                print('Gene ' + gene + ' has more than one row, skip.')
+                continue
             row_indices = np.array(gene_adata.obs['x'].values).flatten()
             column_indices = np.array(gene_adata.obs['y'].values).flatten()
             try:
                 data = np.array(gene_adata.X.todense()).flatten()
             except AttributeError as e:
                 data = np.array(gene_adata.X).flatten()
-            gene_csr = csr_matrix((data, (row_indices, column_indices)))
-            self.csr_dict[gene] = gene_csr
+            try:
+                gene_csr = csr_matrix((data, (row_indices, column_indices)))
+                self.csr_dict[gene] = gene_csr
+            except Exception as e:
+                print('Error when parse gene ' + gene + '\nError: ')
+                print(e)
 
     def spatial_high_variable_genes(self):
         data = np.array(self.adata.X.sum(axis=1)).flatten()
@@ -239,6 +247,5 @@ class SPFinder:
         all_labels['value'] = [total.iloc[i, col_index] for i, col_index in enumerate(all_labels['label'].to_list())]
         self.all_labels = all_labels
 
-        
     # def flush_app(self):
     #     self.app = App()
