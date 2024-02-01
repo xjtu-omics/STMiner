@@ -108,12 +108,12 @@ class Plot:
                    n_gene=12,
                    cmap=None,
                    num_cols=4,
-                   vmax=100,
+                   vmax=99,
                    vmin=0,
                    rotate=False,
                    reverse_y=False,
                    reverse_x=False,
-                   plot_type='heatmap',
+                   plot_type='scatter',
                    s=1):
         result = self.sp.genes_labels
         adata = self.sp.adata
@@ -213,6 +213,7 @@ class Plot:
                                 ax=ax,
                                 cmap=cmap if cmap is not None else 'viridis',
                                 s=s,
+                                vmax=np.percentile(sparse_matrix.data, vmax),
                                 edgecolor='none')
                 ax.set_xlim(0, total_count.shape[0])
                 ax.set_ylim(0, total_count.shape[1])
