@@ -54,7 +54,8 @@ class Plot:
                   log1p=False,
                   save_path='',
                   format='eps',
-                  dpi=400):
+                  dpi=400,
+                  vmax=99):
         global_matrix = self.get_global_matrix(reverse_x, reverse_y, rotate)
         plt.figure(figsize=figsize)
         sns.scatterplot(x=global_matrix.nonzero()[0],
@@ -74,12 +75,14 @@ class Plot:
                                  c=sparse_matrix.data,
                                  s=spot_size,
                                  edgecolor='none',
+                                 vmax=np.percentile(sparse_matrix.data, vmax),
                                  cmap=cmap)
         else:
             ax = sns.scatterplot(x=sparse_matrix.nonzero()[0],
                                  y=sparse_matrix.nonzero()[1],
                                  c=sparse_matrix.data,
                                  edgecolor='none',
+                                 vmax=np.percentile(sparse_matrix.data, vmax),
                                  cmap=cmap)
         ax.set_axis_off()
         ax.set_title(gene)
