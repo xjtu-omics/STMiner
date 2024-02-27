@@ -15,6 +15,7 @@ from STMiner.IO.read_stereo import read_gem_file
 from STMiner.Plot import Plot
 from STMiner.Algorithm.distance import compare_gmm_distance
 from STMiner.Algorithm.distribution import get_gmm
+import multiprocessing
 
 
 def scale_array(exp_matrix, total_count):
@@ -80,7 +81,8 @@ class SPFinder:
         gene_gmm = self.patterns[gene_name]
         return compare_gmm_distance(gene_gmm, self.patterns)
 
-    def get_genes_csr_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False, vmax=99, gene_list=None):
+    def get_genes_csr_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False, vmax=99,
+                            gene_list=None):
         self.csr_dict = {}
         self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells)
         if gene_list is not None:
@@ -107,7 +109,7 @@ class SPFinder:
                 print('Error when parse gene ' + gene + '\nError: ')
                 print(e)
 
-    def spatial_high_variable_genes(self, vmax=99):
+    def spatial_high_variable_genes(self, vmax=99, thread=1):
         if len(self.csr_dict) == 0:
             self.get_genes_csr_array(min_cells=1000, vmax=vmax, normalize=True)
         data = np.array(self.adata.X.sum(axis=1)).flatten()
@@ -115,13 +117,25 @@ class SPFinder:
         row_indices = np.array(self.adata.obs['x'].values).flatten()
         column_indices = np.array(self.adata.obs['y'].values).flatten()
         global_matrix = csr_matrix((data, (row_indices, column_indices)))
-        # Compare
-        distance_dict = {}
-        for key in tqdm(list(self.csr_dict.keys()), desc='Computing ot distances...'):
-            distance_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
-        self.global_distance = pd.DataFrame(list(distance_dict.items()),
-                                            columns=['Gene', 'Distance']).sort_values(by='Distance',
-                                                                                      ascending=False)
+        # Compare ot distance
+        if (not isinstance(thread, int)) or (thread <= 1):
+            distance_dict = {}
+            for key in tqdm(list(self.csr_dict.keys()), desc='Computing ot distances...'):
+                distance_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
+            self.global_distance = pd.DataFrame(list(distance_dict.items()),
+                                                columns=['Gene', 'Distance']).sort_values(by='Distance',
+                                                                                          ascending=False)
+        else:
+            result_dict = multiprocessing.Manager().dict()
+            pool = multiprocessing.Pool(processes=thread)
+            for key in tqdm(list(self.csr_dict.keys())):
+                pool.apply_async(self._mpl_worker, args=(global_matrix, self.csr_dict[key], result_dict))
+            pool.close()
+            pool.join()
+            self.global_distance = dict(result_dict)
+
+    def _mpl_worker(self, global_matrix, key, result_dict):
+        result_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
 
     def fit_pattern(self,
                     n_top_genes=-1,
