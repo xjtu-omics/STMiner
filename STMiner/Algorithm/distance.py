@@ -202,7 +202,7 @@ def calculate_ot_distance(source, target) -> float:
     b = target.data[target.data > 0] / xtd.sum()
     # loss matrix
     loss_matrix = ot.dist(xs, xt)
-    distance = ot.emd2(a, b, loss_matrix)
+    distance = ot.emd2(a, b, loss_matrix, numItermax=500000)
     return distance
 
 

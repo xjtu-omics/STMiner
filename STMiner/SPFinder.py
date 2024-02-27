@@ -80,15 +80,18 @@ class SPFinder:
         gene_gmm = self.patterns[gene_name]
         return compare_gmm_distance(gene_gmm, self.patterns)
 
-    def get_genes_csr_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False):
+    def get_genes_csr_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False, vmax=99, gene_list=None):
         self.csr_dict = {}
         self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells)
-        arr_list = list(self.adata.var.index)
+        if gene_list is not None:
+            arr_list = gene_list
+        else:
+            arr_list = list(self.adata.var.index)
         for gene in tqdm(arr_list, desc='Parsing distance array...'):
             gene_adata = self.adata[:, gene]
             # Sometimes more than 1 genes has same name.
             if gene_adata.var.shape[0] != 1:
-                print('Gene ' + gene + ' has more than one row, skip.')
+                print('Gene [' + gene + '] has more than one index, skip.')
                 continue
             row_indices = np.array(gene_adata.obs['x'].values).flatten()
             column_indices = np.array(gene_adata.obs['y'].values).flatten()
@@ -97,14 +100,18 @@ class SPFinder:
             except AttributeError as e:
                 data = np.array(gene_adata.X).flatten()
             try:
+                data[data > np.percentile(data, vmax)] = np.percentile(data, vmax)
                 gene_csr = csr_matrix((data, (row_indices, column_indices)))
                 self.csr_dict[gene] = gene_csr
             except Exception as e:
                 print('Error when parse gene ' + gene + '\nError: ')
                 print(e)
 
-    def spatial_high_variable_genes(self):
+    def spatial_high_variable_genes(self, vmax=99):
+        if len(self.csr_dict) == 0:
+            self.get_genes_csr_array(min_cells=1000, vmax=vmax, normalize=True)
         data = np.array(self.adata.X.sum(axis=1)).flatten()
+        data[data > np.percentile(data, vmax)] = np.percentile(data, vmax)
         row_indices = np.array(self.adata.obs['x'].values).flatten()
         column_indices = np.array(self.adata.obs['y'].values).flatten()
         global_matrix = csr_matrix((data, (row_indices, column_indices)))
@@ -158,12 +165,15 @@ class SPFinder:
                 gene_to_fit = self._highly_variable_genes
             else:
                 gene_to_fit = list(self.adata.var.index)
-        self.patterns = fit_gmms(self.adata,
-                                 gene_to_fit,
-                                 n_comp=n_comp,
-                                 remove_low_exp_spots=remove_low_exp_spots)
+        try:
+            self.patterns = fit_gmms(self.adata,
+                                     gene_to_fit,
+                                     n_comp=n_comp,
+                                     remove_low_exp_spots=remove_low_exp_spots)
+        except Exception as e:
+            print(e)
 
-    def preprocess(self, normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes=500):
+    def preprocess(self, normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes=2000):
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
         sc.pp.highly_variable_genes(self.adata,
                                     flavor='seurat_v3',
