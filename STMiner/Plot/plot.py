@@ -49,8 +49,7 @@ class Plot:
                   reverse_x=False,
                   rotate=False,
                   figsize=(8, 6),
-                  spot_size=None,
-                  global_matrix_spot_size=15,
+                  s=5,
                   log1p=False,
                   save_path='',
                   format='eps',
@@ -60,7 +59,7 @@ class Plot:
         plt.figure(figsize=figsize)
         sns.scatterplot(x=global_matrix.nonzero()[0],
                         y=global_matrix.nonzero()[1],
-                        s=global_matrix_spot_size,
+                        s=s,
                         color='#ced4da',
                         edgecolor='none')
 
@@ -69,11 +68,11 @@ class Plot:
         if log1p:
             arr = np.log1p(arr)
         sparse_matrix = csr_matrix(arr)
-        if spot_size is not None:
+        if s is not None:
             ax = sns.scatterplot(x=sparse_matrix.nonzero()[0],
                                  y=sparse_matrix.nonzero()[1],
                                  c=sparse_matrix.data,
-                                 s=spot_size,
+                                 s=s,
                                  edgecolor='none',
                                  vmax=np.percentile(sparse_matrix.data, vmax),
                                  cmap=cmap)
@@ -221,8 +220,8 @@ class Plot:
                 ax.set_xlim(0, total_count.shape[0])
                 ax.set_ylim(0, total_count.shape[1])
             ax.set_title('Pattern ' + str(label))
-        if output_path is not None and os.path.isdir(output_path):
-            plt.savefig(os.path.join(output_path, "./scatterplot.eps"), dpi=1000, format='eps')
+        if output_path is not None:
+            plt.savefig(output_path, dpi=1000, format='eps')
         plt.tight_layout()
         plt.show()
 
