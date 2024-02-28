@@ -83,6 +83,7 @@ class SPFinder:
 
     def get_genes_csr_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False, vmax=99,
                             gene_list=None):
+        error_gene_list = []
         self.csr_dict = {}
         self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells)
         if gene_list is not None:
@@ -93,7 +94,11 @@ class SPFinder:
             gene_adata = self.adata[:, gene]
             # Sometimes more than 1 genes has same name.
             if gene_adata.var.shape[0] != 1:
-                print('Gene [' + gene + '] has more than one index, skip.')
+                if gene in error_gene_list:
+                    pass
+                else:
+                    error_gene_list.append(gene)
+                    print('Gene [' + gene + '] has more than one index, skip.')
                 continue
             row_indices = np.array(gene_adata.obs['x'].values).flatten()
             column_indices = np.array(gene_adata.obs['y'].values).flatten()
@@ -121,7 +126,11 @@ class SPFinder:
         if (not isinstance(thread, int)) or (thread <= 1):
             distance_dict = {}
             for key in tqdm(list(self.csr_dict.keys()), desc='Computing ot distances...'):
-                distance_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
+                try:
+                    distance_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
+                except Exception as e:
+                    print(key)
+                    print(e)
             self.global_distance = pd.DataFrame(list(distance_dict.items()),
                                                 columns=['Gene', 'Distance']).sort_values(by='Distance',
                                                                                           ascending=False)
