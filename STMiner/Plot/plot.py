@@ -168,7 +168,6 @@ class Plot:
                      reverse_x=False,
                      heatmap=True,
                      s=1,
-                     global_matrix_spot_size=15,
                      image_path=None,
                      rotate_img=False,
                      k=1,
@@ -206,7 +205,7 @@ class Plot:
                     # plt.figure(figsize=figsize)
                     sns.scatterplot(x=global_matrix.nonzero()[0],
                                     y=global_matrix.nonzero()[1],
-                                    s=global_matrix_spot_size,
+                                    s=s,
                                     color='#ced4da')
                 sparse_matrix = csr_matrix(total_count)
                 sns.scatterplot(x=sparse_matrix.nonzero()[0],
