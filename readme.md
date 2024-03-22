@@ -103,7 +103,9 @@ sp.plot.plot_pattern(vmax=99,
                      aspect=0.55)
 ```
 
-![STMiner](./pic/scatterplot.png)
+<div  align="center">    
+  <img src="./pic/scatterplot.png" width = "600" align=center />
+</div>
 
 
 ### Visualize the intersections between patterns 3 & 1:
@@ -117,7 +119,7 @@ sp.plot.plot_intersection(pattern_list=[0, 1],
 ```
 
 <div  align="center">    
-  <img src="./pic/scatterplot_mx.png" width = "200" align=center />
+  <img src="./pic/scatterplot_mx.png" width = "300" align=center />
 </div>
 
 ### To visualize the gene expression by labels:
