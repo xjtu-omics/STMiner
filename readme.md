@@ -117,10 +117,10 @@ sp.plot.plot_intersection(pattern_list=[0, 1],
 ```
 
 <div  align="center">    
-  <img src="./pic/scatterplot_mx.png" width = "400" align=center />
+  <img src="./pic/scatterplot_mx.png" width = "200" align=center />
 </div>
 
-### To visualize the genes expression by labels:
+### To visualize the gene expression by labels:
 
 ```python
 sp.plot.plot_genes(label=0, vmax=99)
