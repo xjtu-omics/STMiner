@@ -95,6 +95,12 @@ class Plot:
         plt.show()
 
     def get_global_matrix(self, reverse_x, reverse_y, rotate):
+        """
+        @param reverse_x: bool
+        @param reverse_y: bool
+        @param rotate: bool
+        @return: spmatrix
+        """
         adata = self.sp.adata
         expression_data = np.array(adata.X.sum(axis=1)).flatten()
         row_indices = np.array(adata.obs['x'].values).flatten()
@@ -166,7 +172,7 @@ class Plot:
                      rotate=False,
                      reverse_y=False,
                      reverse_x=False,
-                     heatmap=True,
+                     heatmap=False,
                      s=1,
                      image_path=None,
                      rotate_img=False,
