@@ -47,16 +47,22 @@ sp.read_h5ad(file=file_path)
 sp.get_genes_csr_array(min_cells=500, log1p=False)
 sp.spatial_high_variable_genes()
 ```
-| Gene | Distance |
-| --- | --- |
-| geneA | 9998 |
-| geneB | 9994 |
-| geneC | 8724 |
+You can check the distance of each genes by
+
+```python
+sp.global_distance
+```
+| Gene  | Distance |
+| ----- | -------- |
+| geneA | 9998     |
+| geneB | 9994     |
+| ...   | ...      |
+| geneC | 8724     |
 
 ## Preprocess and Fit GMM
 
 ```python
-sp1.fit_pattern(n_comp=20, gene_list=list(sp.global_distance['Gene'][:500]))
+sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:1000]['Gene']))
 ```
 
 Each GMM model has 20 components.
@@ -78,19 +84,19 @@ sp.genes_labels
 
 The output looks like the following:
 
-|    | gene_id        | labels |
-|----|----------------|--------|
-| 0  | Cldn5          | 2      |
-| 1  | Fyco1          | 2      |
-| 2  | Pmepa1         | 2      |
-| 3  | Arhgap5        | 0      |
-| 4  | Apc            | 5      |
-| .. | ...            | ...    |
-| 95 | Cyp2a5         | 0      |
-| 96 | X5730403I07Rik | 0      |
-| 97 | Ltbp2          | 2      |
-| 98 | Rbp4           | 4      |
-| 99 | Hist1h1e       | 4      |
+|     | gene_id        | labels |
+| --- | -------------- | ------ |
+| 0   | Cldn5          | 2      |
+| 1   | Fyco1          | 2      |
+| 2   | Pmepa1         | 2      |
+| 3   | Arhgap5        | 0      |
+| 4   | Apc            | 5      |
+| ..  | ...            | ...    |
+| 95  | Cyp2a5         | 0      |
+| 96  | X5730403I07Rik | 0      |
+| 97  | Ltbp2          | 2      |
+| 98  | Rbp4           | 4      |
+| 99  | Hist1h1e       | 4      |
 
 ### To visualize the patterns:
 
@@ -135,7 +141,7 @@ sp.plot.plot_genes(label=0, vmax=99)
 ## Attribute of STMiner Object
 
 | Attribute            | Type         | Description                        |
-|----------------------|--------------|------------------------------------|
+| -------------------- | ------------ | ---------------------------------- |
 | adata                | Anndata      | Anndata for loaded spatial data    |
 | genes_patterns       | dict         | GMM model for each gene            |
 | genes_distance_array | pd.DataFrame | Distance between each GMM          |
