@@ -46,8 +46,12 @@ sp.read_h5ad(file=file_path)
 ```python
 sp.get_genes_csr_array(min_cells=500, log1p=False)
 sp.spatial_high_variable_genes()
-
 ```
+| Gene | Distance |
+| --- | --- |
+| geneA | 9998 |
+| geneB | 9994 |
+| geneC | 8724 |
 
 ## Preprocess and Fit GMM
 
