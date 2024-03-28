@@ -47,13 +47,15 @@ sp.read_h5ad(file=file_path)
 sp.get_genes_csr_array(min_cells=500, log1p=False)
 sp.spatial_high_variable_genes()
 ```
+
 You can check the distance of each genes by
 
 ```python
 sp.global_distance
 ```
+
 | Gene  | Distance |
-| ----- | -------- |
+|-------|----------|
 | geneA | 9998     |
 | geneB | 9994     |
 | ...   | ...      |
@@ -84,19 +86,19 @@ sp.genes_labels
 
 The output looks like the following:
 
-|     | gene_id        | labels |
-| --- | -------------- | ------ |
-| 0   | Cldn5          | 2      |
-| 1   | Fyco1          | 2      |
-| 2   | Pmepa1         | 2      |
-| 3   | Arhgap5        | 0      |
-| 4   | Apc            | 5      |
-| ..  | ...            | ...    |
-| 95  | Cyp2a5         | 0      |
-| 96  | X5730403I07Rik | 0      |
-| 97  | Ltbp2          | 2      |
-| 98  | Rbp4           | 4      |
-| 99  | Hist1h1e       | 4      |
+|    | gene_id        | labels |
+|----|----------------|--------|
+| 0  | Cldn5          | 2      |
+| 1  | Fyco1          | 2      |
+| 2  | Pmepa1         | 2      |
+| 3  | Arhgap5        | 0      |
+| 4  | Apc            | 5      |
+| .. | ...            | ...    |
+| 95 | Cyp2a5         | 0      |
+| 96 | X5730403I07Rik | 0      |
+| 97 | Ltbp2          | 2      |
+| 98 | Rbp4           | 4      |
+| 99 | Hist1h1e       | 4      |
 
 ### To visualize the patterns:
 
@@ -117,8 +119,8 @@ sp.plot.plot_pattern(vmax=99,
   <img src="./pic/scatterplot.png" width = "600" align=center />
 </div>
 
-
 ### Visualize the intersections between patterns 3 & 1:
+
 ```python
 sp.plot.plot_intersection(pattern_list=[0, 1],
                           image_path='E://OneDrive - stu.xjtu.edu.cn/paper/cut_img.png',
@@ -140,11 +142,13 @@ sp.plot.plot_genes(label=0, vmax=99)
 
 ## Attribute of STMiner Object
 
-| Attribute            | Type         | Description                        |
-| -------------------- | ------------ | ---------------------------------- |
-| adata                | Anndata      | Anndata for loaded spatial data    |
-| genes_patterns       | dict         | GMM model for each gene            |
-| genes_distance_array | pd.DataFrame | Distance between each GMM          |
-| genes_labels         | pd.DataFrame | Gene name and their pattern labels |
-| kmeans_fit_result    | obj          | Result of k-means                  |
-| mds_features         | pd.DataFrame | embedding features after MDS       |
+| Attribute            | Type         | Description                             |
+|----------------------|--------------|-----------------------------------------|
+| adata                | Anndata      | Anndata for loaded spatial data         |
+| global_distance      | pd.DataFrame | OT distance between gene and background |
+| genes_labels         | pd.DataFrame | Gene name and their pattern labels      |
+| genes_patterns       | dict         | GMM model for each gene                 |
+| genes_distance_array | pd.DataFrame | Distance between each GMM               |
+| kmeans_fit_result    | obj          | Result of k-means                       |
+| mds_features         | pd.DataFrame | embedding features after MDS            |
+
