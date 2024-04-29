@@ -1,12 +1,20 @@
 from setuptools import setup, find_packages
+from os import path
+
+
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='STMiner',
-    version='1.0.0',
+    version='1.0.2',
     author='Peisen Sun',
     url='https://github.com/PSSUN/STMiner',
     license='MIT License',
     description='Python package for spatial transcriptomics data analysis',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     author_email='sunpeisen@stu.xjtu.edu.cn',
     packages=find_packages(),
     platforms=['Linux', 'Mac', 'Windows'],
