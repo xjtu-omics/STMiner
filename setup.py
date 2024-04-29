@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='STMiner',
-    version='1.0.2',
+    version='0.0.0',
     author='Peisen Sun',
     url='https://github.com/PSSUN/STMiner',
     license='MIT License',
