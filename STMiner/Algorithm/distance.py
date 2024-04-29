@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import ot
 from numba import njit
 
 from scipy.sparse import csr_matrix
@@ -9,9 +10,6 @@ from tqdm import tqdm
 from STMiner.Algorithm.algorithm import linear_sum
 from STMiner.Utils.utils import issparse
 from STMiner.Algorithm.AlgUtils import get_exp_array
-
-import ot
-import networkx as nx
 
 
 def distribution_distance(first_gmm, second_gmm):
