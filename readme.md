@@ -140,7 +140,7 @@ sp.plot.plot_intersection(pattern_list=[0, 1],
 sp.plot.plot_genes(label=0, vmax=99)
 ```
 
-## Attribute of STMiner Object
+## Attribute of STMiner.SPFinder Object
 
 | Attribute            | Type         | Description                             |
 |----------------------|--------------|-----------------------------------------|
