@@ -1,15 +1,14 @@
 import numpy as np
-import pandas as pd
 import ot
+import pandas as pd
 from numba import njit
-
 from scipy.sparse import csr_matrix
-from scipy.spatial.distance import cdist, cosine
+from scipy.spatial.distance import cosine
 from tqdm import tqdm
 
+from STMiner.Algorithm.AlgUtils import get_exp_array
 from STMiner.Algorithm.algorithm import linear_sum
 from STMiner.Utils.utils import issparse
-from STMiner.Algorithm.AlgUtils import get_exp_array
 
 
 def distribution_distance(first_gmm, second_gmm):

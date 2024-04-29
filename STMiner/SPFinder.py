@@ -1,21 +1,20 @@
+import multiprocessing
 from collections import Counter
 from typing import Optional
 
 import scanpy as sc
 from anndata import AnnData
 
+from STMiner.Algorithm.AlgUtils import get_exp_array
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
-from STMiner.Algorithm.AlgUtils import get_exp_array
+from STMiner.Algorithm.distance import compare_gmm_distance
+from STMiner.Algorithm.distribution import get_gmm
 from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
-from STMiner.CustomApp.App import App
 from STMiner.IO.IOUtil import merge_bin_coordinate
 from STMiner.IO.read_h5ad import read_h5ad
 from STMiner.IO.read_stereo import read_gem_file
 from STMiner.Plot import Plot
-from STMiner.Algorithm.distance import compare_gmm_distance
-from STMiner.Algorithm.distribution import get_gmm
-import multiprocessing
 
 
 def scale_array(exp_matrix, total_count):
