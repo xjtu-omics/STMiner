@@ -17,7 +17,6 @@ setup(
               'Spatial transcriptomics'],
     install_requires=['anndata==0.10.7',
                       'bioservices==1.11.2',
-                      'hotspot==0.0.2',
                       'matplotlib==3.7.2',
                       'networkx==3.1',
                       'numba==0.57.0',
