@@ -5,7 +5,6 @@ from typing import Optional
 import scanpy as sc
 from anndata import AnnData
 
-from STMiner.Algorithm.AlgUtils import get_exp_array
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
 from STMiner.Algorithm.distance import compare_gmm_distance

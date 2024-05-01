@@ -91,7 +91,7 @@ class Plot:
                 save_path += '/'
             save_path += gene
             save_path += '.' + format
-            fig.savefig(fname=save_path, dpi=dpi, format=format,bbox_inches='tight')
+            fig.savefig(fname=save_path, dpi=dpi, format=format, bbox_inches='tight')
         plt.show()
 
     def get_global_matrix(self, reverse_x, reverse_y, rotate):
