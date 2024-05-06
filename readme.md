@@ -4,6 +4,7 @@
 ![Static Badge](https://img.shields.io/badge/Linux-blue?logo=Linux&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/Windows-blue?logo=Windows&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/macos-blue?logo=apple&logoColor=white)
+[![Documentation Status](https://readthedocs.org/projects/stminerdoc/badge/?version=latest)](https://stminerdoc.readthedocs.io/en/latest/?badge=latest) 
 
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
 
