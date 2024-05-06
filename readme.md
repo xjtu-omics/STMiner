@@ -9,9 +9,7 @@
 
 # Introduction
 
-Spatial transcriptomics revolutionizes transcriptomics by incorporating positional information. However, an emergency
-problem is to find out the gene expression pattern which can reveal the special region in tissue and find out the genes
-only expression in those regions.
+Spatial transcriptomics revolutionizes transcriptomics by incorporating positional information. However, an emergency task is to find out the gene expression pattern which can reveal the special region in tissue and find out the genes only expression in those regions.
 
 ![STMiner](./pic/fig1.png)
 
@@ -20,10 +18,10 @@ algorithm. It is initiated by fitting a parametric model of gene spatial distrib
 between them utilizing the Hellinger distance. Genes are clustered, thereby recognizing spatial co-expression patterns
 across distinct gene classes.
 
-**Please visit STMiner [Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for
-details.**
+
 
 # Quick start by example
+**Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for installation and detail usage.**
 
 ## import package
 
