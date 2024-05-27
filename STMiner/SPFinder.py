@@ -113,8 +113,25 @@ class SPFinder:
                 print(e)
 
     def spatial_high_variable_genes(self, vmax=99, thread=1):
+        """
+        Compute the optimal transport (OT) distance matrix for high variable genes.
+
+        :param vmax: The percentile threshold to clip data values.
+        :type vmax: int, default 99
+        :param thread: Number of threads to use for parallel processing. If <= 1, single-threaded execution is used.
+        :type thread: int, default 1
+
+        This function first ensures that `csr_dict` is populated. It then creates a global matrix using the sum of
+        expression values across cells and computes OT distances between this matrix and each gene's CSR matrix from `csr_dict`.
+
+        The resulting OT distances are stored in a DataFrame sorted by increasing distance,
+        with genes and their corresponding distances as columns.
+
+        Note: Exceptions during calculation are logged with the gene key and error message.
+        """
         if len(self.csr_dict) == 0:
             self.get_genes_csr_array(min_cells=1000, vmax=vmax, normalize=True)
+        # Process data and create global sparse matrix
         data = np.array(self.adata.X.sum(axis=1)).flatten()
         data[data > np.percentile(data, vmax)] = np.percentile(data, vmax)
         row_indices = np.array(self.adata.obs['x'].values).flatten()
