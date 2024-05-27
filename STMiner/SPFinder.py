@@ -17,23 +17,9 @@ from STMiner.Plot import Plot
 
 
 def scale_array(exp_matrix, total_count):
-    """
-    Scales the given matrix so that the sum of its elements equals 100 and adds the scaled matrix to the total count.
-
-    Args:
-    exp_matrix: numpy array, representing the matrix to be scaled.
-    total_count: numpy array, representing the cumulative sum of the scaled matrices.
-
-    Returns:
-    total_count: The updated cumulative sum after adding the scaled matrix.
-    """
-    # Calculate the sum of all elements in the matrix
     total_sum = np.sum(exp_matrix)
-    # Compute the scaling factor to make the sum of matrix elements equal to 100
     scale_factor = 100 / total_sum
-    # Apply the scaling factor to the matrix
     scaled_matrix = exp_matrix * scale_factor
-    # Add the scaled matrix to the total count
     total_count += scaled_matrix
     return total_count
 
@@ -93,12 +79,7 @@ class SPFinder:
         gene_gmm = self.patterns[gene_name]
         return compare_gmm_distance(gene_gmm, self.patterns)
 
-    def get_genes_csr_array(self,
-                            min_cells,
-                            normalize=True,
-                            exclude_highly_expressed=False,
-                            log1p=False,
-                            vmax=99,
+    def get_genes_csr_array(self, min_cells, normalize=True, exclude_highly_expressed=False, log1p=False, vmax=99,
                             gene_list=None):
         error_gene_list = []
         self.csr_dict = {}
@@ -225,25 +206,8 @@ class SPFinder:
             sc.pp.log1p(self.adata)
 
     def build_distance_array(self, method='gmm', gene_list=None):
-        """
-        Constructs a distance array between genes using the specified method.
-
-        Args:
-
-        1. method (str, optional): The method used to calculate distances. Defaults to 'gmm'.
-            - 'gmm': Gaussian Mixture Model distance
-            - 'mse': Mean Squared Error distance
-            - 'cs': Cosine Similarity
-            - 'ot': Optimal Transport distance
-        2. gene_list (list, optional): A list of gene names to consider. If None, uses all genes in `self.adata.var.index`. Defaults to None.
-
-        Attributes:
-        self.genes_distance_array (numpy array): The constructed distance array based on the chosen method.
-
-        """
         if gene_list is None:
             gene_list = list(self.adata.var.index)
-
         if method == 'gmm':
             self.genes_distance_array = build_gmm_distance_array(self.patterns)
         elif method == 'mse':
@@ -252,60 +216,28 @@ class SPFinder:
             self.genes_distance_array = build_cosine_similarity_array(self.adata, gene_list)
         elif method == 'ot':
             self.genes_distance_array = build_ot_distance_array(self.csr_dict, gene_list)
-        else:
-            raise ValueError(f"Unsupported method '{method}'. Available methods: 'gmm', 'mse', 'cs', 'ot'")
 
     def get_pattern_array(self, vote_rate=0.2):
-        """
-        Generates pattern arrays by aggregating expression data based on gene labels, applying a voting scheme,
-        and converting to array.
-
-        Args:
-
-        - vote_rate (float, optional): The minimum proportion of genes that must express at a position for it to be considered significant. Defaults to 0.2.
-
-        Attributes Updated:
-
-        - self.patterns_binary_matrix_dict: A dictionary where keys are gene labels and values are binary matrices representing patterns.
-        - self.patterns_matrix_dict: A dictionary similar to `patterns_binary_matrix_dict`, but with non-binary aggregated expression.
-
-        Procedure:
-
-        1. Initializes empty dictionaries for storing pattern matrices.
-        2. Iterates over unique gene labels.
-        3. For each label, collects gene IDs and their expression matrices.
-        4. Aggregates expression counts across genes, also tracking positions with non-zero expression.
-        5. Applies a voting mechanism to determine significant expression positions based on `vote_rate`.
-        6. Converts the scaled aggregate matrix to a binary form based on presence of expression.
-        7. Stores the resulting matrices in respective dictionaries.
-        """
         self.patterns_binary_matrix_dict = {}
         label_list = set(self.genes_labels['labels'])
-
         for label in label_list:
             gene_list = list(self.genes_labels[self.genes_labels['labels'] == label]['gene_id'])
             total_count = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
-            total_coo_list = []  # List to collect coordinates of non-zero elements
+            total_coo_list = []
             vote_array = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
-
             for gene in gene_list:
                 exp_matrix = get_exp_array(self.adata, gene)
-                # Get non-zero element coordinates
-                non_zero_coo_list = np.vstack(np.nonzero(exp_matrix)).T.tolist()
-                # Collect all non-zero element coordinates
-                total_coo_list.extend(non_zero_coo_list)
-                # Scale and accumulate expression
+                # calculate nonzero index
+                non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
+                for coo in non_zero_coo_list:
+                    total_coo_list.append(tuple(coo))
                 total_count = scale_array(exp_matrix, total_count)
-
-            # Count occurrences of each coordinate and apply voting threshold
             count_dict = Counter(total_coo_list)
             for ele, count in count_dict.items():
                 if int(count) / len(gene_list) >= vote_rate:
-                    vote_array[tuple(ele)] = 1
-
-            # Apply voting mask, convert to binary, and store results
-            total_count *= vote_array
-            binary_arr = np.where(total_count != 0, 1, 0)  # Convert to binary
+                    vote_array[ele] = 1
+            total_count = total_count * vote_array
+            binary_arr = np.where(total_count != 0, 1, total_count)
             self.patterns_matrix_dict[label] = total_count
             self.patterns_binary_matrix_dict[label] = binary_arr
 
