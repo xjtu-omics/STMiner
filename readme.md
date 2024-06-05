@@ -16,6 +16,7 @@ ST data presents challenges such as uneven cell density distribution, low sampli
 ![why](./pic/why.png)
 
 <br>
+
 ## Method detail
 Here we propose “**STMiner**”. The three key steps of analyzing ST data in STMiner are depicted. 
 
