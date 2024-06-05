@@ -155,3 +155,6 @@ sp.plot.plot_genes(label=0, vmax=99)
 | kmeans_fit_result    | obj          | Result of k-means                       |
 | mds_features         | pd.DataFrame | embedding features after MDS            |
 
+# Contact
+ - Peisen Sun (sunpeisen@stu.xjtu.edu.cn)
+ - Kai Ye (kaiye@xjtu.edu.cn)
