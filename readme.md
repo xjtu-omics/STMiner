@@ -9,8 +9,9 @@
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
 
 # Introduction
-
-Spatial transcriptomics revolutionizes transcriptomics by incorporating positional information. However, an emergency task is to find out the gene expression pattern which can reveal the special region in tissue and find out the genes only expression in those regions.
+Why STMiner?
+![why](./pic/why.png)
+ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.
 
 ![STMiner](./pic/fig1.png)
 
