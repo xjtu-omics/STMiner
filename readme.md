@@ -10,15 +10,14 @@
 
 # Introduction
 Why STMiner?
+
 ![why](./pic/why.png)
+
 ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.
 
 ![STMiner](./pic/fig1.png)
 
-Here we propose “STMiner” based on the Gaussian mixture model to solve this problem. STMiner is a bottom-up methodology
-algorithm. It is initiated by fitting a parametric model of gene spatial distributions and constructing a distance array
-between them utilizing the Hellinger distance. Genes are clustered, thereby recognizing spatial co-expression patterns
-across distinct gene classes.
+Here we propose “STMiner”. The three key steps of analyzing ST data in STMiner are depicted. (Left top) STMiner first utilizes Gaussian Mixture Models (GMMs) to represent the spatial distribution of each gene and the overall spatial distribution. (Left bottom) STMiner then identifies spatially variable genes by calculating the cost that transfers the overall spatial distribution to gene spatial distribution. Genes with high costs exhibit significant spatial variation, meaning their expression patterns differ considerably across different regions of the tissue. The distance array is built between SVGs in the same way, genes with similar spatial structures have a low cost to transport to each other, and vice versa. (Right) The distance array is embedded into a low-dimensional space by Multidimensional Scaling, allowing for clustering genes with similar spatial expression patterns into distinct functional gene sets and getting their spatial structure. 
 
 
 
