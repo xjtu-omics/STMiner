@@ -9,15 +9,19 @@
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
 
 # Introduction
-Why STMiner?
-
-![why](./pic/why.png)
+## Why STMiner?
 
 ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.
 
+![why](./pic/why.png)
+
+<br>
+## Method detail
+Here we propose “**STMiner**”. The three key steps of analyzing ST data in STMiner are depicted. 
+
 ![STMiner](./pic/fig1.png)
 
-Here we propose “STMiner”. The three key steps of analyzing ST data in STMiner are depicted. (Left top) STMiner first utilizes Gaussian Mixture Models (GMMs) to represent the spatial distribution of each gene and the overall spatial distribution. (Left bottom) STMiner then identifies spatially variable genes by calculating the cost that transfers the overall spatial distribution to gene spatial distribution. Genes with high costs exhibit significant spatial variation, meaning their expression patterns differ considerably across different regions of the tissue. The distance array is built between SVGs in the same way, genes with similar spatial structures have a low cost to transport to each other, and vice versa. (Right) The distance array is embedded into a low-dimensional space by Multidimensional Scaling, allowing for clustering genes with similar spatial expression patterns into distinct functional gene sets and getting their spatial structure. 
+(**Left top**) STMiner first utilizes Gaussian Mixture Models (GMMs) to represent the spatial distribution of each gene and the overall spatial distribution. (**Left bottom**) STMiner then identifies spatially variable genes by calculating the cost that transfers the overall spatial distribution to gene spatial distribution. Genes with high costs exhibit significant spatial variation, meaning their expression patterns differ considerably across different regions of the tissue. The distance array is built between SVGs in the same way, genes with similar spatial structures have a low cost to transport to each other, and vice versa. (**Right**) The distance array is embedded into a low-dimensional space by Multidimensional Scaling, allowing for clustering genes with similar spatial expression patterns into distinct functional gene sets and getting their spatial structure. 
 
 
 
@@ -47,7 +51,7 @@ sp.get_genes_csr_array(min_cells=500, log1p=False)
 sp.spatial_high_variable_genes()
 ```
 
-You can check the distance of each genes by
+You can check the distance of each gene by
 
 ```python
 sp.global_distance
