@@ -41,7 +41,7 @@ You can download test data [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi
 
 ```python
 sp = SPFinder()
-file_path = 'D://10X_Visium_hunter2021spatially_sample_C_data.h5ad'
+file_path = 'Path/to/your/h5ad/file'
 sp.read_h5ad(file=file_path)
 ```
 
