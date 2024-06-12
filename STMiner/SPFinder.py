@@ -105,7 +105,8 @@ class SPFinder:
             except AttributeError as e:
                 data = np.array(gene_adata.X).flatten()
             try:
-                data[data > np.percentile(data, vmax)] = np.percentile(data, vmax)
+                if np.percentile(data, vmax) > 0:
+                    data[data > np.percentile(data, vmax)] = np.percentile(data, vmax)
                 gene_csr = csr_matrix((data, (row_indices, column_indices)))
                 self.csr_dict[gene] = gene_csr
             except Exception as e:
