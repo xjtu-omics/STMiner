@@ -13,6 +13,7 @@ from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_imag
 from STMiner.IO.IOUtil import merge_bin_coordinate
 from STMiner.IO.read_h5ad import read_h5ad
 from STMiner.IO.read_stereo import read_gem_file
+from STMiner.IO.read_bmk import read_bmk
 from STMiner.Plot import Plot
 
 
@@ -53,6 +54,9 @@ class SPFinder:
 
     def read_h5ad(self, file, amplification=1, bin_size=1):
         self.set_adata(read_h5ad(file, amplification=amplification, bin_size=bin_size))
+
+    def read_bmk_dir(self, file, bin_size=1):
+        self.set_adata(read_bmk(file, bin_size=bin_size))
 
     def read_gem(self, file, bin_size=40):
         self.set_adata(read_gem_file(file, bin_size=bin_size))
