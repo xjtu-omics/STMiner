@@ -161,7 +161,7 @@ class SPFinder:
                 pool.apply_async(self._mpl_worker, args=(global_matrix, self.csr_dict[key], result_dict))
             pool.close()
             pool.join()
-            self.global_distance = pd.Dataframe(dict(result_dict)).T
+            self.global_distance = pd.DataFrame(dict(result_dict)).T
 
     def _mpl_worker(self, global_matrix, key, result_dict):
         result_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
