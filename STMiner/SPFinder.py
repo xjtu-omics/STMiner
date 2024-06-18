@@ -158,13 +158,14 @@ class SPFinder:
             result_dict = multiprocessing.Manager().dict()
             pool = multiprocessing.Pool(processes=thread)
             for key in tqdm(list(self.csr_dict.keys())):
-                pool.apply_async(self._mpl_worker, args=(global_matrix, self.csr_dict[key], result_dict))
+                pool.apply_async(self._mpl_worker, args=(global_matrix, key, result_dict))
             pool.close()
             pool.join()
-            self.global_distance = pd.DataFrame(dict(result_dict)).T
+            self.global_distance = pd.DataFrame(dict(result_dict), index=[0]).T
 
     def _mpl_worker(self, global_matrix, key, result_dict):
-        result_dict[key] = calculate_ot_distance(global_matrix, self.csr_dict[key])
+        res = calculate_ot_distance(global_matrix, self.csr_dict[key])
+        result_dict[key] = res
 
     def fit_pattern(self,
                     n_top_genes=-1,
