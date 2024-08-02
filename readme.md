@@ -118,17 +118,18 @@ sns.clustermap(sp.genes_distance_array)
 ```
 <div align=center><img src="./pic/heatmap.png" height = "500"/></div>
 
-
 ### To visualize the patterns:
+Note: To better visualization, images need cutting border of the original dataset. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
 
 ```python
 sp.get_pattern_array(vote_rate=0.3)
+img_path = 'path/to/downloaded/image'
 sp.plot.plot_pattern(vmax=99,
                      heatmap=False,
                      s=5,
                      reverse_y=True,
                      reverse_x=True,
-                     image_path='E://cut_img.png',
+                     image_path=img_path,
                      rotate_img=True,
                      k=4,
                      aspect=0.55)
@@ -142,7 +143,7 @@ sp.plot.plot_pattern(vmax=99,
 
 ```python
 sp.plot.plot_intersection(pattern_list=[0, 1],
-                          image_path='E://OneDrive - stu.xjtu.edu.cn/paper/cut_img.png',
+                          image_path=img_path,
                           reverse_y=True,
                           reverse_x=True,
                           aspect=0.55,
