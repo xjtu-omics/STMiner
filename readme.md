@@ -104,6 +104,15 @@ The output looks like the following:
 | 98 | Rbp4           | 4      |
 | 99 | Hist1h1e       | 4      |
 
+### Visualize the distance array:
+
+```python
+import seaborn as sns
+sns.clustermap(sp.genes_distance_array)
+```
+<div align=center><img src="./pic/heatmap.png" height = "500"/></div>
+
+
 ### To visualize the patterns:
 
 ```python
