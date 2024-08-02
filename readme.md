@@ -46,7 +46,7 @@ file_path = 'Path/to/your/h5ad/file'
 sp.read_h5ad(file=file_path, bin_size=1)
 
 ```
-This parameter specifies the size of merged cells (spots). If not specified, no merging is performed. If set to 50, 50x50 cells/spots will be merged into a single cell/spot. Due to low sequencing depth in some datasets, cells/spots are often merged during analysis (e.g., stereo-seq). However, 10x data typically does not require merging.
+The parameter **bin_size** specifies the size of merged cells (spots). If not specified, no merging is performed. If set to 50, 50x50 cells/spots will be merged into a single cell/spot. Due to low sequencing depth in some datasets, cells/spots are often merged during analysis (e.g., stereo-seq). However, 10x data typically does not require merging.
 
 ## Find spatial high variable genes
 
@@ -55,7 +55,7 @@ sp.get_genes_csr_array(min_cells=500, log1p=False)
 sp.spatial_high_variable_genes()
 ```
 
-You can check the distance of each gene by
+You can check the distance of each gene by:
 
 ```python
 sp.global_distance
@@ -68,13 +68,16 @@ sp.global_distance
 | ...   | ...      |
 | geneC | 8724     |
 
+The first column is the gene name, and the second column is the difference between the spatial distribution of the gene and the background.</br>
+A larger difference indicates a more pronounced spatial pattern of the gene.
+
 ## Preprocess and Fit GMM
 
 ```python
 sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:1000]['Gene']))
 ```
 
-Each GMM model has 20 components.
+**n_comp=20** means each GMM model has 20 components.
 
 ## Build distance matrix & clustering
 
@@ -156,7 +159,7 @@ sp.plot.plot_intersection(pattern_list=[0, 1],
 sp.plot.plot_genes(label=0, vmax=99)
 ```
 
-## Attribute of STMiner.SPFinder Object
+## Attributes of STMiner.SPFinder Object
 
 | Attribute            | Type         | Description                             |
 |----------------------|--------------|-----------------------------------------|
