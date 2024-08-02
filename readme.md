@@ -37,13 +37,16 @@ from STMiner import SPFinder
 
 ## Load data
 
-You can download test data [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133).
+You can download the demo dataset from [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133), or you can also download them from [STMOMICS](https://db.cngb.org/stomics/datasets/STDS0000086).
+STMiner can read spatial transcriptome data in various formats, such as **gem**, **bmk**, and **h5ad** (see [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html)). We recommend using the **h5ad** format, as it is currently the most widely used and supported by most algorithms and software in the spatial transcriptomics field.
 
 ```python
 sp = SPFinder()
 file_path = 'Path/to/your/h5ad/file'
-sp.read_h5ad(file=file_path)
+sp.read_h5ad(file=file_path, bin_size=1)
+
 ```
+This parameter specifies the size of merged cells (spots). If not specified, no merging is performed. If set to 50, 50x50 cells/spots will be merged into a single cell/spot. Due to low sequencing depth in some datasets, cells/spots are often merged during analysis (e.g., stereo-seq). However, 10x data typically does not require merging.
 
 ## Find spatial high variable genes
 
