@@ -16,3 +16,6 @@
 *.ipynb
 *.pdf
 *.ai
+*.h5ad
+*.xlsx
+*.svg
