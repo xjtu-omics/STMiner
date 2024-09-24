@@ -7,9 +7,9 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='STMiner',
-    version='0.0.0',
+    version='0.0.3',
     author='Peisen Sun',
-    url='https://github.com/PSSUN/STMiner',
+    url='https://github.com/xjtu-omics/STMiner',
     license='MIT License',
     description='Python package for spatial transcriptomics data analysis',
     long_description=long_description,
@@ -20,7 +20,7 @@ setup(
     keywords=['STMiner',
               'bioinformatics',
               'GMM',
-              'hellinger distance',
+              'Hellinger distance',
               'Spatial transcriptomics'],
     install_requires=['anndata==0.10.7',
                       'bioservices==1.11.2',
