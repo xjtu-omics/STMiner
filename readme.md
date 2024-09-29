@@ -82,8 +82,8 @@ sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:1000]['Gene']))
 ## Build distance matrix & clustering
 
 ```python
-sp.build_distance_array()
-sp.cluster_gene(n_clusters=6, mds_components=20)
+sp.build_distance_array() # This step calculates the distance between genes' spatial distributions.
+sp.cluster_gene(n_clusters=6, mds_components=20) # Dimensionality reduction and clustering.
 ```
 
 ## Result & Visualization
@@ -119,7 +119,7 @@ sns.clustermap(sp.genes_distance_array)
 <div align=center><img src="./pic/heatmap.png" height = "500"/></div>
 
 ### To visualize the patterns:
-Note: To better visualization, images need cutting border of the original dataset. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
+Note: A cutting border of the original dataset is needed to better visualize images. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
 
 ```python
 sp.get_pattern_array(vote_rate=0.3)
