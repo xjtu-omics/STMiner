@@ -82,8 +82,10 @@ sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:1000]['Gene']))
 ## Build distance matrix & clustering
 
 ```python
-sp.build_distance_array() # This step calculates the distance between genes' spatial distributions.
-sp.cluster_gene(n_clusters=6, mds_components=20) # Dimensionality reduction and clustering.
+# This step calculates the distance between genes' spatial distributions.
+sp.build_distance_array()
+# Dimensionality reduction and clustering.
+sp.cluster_gene(n_clusters=6, mds_components=20) 
 ```
 
 ## Result & Visualization
