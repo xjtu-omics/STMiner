@@ -47,7 +47,9 @@ file_path = 'Path/to/your/h5ad/file'
 sp.read_h5ad(file=file_path, bin_size=1)
 
 ```
-The parameter **bin_size** specifies the size of merged cells (spots). If not specified, no merging is performed. If set to 50, 50x50 cells/spots will be merged into a single cell/spot. Due to low sequencing depth in some datasets, cells/spots are often merged during analysis (e.g., stereo-seq). However, 10x data typically does not require merging.
+ - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
+ - The parameter **log1p** was used to avoid extreme values affecting the results. For most open-source h5ad files, log1p has already been executed, so the default value here is False.
+ - You can perform STMiner in your interested gene sets. Use parameter **gene_list** to input the gene list to STMiner. Then, STMiner will only calculate the given gene set of the dataset.
 
 ## Find spatial high variable genes
 
