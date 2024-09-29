@@ -118,7 +118,7 @@ The output looks like the following:
 import seaborn as sns
 sns.clustermap(sp.genes_distance_array)
 ```
-<div align=center><img src="./pic/heatmap.png" height = "500"/></div>
+<div align=center><img src="./pic/heatmap.png" width = "320"/></div>
 
 ### To visualize the patterns:
 Note: A cutting border of the original dataset is needed to better visualize images. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
