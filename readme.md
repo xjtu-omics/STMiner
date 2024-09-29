@@ -167,15 +167,16 @@ sp.plot.plot_genes(label=0, vmax=99)
 
 ## Attributes of STMiner.SPFinder Object
 
-| Attribute            | Type         | Description                             |
-|----------------------|--------------|-----------------------------------------|
-| adata                | Anndata      | Anndata for loaded spatial data         |
-| global_distance      | pd.DataFrame | OT distance between gene and background |
-| genes_labels         | pd.DataFrame | Gene name and their pattern labels      |
-| genes_patterns       | dict         | GMM model for each gene                 |
-| genes_distance_array | pd.DataFrame | Distance between each GMM               |
-| kmeans_fit_result    | obj          | Result of k-means                       |
-| mds_features         | pd.DataFrame | embedding features after MDS            |
+| Attributes           | Type          | Description                            |
+| -------------------- | ------------- | -------------------------------------- |
+| adata                | Anndata       | Anndata for loaded spatial data        |
+| patterns             | dict          | Spatial distributions pattern of genes |
+| genes_patterns       | dict          | GMM model for each gene                |
+| global_distance      | pd. DataFrame | Distances between genes and background |
+| mds_features         | array         | embedding features of genes            |
+| genes_distance_array | pd. DataFrame | Distance between each GMM              |
+| genes_labels         | pd. DataFrame | Gene name and their pattern labels     |
+| plot                 | Object        | Call plot to visualization             |
 
 # Contact
  - Peisen Sun (sunpeisen@stu.xjtu.edu.cn)
