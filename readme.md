@@ -181,3 +181,5 @@ sp.plot.plot_genes(label=0, vmax=99)
 # Contact
  - Peisen Sun (sunpeisen@stu.xjtu.edu.cn)
  - Kai Ye (kaiye@xjtu.edu.cn)
+
+<img src="https://raw.githubusercontent.com/trinib/trinib/82213791fa9ff58d3ca768ddd6de2489ec23ffca/images/footer.svg" width="100%">
