@@ -64,12 +64,12 @@ You can check the distance of each gene by:
 sp.global_distance
 ```
 
-| Gene  | Distance |
-|-------|----------|
-| geneA | 9998     |
-| geneB | 9994     |
-| ...   | ...      |
-| geneC | 8724     |
+| Gene  | Distance | z-score |
+| ----- | -------- | ------- |
+| geneA | 9998     | 5.5     |
+| geneB | 9994     | 5.4     |
+| ...   | ...      | 5.3     |
+| geneC | 8724     | 5.2     |
 
 The first column is the gene name, and the second column is the difference between the spatial distribution of the gene and the background.</br>
 A larger difference indicates a more pronounced spatial pattern of the gene.
@@ -101,19 +101,19 @@ sp.genes_labels
 
 The output looks like the following:
 
-|    | gene_id        | labels |
-|----|----------------|--------|
-| 0  | Cldn5          | 2      |
-| 1  | Fyco1          | 2      |
-| 2  | Pmepa1         | 2      |
-| 3  | Arhgap5        | 0      |
-| 4  | Apc            | 5      |
-| .. | ...            | ...    |
-| 95 | Cyp2a5         | 0      |
-| 96 | X5730403I07Rik | 0      |
-| 97 | Ltbp2          | 2      |
-| 98 | Rbp4           | 4      |
-| 99 | Hist1h1e       | 4      |
+|     | gene_id        | labels |
+| --- | -------------- | ------ |
+| 0   | Cldn5          | 2      |
+| 1   | Fyco1          | 2      |
+| 2   | Pmepa1         | 2      |
+| 3   | Arhgap5        | 0      |
+| 4   | Apc            | 5      |
+| ..  | ...            | ...    |
+| 95  | Cyp2a5         | 0      |
+| 96  | X5730403I07Rik | 0      |
+| 97  | Ltbp2          | 2      |
+| 98  | Rbp4           | 4      |
+| 99  | Hist1h1e       | 4      |
 
 ### Visualize the distance array:
 
