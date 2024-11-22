@@ -155,7 +155,10 @@ class SPFinder:
             self.global_distance = pd.DataFrame(list(distance_dict.items()),
                                                 columns=['Gene', 'Distance']).sort_values(by='Distance',
                                                                                           ascending=False)
-            self.global_distance['z-score'] = zscore(np.log1p(self.global_distance['Distance']))                                                        
+            # Calculating the z-score for the log-transformed values of the
+            # 'Distance' column in the 'global_distance' DataFrame using the zscore function from the
+            # scipy.stats library.
+            self.global_distance['z-score'] = zscore(np.log1p(self.global_distance['Distance']))
         else:
             result_dict = multiprocessing.Manager().dict()
             pool = multiprocessing.Pool(processes=thread)
