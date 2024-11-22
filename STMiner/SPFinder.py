@@ -1,10 +1,11 @@
-import multiprocessing
-from collections import Counter
-from typing import Optional
-
 import scanpy as sc
-from anndata import AnnData
+import numpy as np
+import multiprocessing
 
+from typing import Optional
+from anndata import AnnData
+from scipy.stats import zscore
+from collections import Counter
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
 from STMiner.Algorithm.distance import compare_gmm_distance
@@ -154,6 +155,7 @@ class SPFinder:
             self.global_distance = pd.DataFrame(list(distance_dict.items()),
                                                 columns=['Gene', 'Distance']).sort_values(by='Distance',
                                                                                           ascending=False)
+            self.global_distance['z-score'] = zscore(np.log1p(self.global_distance['Distance']))                                                        
         else:
             result_dict = multiprocessing.Manager().dict()
             pool = multiprocessing.Pool(processes=thread)
@@ -162,6 +164,7 @@ class SPFinder:
             pool.close()
             pool.join()
             self.global_distance = pd.DataFrame(dict(result_dict), index=[0]).T
+            self.global_distance['z-score'] = zscore(np.log1p(self.global_distance['Distance']))
 
     def _mpl_worker(self, global_matrix, key, result_dict):
         res = calculate_ot_distance(global_matrix, self.csr_dict[key])
