@@ -279,7 +279,7 @@ class SPFinder:
                 self.csr_dict, gene_list
             )
 
-    def get_pattern_array(self, vote_rate=0.2):
+    def get_pattern_array(self, vote_rate=0):
         self.patterns_binary_matrix_dict = {}
         label_list = set(self.genes_labels["labels"])
         for label in label_list:
