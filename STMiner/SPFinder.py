@@ -311,7 +311,6 @@ class SPFinder:
         mds_components=20,
         use_highly_variable_gene=False,
         n_top_genes=500,
-        gene_list=None,
     ):
         # TODO: genes_labels should be int not float
         if use_highly_variable_gene:
