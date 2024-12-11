@@ -178,6 +178,9 @@ sp.plot.plot_genes(label=0, vmax=99)
 | genes_labels         | pd. DataFrame | Gene name and their pattern labels     |
 | plot                 | Object        | Call plot to visualization             |
 
+# Release history
+https://pypi.org/project/STMiner/#history
+
 # Contact
  - Peisen Sun (sunpeisen@stu.xjtu.edu.cn)
  - Kai Ye (kaiye@xjtu.edu.cn)
