@@ -30,21 +30,21 @@ class SPFinder:
     def __init__(self, adata: Optional[AnnData] = None):
         self.adata = None
         self.patterns = None
-        self.patterns_matrix_dict = {}
-        self.patterns_binary_matrix_dict = {}
         self.genes_distance_array = None
         self.filtered_distance_array = None
         self.genes_labels = None
         self.kmeans_fit_result = None
         self.mds_features = None
         self.image_gmm = None
-        self.csr_dict = {}
         self.global_distance = None
         self.all_labels = None
-        self._gene_expression_edge = {}
-        self._highly_variable_genes = []
-        self._scope = ()
+        self.csr_dict = {}
+        self.patterns_matrix_dict = {}
+        self.patterns_binary_matrix_dict = {}
         self.plot = Plot(self)
+        self._highly_variable_genes = []
+        self._gene_expression_edge = {}
+        self._scope = ()
         # self.app = App()
         if adata is not None:
             self.set_adata(adata)
