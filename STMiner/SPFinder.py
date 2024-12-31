@@ -1,20 +1,21 @@
-import scanpy as sc
-import numpy as np
 import multiprocessing
-
+from collections import Counter
 from typing import Optional
+
+import numpy as np
+import scanpy as sc
 from anndata import AnnData
 from scipy.stats import zscore
-from collections import Counter
+
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
 from STMiner.Algorithm.distance import compare_gmm_distance
 from STMiner.Algorithm.distribution import get_gmm
 from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
 from STMiner.IO.IOUtil import merge_bin_coordinate
+from STMiner.IO.read_bmk import read_bmk
 from STMiner.IO.read_h5ad import read_h5ad
 from STMiner.IO.read_stereo import read_gem_file
-from STMiner.IO.read_bmk import read_bmk
 from STMiner.Plot import Plot
 
 
@@ -301,8 +302,8 @@ class SPFinder:
             raise ValueError("Unknown method, method should be one of gmm, mse, cs, ot")
 
     def get_pattern_array(self, vote_rate: int = 0, mode: str = "vote"):
+        self.patterns_binary_matrix_dict = {}
         if mode == "vote":
-            self.patterns_binary_matrix_dict = {}
             label_list = set(self.genes_labels["labels"])
             for label in label_list:
                 gene_list = list(
