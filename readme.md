@@ -182,7 +182,7 @@ sp.plot.plot_genes(label=0, vmax=99)
 https://pypi.org/project/STMiner/#history
 
 # Contact
- - Peisen Sun (sunpeisen@stu.xjtu.edu.cn)
- - Kai Ye (kaiye@xjtu.edu.cn)
+ - Peisen Sun: E-mail(sunpeisen@stu.xjtu.edu.cn) / X(https://x.com/Sun_python)
+ - Kai Ye: E-mail (kaiye@xjtu.edu.cn)
 
 <img src="./pic/footer.svg" width="100%">
