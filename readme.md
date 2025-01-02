@@ -8,7 +8,7 @@
 
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
 
-# Introduction
+# 👩‍🏫 Introduction
 ## Why STMiner?
 
 ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.
@@ -26,7 +26,7 @@ Here we propose “**STMiner**”. The three key steps of analyzing ST data in S
 
 
 
-# Quick start by example
+# 🚀 Quick start by example
 **Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for installation and detail usage.**
 
 ## import package
@@ -176,10 +176,10 @@ sp.plot.plot_genes(label=0, vmax=99)
 | genes_labels         | pd. DataFrame | Gene name and their pattern labels     |
 | plot                 | Object        | Call plot to visualization             |
 
-# Release history
+# 📜 Release history
 https://pypi.org/project/STMiner/#history
 
-# Contact
+# ✉️ Contact
  - Peisen Sun: E-mail(sunpeisen@stu.xjtu.edu.cn) / X(https://x.com/Sun_python)
  - Kai Ye: E-mail (kaiye@xjtu.edu.cn)
 
