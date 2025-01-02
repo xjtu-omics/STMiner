@@ -45,18 +45,16 @@ We recommend using the **h5ad** format, as it is currently the most widely used 
 sp = SPFinder()
 file_path = 'Path/to/your/h5ad/file'
 sp.read_h5ad(file=file_path, bin_size=1)
-
 ```
- - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
- - The parameter **log1p** was used to avoid extreme values affecting the results. For most open-source h5ad files, log1p has already been executed, so the default value here is False.
- - You can perform STMiner in your interested gene sets. Use parameter **gene_list** to input the gene list to STMiner. Then, STMiner will only calculate the given gene set of the dataset.
-
 ## Find spatial high variable genes
 
 ```python
 sp.get_genes_csr_array(min_cells=500, log1p=False)
 sp.spatial_high_variable_genes()
 ```
+ - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
+ - The parameter **log1p** was used to avoid extreme values affecting the results. For most open-source h5ad files, log1p has already been executed, so the default value here is False.
+ - You can perform STMiner in your interested gene sets. Use parameter **gene_list** to input the gene list to STMiner. Then, STMiner will only calculate the given gene set of the dataset.
 
 You can check the distance of each gene by:
 
