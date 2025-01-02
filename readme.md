@@ -119,7 +119,7 @@ The output looks like the following:
 import seaborn as sns
 sns.clustermap(sp.genes_distance_array)
 ```
-<div align=center><img src="./pic/heatmap.png" width = "320"/></div>
+<div align=center><img src="./pic/heatmap.png" width = "400"/></div>
 
 ### To visualize the patterns:
 Note: A cutting border of the original dataset is needed to better visualize images. Anyhow, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
@@ -139,7 +139,7 @@ sp.plot.plot_pattern(vmax=99,
 ```
 
 <div  align="center">    
-  <img src="./pic/scatterplot.png" width = "600" align=center />
+  <img src="./pic/scatterplot.png" width = "400" align=center />
 </div>
 
 ### Visualize the intersections between patterns 3 & 1:
