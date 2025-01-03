@@ -183,4 +183,6 @@ https://pypi.org/project/STMiner/#history
  - Peisen Sun: 📧(sunpeisen@stu.xjtu.edu.cn) / 𝕏(https://x.com/Sun_python)
  - Kai Ye: 📧(kaiye@xjtu.edu.cn)
 
+Please ⭐ STMiner on Github if you find it's useful, thank you!
+  
 <img src="./pic/footer.svg" width="100%">
