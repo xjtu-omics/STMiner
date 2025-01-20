@@ -1,5 +1,5 @@
 ![Static Badge](https://img.shields.io/badge/License-GPL3.0-blue)
-![Static Badge](https://img.shields.io/badge/Active-blue?&label=Status)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/STMiner)
 ![Static Badge](https://img.shields.io/badge/3.10-green?logo=python&label=Python&labelColor=yellow)
 ![Static Badge](https://img.shields.io/badge/Linux-blue?logo=Linux&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/Windows-blue?logo=Windows&logoColor=white)
