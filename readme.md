@@ -184,6 +184,9 @@ sp.plot.plot_genes(label=0, vmax=99)
 # 📜 Release history
 https://pypi.org/project/STMiner/#history
 
+# 🔖 Referance
+[1] 
+
 # ✉️ Contact
  - Peisen Sun: 📧(sunpeisen@stu.xjtu.edu.cn) / 𝕏(https://x.com/Sun_python)
  - Kai Ye: 📧(kaiye@xjtu.edu.cn)
