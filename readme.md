@@ -18,7 +18,7 @@
 
 ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.<br>
 
-Most importantly, STMiner offers seamless integration with anndata/scanpy and can be **easily installed** via pypi.<br>
+Most importantly, STMiner offers seamless integration with [Anndata](https://github.com/scverse/anndata)/[Scanpy](https://github.com/scverse/scanpy) and can be **easily installed** via [PyPI](https://pypi.org/project/STMiner/).<br>
 
 <div align=center><img src="./pic/why.png" height = "500"/></div>
 
@@ -192,6 +192,6 @@ https://pypi.org/project/STMiner/#history
  - Kai Ye: 📧(kaiye@xjtu.edu.cn)
 
 <br>
-Please ⭐ STMiner on Github if you find it's useful, thank you!
+Please ⭐Star STMiner on Github if you find it's useful, thank you!
   
 <img src="./pic/footer.svg" width="100%">
