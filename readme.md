@@ -16,11 +16,11 @@
 # 👩‍🏫 Introduction
 ## Why STMiner?
 
-ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.
+ST data presents challenges such as uneven cell density distribution, low sampling rates, and complex spatial structures. Traditional spot-based analysis strategies struggle to effectively address these issues. STMiner explores ST data by leveraging the spatial distribution of genes, thus avoiding the biases that these conditions can introduce into the results.<br>
+
+Most importantly, STMiner offers seamless integration with anndata/scanpy and can be **easily installed** via pypi.<br>
 
 <div align=center><img src="./pic/why.png" height = "500"/></div>
-
-<br>
 
 ## Method detail
 Here we propose “**STMiner**”. The three key steps of analyzing ST data in STMiner are depicted. 
