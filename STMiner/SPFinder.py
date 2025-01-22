@@ -20,6 +20,21 @@ from STMiner.Plot import Plot
 
 
 def scale_array(exp_matrix, total_count):
+    """
+    Scale the expression matrix to a total count of 100.
+
+    This function calculates the total sum of the expression matrix,
+    determines a scale factor to achieve a total count of 100,
+    scales the expression matrix by this factor, and adds the scaled
+    values to the total count.
+
+    Parameters:
+    exp_matrix (numpy.ndarray): A 2D array containing expression values.
+    total_count (numpy.ndarray): A 1D array containing the total count.
+
+    Returns:
+    numpy.ndarray: The updated total count after scaling the expression matrix.
+    """
     total_sum = np.sum(exp_matrix)
     scale_factor = 100 / total_sum
     scaled_matrix = exp_matrix * scale_factor
