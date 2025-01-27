@@ -6,7 +6,7 @@ import numpy as np
 import scanpy as sc
 from anndata import AnnData
 from scipy.stats import zscore
-
+from sklearn import mixture
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
 from STMiner.Algorithm.distance import compare_gmm_distance
@@ -341,7 +341,6 @@ class SPFinder:
     def get_custom_pattern(self, gene_list, n_components=20, vote_rate: int = 0, mode: str = "vote"):
         if mode == "vote":
             _, total_count = self._genes_to_pattern(gene_list, vote_rate)
-            from sklearn import mixture
             _gmm = mixture.GaussianMixture(n_components=n_components)
             _gmm.fit(array_to_list(np.round(total_count).astype(np.int32)))
             self.custom_pattern = _gmm
@@ -402,15 +401,12 @@ class SPFinder:
         _genes = []
         if self.adata is None:
             raise ValueError("Please load ST data first.")
-        for i in gene_list:
-            if i in list(self.adata.var.index):
-                _genes.append(i)
+        for gene in gene_list:
+            if gene in list(self.adata.var.index):
+                _genes.append(gene)
 
         # Get expression patterns of interested gene set
-        self.fit_pattern(n_comp=n_comp, gene_list=_genes)
-        self.cluster_gene(n_clusters=1, mds_components=2)
-        self.patterns_matrix_dict = None
-        self.get_custom_pattern(gene_list=gene_list, n_components=n_comp, vote_rate=0)
+        self.get_custom_pattern(gene_list=_genes, n_components=n_comp, vote_rate=0)
 
     # def flush_app(self):
     #     self.app = App()
