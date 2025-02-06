@@ -12,7 +12,9 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/xjtu-omics/STMiner)
 
 <div align=center><img src="./pic/logo.png" height = "200"/></div>
-
+<p align="center">
+ <a href="https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html">📖 Documents</a> | <a href="https://stminerdoc.readthedocs.io/en/latest/Tutorial/Tutorial.html">🚀 Tutorial</a> | <a href="https://x.com/Sun_python">💬 Contact me</a>
+</p>
 # 👩‍🏫 Introduction
 ## Why STMiner?
 
