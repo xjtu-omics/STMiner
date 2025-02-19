@@ -196,8 +196,8 @@ https://pypi.org/project/STMiner/#history
  - Kai Ye: 📧(kaiye@xjtu.edu.cn)
 
 <br>
-<div align=center>
- Please ⭐Star STMiner on Github if you find it's useful, thank you!
+<div align=center >
+ <p> <b>Please ⭐Star STMiner on Github if you find it's useful, thank you!</b></p>
 </div>
 
 <img src="./pic/footer.svg" width="100%">
