@@ -1,7 +1,6 @@
 import numpy as np
 from scipy import sparse
 
-
 def get_exp_array(adata, gene_name, remove_low_exp_spots=False):
     sparse_matrix = _preprocess(adata, gene_name)
     return _to_dense(remove_low_exp_spots, sparse_matrix)
@@ -12,10 +11,12 @@ def _to_dense(remove_low_exp_spots, sparse_matrix):
         dense_array = sparse_matrix.todense()
         if remove_low_exp_spots:
             dense_array = np.maximum(dense_array - np.mean(dense_array[dense_array != 0]), 0)
-        dense_array = np.array(np.round(dense_array), dtype=np.int16)
-        return dense_array
+        return _round(dense_array)
     else:
         print("matrix is None")
+        
+def _round(array):
+    return np.array(np.round(array), dtype=np.int16)
 
 
 def _preprocess(adata, gene_name):
