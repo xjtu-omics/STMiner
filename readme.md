@@ -32,8 +32,6 @@ Here we propose “**STMiner**”. The three key steps of analyzing ST data in S
 
 (**Left top**) STMiner first utilizes Gaussian Mixture Models (GMMs) to represent the spatial distribution of each gene and the overall spatial distribution. (**Left bottom**) STMiner then identifies spatially variable genes by calculating the cost that transfers the overall spatial distribution to gene spatial distribution. Genes with high costs exhibit significant spatial variation, meaning their expression patterns differ considerably across different regions of the tissue. The distance array is built between SVGs in the same way, genes with similar spatial structures have a low cost to transport to each other, and vice versa. (**Right**) The distance array is embedded into a low-dimensional space by Multidimensional Scaling, allowing for clustering genes with similar spatial expression patterns into distinct functional gene sets and getting their spatial structure. 
 
-
-
 # 🚀 Quick start by example
 **Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for installation and detail usage.**
 
@@ -70,19 +68,19 @@ You can check the distance of each gene by:
 sp.global_distance
 ```
 
-| Gene       | Distance  | z-score   |
-|------------|-----------|-----------|
-| myha       | 1.35E+08  | 2.771493  |
-| vmhcl      | 1.01E+08  | 2.470881  |
-| zgc:101560 | 9.95E+07  | 2.458787  |
-| pvalb1     | 9.82E+07  | 2.445257  |
-| myhz2      | 9.75E+07  | 2.437787  |
-| ...        | ...       | ...       |
-| rps17      | 2.61E+05  | -3.63207  |
-| rpl13      | 2.48E+05  | -3.68506  |
-| rpl32      | 2.43E+05  | -3.70327  |
-| rsl24d1    | 2.27E+05  | -3.7757   |
-| rpl22      | 1.83E+05  | -3.99332  |
+| Gene       | Distance | z-score  |
+| ---------- | -------- | -------- |
+| myha       | 1.35E+08 | 2.771493 |
+| vmhcl      | 1.01E+08 | 2.470881 |
+| zgc:101560 | 9.95E+07 | 2.458787 |
+| pvalb1     | 9.82E+07 | 2.445257 |
+| myhz2      | 9.75E+07 | 2.437787 |
+| ...        | ...      | ...      |
+| rps17      | 2.61E+05 | -3.63207 |
+| rpl13      | 2.48E+05 | -3.68506 |
+| rpl32      | 2.43E+05 | -3.70327 |
+| rsl24d1    | 2.27E+05 | -3.7757  |
+| rpl22      | 1.83E+05 | -3.99332 |
 
 
 
@@ -195,7 +193,11 @@ sp.plot.plot_genes(label=0, vmax=99)
 | plot                 | Object        | Call plot to visualization             |
 
 # 📜 Release history
-https://pypi.org/project/STMiner/#history
+| Version | Date      | Description                               |
+| ------- | --------- | ----------------------------------------- |
+| 0.0.7  | 2025/2/21 | improved performance of *get_pattern_array()* |
+
+pypi: https://pypi.org/project/STMiner/#history
 
 # 🔖 Referance
 [1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., Zhang, P., Yang, X., Wang, C., Xu, L., Wang, T., & Ye, K. (2025). STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues. Cell Genomics, 5(2). https://doi.org/10.1016/j.xgen.2025.100771 

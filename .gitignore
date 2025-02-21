@@ -20,3 +20,6 @@
 *.xlsx
 *.svg
 *.txt
+/build
+dist/STMiner-0.0.7-py3-none-any.whl
+STMiner.egg-info/PKG-INFO
