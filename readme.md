@@ -52,7 +52,7 @@ We recommend using the **h5ad** format, as it is currently the most widely used 
 ```python
 sp = SPFinder()
 file_path = 'Path/to/your/h5ad/file'
-sp.read_h5ad(file=file_path, bin_size=10)
+sp.read_h5ad(file=file_path, bin_size=1)
 ```
 ## Find spatial high variable genes
 
