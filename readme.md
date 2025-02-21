@@ -149,7 +149,23 @@ Compare the distance between all genes and the given gene set
 from STMiner.Algorithm.distance import compare_gmm_distance
 df = compare_gmm_distance(sp.custom_pattern, sp.patterns)
 df.to_csv('compare_distance.csv')
+df
 ```
+
+| Gene              | distance           |
+| ----------------- | ------------------ |
+| mbpa              | 0.8914643122002152 |
+| map1ab            | 0.9479574709875033 |
+| snap25a           | 0.9801858512442632 |
+| nsfa              | 0.9948239449738531 |
+| stxbp1a           | 0.99916307128497   |
+| ...               | ...                |
+| lrrfip1b          | 1.9981586323013931 |
+| si:ch211-145h19.2 | 1.9995115533927301 |
+| BX248122.1        | 1.9996375745511945 |
+| si:dkey-7i4.24    | 1.9997052371268462 |
+
+A lower distance indicates that the spatial expression pattern of the gene is more similar to that of the gene set of interest. 
 
 ### To visualize the patterns:
 **Note**: A image path for ***image_path*** is needed if you want to show background image. In this example, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png). Anyway, ***image_path*** is **optional**, not providing background images has no impact on the calculation results.
@@ -208,9 +224,9 @@ sp.plot.plot_genes(label=0, vmax=99)
 | plot                 | Object        | Call plot to visualization             |
 
 # 📜 Release history
-| Version | Date      | Description                               |
-| ------- | --------- | ----------------------------------------- |
-| 0.0.7  | 2025/2/21 | improved performance of *get_pattern_array()* |
+| Version | Date      | Description                                   |
+| ------- | --------- | --------------------------------------------- |
+| 0.0.7   | 2025/2/21 | improved performance of *get_pattern_array()* |
 
 pypi: https://pypi.org/project/STMiner/#history
 
