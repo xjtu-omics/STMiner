@@ -203,6 +203,8 @@ pypi: https://pypi.org/project/STMiner/#history
 [1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., Zhang, P., Yang, X., Wang, C., Xu, L., Wang, T., & Ye, K. (2025). STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues. Cell Genomics, 5(2). https://doi.org/10.1016/j.xgen.2025.100771 
 
 # ✉️ Contact
+If you encounter any issues during use, please try updating STMiner to the latest version. If the issue persists, feel free to submit your problem on the issue page or contact us through the following methods:
+
  - Peisen Sun: 📧(sunpeisen@stu.xjtu.edu.cn) / 𝕏(https://x.com/Sun_python)
  - Kai Ye: 📧(kaiye@xjtu.edu.cn)
 
