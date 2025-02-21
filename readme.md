@@ -57,7 +57,7 @@ sp.adata.obs['y']=sp.adata.obs['array_col']
 ## Find spatial high variable genes
 
 ```python
-sp.get_genes_csr_array(min_cells=50, log1p=False)
+sp.get_genes_csr_array(min_cells=200, log1p=False)
 sp.spatial_high_variable_genes()
 ```
  - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
