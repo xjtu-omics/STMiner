@@ -10,7 +10,7 @@ setup(
     version='0.0.7',
     author='Peisen Sun',
     url='https://github.com/xjtu-omics/STMiner',
-    license='MIT License',
+    license='GPL-3.0 license',
     description='Python package for spatial transcriptomics data analysis',
     long_description=long_description,
     long_description_content_type='text/markdown',
