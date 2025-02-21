@@ -43,7 +43,7 @@ from STMiner import SPFinder
 
 ## Load data
 
-You can download the demo dataset from [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133), or you can also download them from [STMOMICS](https://db.cngb.org/stomics/datasets/STDS0000086/data), such as **GSM4838133_10xvisium.h5ad**.
+You can download the demo dataset from [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4838133), or you can also download them from [STMOMICS](https://db.cngb.org/stomics/datasets/STDS0000086/data), such as **GSM4838133_10xvisium.h5ad** (https://ftp.cngb.org/pub/SciRAID/stomics/STDS0000086/stomics/GSM4838133/GSM4838133_10xvisium.h5ad).
 STMiner can read spatial transcriptome data in various formats, such as **gem**, **bmk**, and **h5ad** (see [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html)).   
 We recommend using the **h5ad** format, as it is currently the most widely used and supported by most algorithms and software in the spatial transcriptomics field.
 
@@ -135,6 +135,21 @@ import seaborn as sns
 sns.clustermap(sp.genes_distance_array)
 ```
 <div align=center><img src="./pic/heatmap.png" width = "400"/></div>
+
+### Finding gene sets with interested structure
+Get patterns of interested gene/gene set:
+
+```python
+interested_genes = ["mbpa", "BX957331.1", "madd"]
+sp.get_pattern_of_given_genes(gene_list = interested_genes)
+```
+Compare the distance between all genes and the given gene set
+
+```python
+from STMiner.Algorithm.distance import compare_gmm_distance
+df = compare_gmm_distance(sp.custom_pattern, sp.patterns)
+df.to_csv('compare_distance.csv')
+```
 
 ### To visualize the patterns:
 **Note**: A image path for ***image_path*** is needed if you want to show background image. In this example, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png). Anyway, ***image_path*** is **optional**, not providing background images has no impact on the calculation results.
