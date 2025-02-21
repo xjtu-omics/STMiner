@@ -70,14 +70,23 @@ You can check the distance of each gene by:
 sp.global_distance
 ```
 
-| Gene  | Distance | z-score |
-| ----- | -------- | ------- |
-| geneA | 9998     | 5.5     |
-| geneB | 9994     | 5.4     |
-| ...   | ...      | 5.3     |
-| geneC | 8724     | 5.2     |
+| Gene       | Distance  | z-score   |
+|------------|-----------|-----------|
+| myha       | 1.35E+08  | 2.771493  |
+| vmhcl      | 1.01E+08  | 2.470881  |
+| zgc:101560 | 9.95E+07  | 2.458787  |
+| pvalb1     | 9.82E+07  | 2.445257  |
+| myhz2      | 9.75E+07  | 2.437787  |
+| ...        | ...       | ...       |
+| rps17      | 2.61E+05  | -3.63207  |
+| rpl13      | 2.48E+05  | -3.68506  |
+| rpl32      | 2.43E+05  | -3.70327  |
+| rsl24d1    | 2.27E+05  | -3.7757   |
+| rpl22      | 1.83E+05  | -3.99332  |
 
-The first column is the gene name, and the second column is the difference between the spatial distribution of the gene and the background.</br>
+
+
+The 'Gene' column is the gene name, and the 'Distance' column is the difference between the spatial distribution of the gene and the background.</br>
 A larger difference indicates a more pronounced spatial pattern of the gene.
 
 ## Preprocess and Fit GMM
