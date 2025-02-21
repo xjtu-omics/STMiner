@@ -303,7 +303,7 @@ class SPFinder:
             raise ValueError("Unknown method, method should be one of gmm, mse, cs, ot")
 
     def get_pattern_array(self, vote_rate: int = 0, mode: str = "vote"):
-        self.patterns_binary_matrix_dict = {}
+        self.patterns_binary_matrix_dict = {}        
         if mode == "vote":
             label_list = set(self.genes_labels["labels"])
             for label in label_list:
@@ -319,22 +319,34 @@ class SPFinder:
             raise ValueError("mode should be vote or test")
 
     def _genes_to_pattern(self, gene_list, vote_rate):
-
-        total_count = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
+        # Initialize matrices
+        exp_shape = get_exp_array(self.adata, gene_list[0]).shape
         total_coo_list = []
-        vote_array = np.zeros(get_exp_array(self.adata, gene_list[0]).shape)
-        for gene in gene_list:
+        total_count = np.zeros(exp_shape)
+        vote_array = np.zeros(exp_shape)
+
+        # Efficiently accumulate coordinates and counts
+        for gene in tqdm(gene_list, desc="Accumulating gene expression..."):
             exp_matrix = get_exp_array(self.adata, gene)
-            # calculate nonzero index
-            non_zero_coo_list = np.vstack((np.nonzero(exp_matrix))).T.tolist()
-            for coo in non_zero_coo_list:
-                total_coo_list.append(tuple(coo))
-            total_count = scale_array(exp_matrix, total_count)
+            # Directly collect non-zero coordinates in a more efficient manner
+            non_zero_coords = np.nonzero(exp_matrix)
+            total_coo_list.extend(zip(*non_zero_coords))
+
+            # Scale and accumulate the exp_matrix
+            total_count += scale_array(exp_matrix, total_count)
+
+        # Count occurrences of each coordinate
         count_dict = Counter(total_coo_list)
+
+        # Vote-based update
         for ele, count in count_dict.items():
-            if int(count) / len(gene_list) >= vote_rate:
+            if count / len(gene_list) >= vote_rate:
                 vote_array[ele] = 1
-        total_count = total_count * vote_array
+
+        # Apply vote mask to the total count
+        total_count *= vote_array
+
+        # Return binary array and scaled total count
         binary_arr = np.where(total_count != 0, 1, total_count)
         return binary_arr, total_count
 
