@@ -12,7 +12,7 @@ def _to_dense(remove_low_exp_spots, sparse_matrix):
         dense_array = sparse_matrix.todense()
         if remove_low_exp_spots:
             dense_array = np.maximum(dense_array - np.mean(dense_array[dense_array != 0]), 0)
-        dense_array = np.array(np.round(dense_array), dtype=np.int32)
+        dense_array = np.array(np.round(dense_array), dtype=np.int16)
         return dense_array
     else:
         print("matrix is None")
@@ -27,5 +27,5 @@ def _preprocess(adata, gene_name):
             data = np.array(exp_array.todense())
         else:
             data = np.array(exp_array)
-        sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))))
+        sparse_matrix = sparse.coo_matrix((data[:, 0], (np.array(adata.obs['x']), np.array(adata.obs['y']))), dtype=np.int16)
         return sparse_matrix
