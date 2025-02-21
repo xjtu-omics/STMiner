@@ -57,7 +57,7 @@ sp.adata.obs['y']=sp.adata.obs['array_col']
 ## Find spatial high variable genes
 
 ```python
-sp.get_genes_csr_array(min_cells=100, log1p=False)
+sp.get_genes_csr_array(min_cells=50, log1p=False)
 sp.spatial_high_variable_genes()
 ```
  - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
@@ -92,7 +92,7 @@ A larger difference indicates a more pronounced spatial pattern of the gene.
 ## Preprocess and Fit GMM
 
 ```python
-sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:1000]['Gene']))
+sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:2000]['Gene']))
 ```
 
 **n_comp=20** means each GMM model has 20 components.
