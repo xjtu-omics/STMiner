@@ -92,7 +92,7 @@ class SPFinder:
             normalize: bool = True,
             exclude_highly_expressed: bool = False,
             log1p: bool = False,
-            vmax: int = 99,
+            vmax: int = 100,
             gene_list: list = None,
     ):
         error_gene_list = []
@@ -127,7 +127,7 @@ class SPFinder:
                 print("Error when parse gene " + gene + "\nError: ")
                 print(e)
 
-    def spatial_high_variable_genes(self, vmax: int = 99, thread: int = 1):
+    def spatial_high_variable_genes(self, vmax: int = 100, thread: int = 1):
         """
         Compute the optimal transport (OT) distance matrix for high variable genes.
 
@@ -145,7 +145,7 @@ class SPFinder:
         Note: Exceptions during calculation are logged with the gene key and error message.
         """
         if len(self.csr_dict) == 0:
-            self.get_genes_csr_array(min_cells=1000, vmax=vmax, normalize=True)
+            self.get_genes_csr_array(min_cells=50, vmax=vmax, normalize=True)
         # Process data and create global sparse matrix
         data = np.array(self.adata.X.sum(axis=1)).flatten()
         data[data > np.percentile(data, vmax)] = np.percentile(data, vmax)
