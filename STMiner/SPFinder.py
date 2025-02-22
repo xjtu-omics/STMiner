@@ -196,7 +196,7 @@ class SPFinder:
             self,
             n_top_genes: int = -1,
             n_comp: int = 20,
-            normalize: bool = True,
+            normalize: bool = False,
             exclude_highly_expressed: bool = False,
             log1p: bool = False,
             min_cells: int = 20,
