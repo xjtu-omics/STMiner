@@ -173,14 +173,14 @@ sp.get_pattern_array(vote_rate=0.3)
 img_path = 'path/to/downloaded/image'
 sp.plot.plot_pattern(vmax=99,
                      heatmap=False, 
-                     s=5, 
+                     s=10, 
                      reverse_y=True, # optional
                      reverse_x=True, # optional
                      image_path=img_path, # optional
                      rotate_img=True, # optional
                      k=4, # optional
                      aspect=0.55 # optional
-                     )
+                    )
 ```
 
 <div  align="center">    
