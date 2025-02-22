@@ -224,6 +224,7 @@ sp.plot.plot_genes(label=0, vmax=99)
 # 📜 Release history
 | Version | Date      | Description                                   |
 | ------- | --------- | --------------------------------------------- |
+| 0.0.8   | 2025/2/23 | change default value of Normalize             |
 | 0.0.7   | 2025/2/21 | improved performance of *get_pattern_array()* |
 
 pypi: https://pypi.org/project/STMiner/#history
