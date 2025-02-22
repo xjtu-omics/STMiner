@@ -49,8 +49,6 @@ We recommend using the **h5ad** format, as it is currently the most widely used 
 sp = SPFinder()
 file_path = 'Path/to/your/h5ad/file'
 sp.read_h5ad(file=file_path, bin_size=1)
-sp.adata.obs['x']=sp.adata.obs['array_row']
-sp.adata.obs['y']=sp.adata.obs['array_col']
 ```
 ## Find spatial high variable genes
 
