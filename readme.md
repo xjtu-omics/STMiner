@@ -35,6 +35,9 @@ Here we propose “**STMiner**”. The three key steps of analyzing ST data in S
 # 🚀 Quick start by example
 **Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for installation and detail usage.**
 
+We provide the step by step ipynb file to reproduce the result, please check [here](https://github.com/PSSUN/STMiner-test-data/blob/main/STARprotocols.ipynb).
+You can also run STMiner by yourself:
+
 ## import package
 
 ```python
@@ -53,7 +56,7 @@ sp.read_h5ad(file=file_path, bin_size=1)
 ## Find spatial high variable genes
 
 ```python
-sp.get_genes_csr_array(min_cells=200, log1p=False, vmax=100)
+sp.get_genes_csr_array(min_cells=100, log1p=False, , normalize=False, vmax=100)
 sp.spatial_high_variable_genes()
 ```
  - The parameter **min_cells** was used to filter genes that are too sparse to generate a reliable spatial distribution.
@@ -88,7 +91,7 @@ A larger difference indicates a more pronounced spatial pattern of the gene.
 ## Preprocess and Fit GMM
 
 ```python
-sp.fit_pattern(n_comp=20, gene_list=list(sp.global_distance[:2000]['Gene']))
+sp.fit_pattern(n_comp=10, gene_list=list(sp.global_distance[:2000]['Gene']))
 ```
 
 **n_comp=20** means each GMM model has 20 components.
@@ -139,7 +142,7 @@ Get patterns of interested gene/gene set:
 
 ```python
 interested_genes = ["mbpa", "BX957331.1", "madd"]
-sp.get_pattern_of_given_genes(gene_list = interested_genes)
+sp.get_pattern_of_given_genes(gene_list = interested_genes, n_comp=10)
 ```
 Compare the distance between all genes and the given gene set
 
@@ -169,7 +172,7 @@ A lower distance indicates that the spatial expression pattern of the gene is mo
 **Note**: A image path for ***image_path*** is needed if you want to show background image. In this example, you can download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png). Anyway, ***image_path*** is **optional**, not providing background images has no impact on the calculation results.
 
 ```python
-sp.get_pattern_array(vote_rate=0.3)
+sp.get_pattern_array(vote_rate=0.2)
 img_path = 'path/to/downloaded/image'
 sp.plot.plot_pattern(vmax=99,
                      heatmap=False, 
