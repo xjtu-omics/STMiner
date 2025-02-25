@@ -172,17 +172,16 @@ A lower distance indicates that the spatial expression pattern of the gene is mo
 
 ```python
 sp.get_pattern_array(vote_rate=0.2)
-img_path = 'path/to/downloaded/image'
-sp.plot.plot_pattern(vmax=99,
-                     heatmap=False, 
-                     s=10, 
-                     reverse_y=True, # optional
-                     reverse_x=True, # optional
-                     image_path=img_path, # optional
-                     rotate_img=True, # optional
-                     k=4, # optional
-                     aspect=0.55 # optional
-                    )
+img_path = 'path/to/downloaded/demo_img.png'
+sp.plot.plot_pattern(heatmap=False, 
+                     s=10,
+                     rotate=False,
+                     reverse_y=True,
+                     reverse_x=True,
+                     vmax=95,
+                     image_path="./demo_img.png",
+                     cmap="Spectral_r",
+                     aspect=.55)
 ```
 
 <div  align="center">    
