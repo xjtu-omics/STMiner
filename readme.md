@@ -232,7 +232,7 @@ sp.plot.plot_genes(label=0, vmax=99)
 pypi: https://pypi.org/project/STMiner/#history
 
 # 🔖 Referance
-[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., Zhang, P., Yang, X., Wang, C., Xu, L., Wang, T., & Ye, K. (2025). <a href="https://plu.mx/plum/a/?doi=10.1016%2Fj.xgen.2025.100771" data-popup="bottom" data-badge="true" class="plumx-plum-print-popup" data-site="plum" data-hide-when-empty="true" data-no-link="true">STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues</a> Cell Genomics, 5(2). https://doi.org/10.1016/j.xgen.2025.100771 
+[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., ... & Ye, K. (2025). [STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues.](https://doi.org/10.1016/j.xgen.2025.100771 ) Cell Genomics, 5(2).
 
 # ✉️ Contact
 If you encounter any issues during use, please try updating STMiner to the latest version. If the issue persists, feel free to submit your problem on the issue page or contact us through the following methods:
