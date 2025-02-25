@@ -35,7 +35,9 @@ Here we propose “**STMiner**”. The three key steps of analyzing ST data in S
 # 🚀 Quick start by example
 **Please visit [STMiner Documents](https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html) for installation and detail usage.**
 
-We also provide a step-by-step [Jupyter Notebook](https://jupyter.org/) file to reproduce the results. You can access it [here](https://github.com/PSSUN/STMiner-test-data/blob/main/STARprotocols.ipynb). Additionally, you can run STMiner on your own:
+💡💡💡 We also provide a step-by-step [Jupyter Notebook](https://jupyter.org/) file to reproduce the results. You can access it [**here**](https://github.com/PSSUN/STMiner-test-data/blob/main/STARprotocols.ipynb). 
+
+Additionally, you can run STMiner on your own:
 
 ## import package
 
