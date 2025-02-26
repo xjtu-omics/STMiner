@@ -17,6 +17,8 @@
 </p>
 
 <div align=center><img src="./pic/to3D.gif" height = "200"/></div>
+<p align="center"><b>Core Concept - Discrete to Continuous</b></p>
+
 
 # 👩‍🏫 Introduction
 ## Why STMiner?
