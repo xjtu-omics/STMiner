@@ -175,15 +175,19 @@ class SPFinder:
                 np.log1p(self.global_distance["Distance"])
             )
         else:
+            print("Using multiprocessing, thread is {thread}.".format(thread=thread))
             result_dict = multiprocessing.Manager().dict()
             pool = multiprocessing.Pool(processes=thread)
-            for key in tqdm(list(self.csr_dict.keys())):
+            for key in list(self.csr_dict.keys()):
                 pool.apply_async(
                     self._mpl_worker, args=(global_matrix, key, result_dict)
                 )
             pool.close()
             pool.join()
-            self.global_distance = pd.DataFrame(dict(result_dict), index=[0]).T
+            normal_dict = dict(result_dict)
+            self.global_distance = pd.DataFrame(
+                list(normal_dict.items()), columns=["Gene", "Distance"]
+            ).sort_values(by="Distance", ascending=False)
             self.global_distance["z-score"] = zscore(
                 np.log1p(self.global_distance["Distance"])
             )
