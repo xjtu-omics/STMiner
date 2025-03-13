@@ -89,6 +89,7 @@ class SPFinder:
     def get_genes_csr_array(
             self,
             min_cells: int,
+            min_genes: int = 1,
             normalize: bool = True,
             exclude_highly_expressed: bool = False,
             log1p: bool = False,
@@ -97,7 +98,7 @@ class SPFinder:
     ):
         error_gene_list = []
         self.csr_dict = {}
-        self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells)
+        self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, min_genes)
         if gene_list is not None:
             arr_list = gene_list
         else:
@@ -258,9 +259,11 @@ class SPFinder:
             exclude_highly_expressed: bool,
             log1p: bool,
             min_cells: int,
+            min_genes: int,
             n_top_genes: int = 2000
     ):
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
+        sc.pp.filter_cells(self.adata, min_genes=min_genes)
         sc.pp.highly_variable_genes(
             self.adata, flavor="seurat_v3", n_top_genes=n_top_genes
         )
