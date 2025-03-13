@@ -43,7 +43,7 @@ Here we propose “**STMiner**”. The three key steps of analyzing ST data in S
 
 Additionally, you can run STMiner on your own:
 
-## import package
+## Import package
 
 ```python
 from STMiner import SPFinder
