@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='STMiner',
-    version='0.0.8',
+    version='0.0.9',
     author='Peisen Sun',
     url='https://github.com/xjtu-omics/STMiner',
     license='GPL-3.0 license',
