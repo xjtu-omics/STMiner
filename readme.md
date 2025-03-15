@@ -17,8 +17,10 @@
 </p>
 
 <div align=center><img src="./pic/to3D.gif" height = "200"/></div>
-<p align="center"><b>Core Concept - Discrete to Continuous</b></p>
-
+<p align="center"><b>Core Concept: Discrete to Continuous</b></p>
+<div align=center >
+ <p> <b>Please ⭐Star STMiner on Github if you find it's useful, thank you!</b></p>
+</div>
 
 # 👩‍🏫 Introduction
 ## Why STMiner?
@@ -254,8 +256,4 @@ If you encounter any issues during use, please try updating STMiner to the lates
  - Kai Ye: 📧(kaiye@xjtu.edu.cn)
 
 <br>
-<div align=center >
- <p> <b>Please ⭐Star STMiner on Github if you find it's useful, thank you!</b></p>
-</div>
-
 <img src="./pic/footer.svg" width="100%">
