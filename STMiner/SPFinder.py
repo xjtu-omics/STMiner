@@ -53,10 +53,10 @@ class SPFinder:
 
     def set_adata(self, adata):
         self.adata = adata
-        self._scope = (0, max(adata.obs["y"].max(), adata.obs["x"].max()))
+        # self._scope = (0, max(adata.obs["y"].max(), adata.obs["x"].max()))
 
-    def read_h5ad(self, file, amplification=1, bin_size=1):
-        self.set_adata(read_h5ad(file, amplification=amplification, bin_size=bin_size))
+    def read_h5ad(self, file, amplification=1, bin_size=1, merge_bin=False):
+        self.set_adata(read_h5ad(file, amplification=amplification, bin_size=bin_size, merge_bin=merge_bin))
 
     def read_bmk_dir(self, file, bin_size=1):
         self.set_adata(read_bmk(file, bin_size=bin_size))
