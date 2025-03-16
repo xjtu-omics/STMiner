@@ -63,7 +63,7 @@ sp.read_h5ad(file=file_path, bin_size=1)
 
 For high resolution ST data. You can increase the **bin_size** parameter when loading the data to reduce running time, for example:  
 ```python
-sp.read_h5ad(file=file_path, bin_size=50)
+sp.read_h5ad(file=file_path, bin_size=50, merge_bin=True)
 ```
 This will not reduce the accuracy of STMiner, as resolution generally does not affect the spatial distribution of genes.
 
