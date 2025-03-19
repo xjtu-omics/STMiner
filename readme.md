@@ -15,12 +15,16 @@
 <p align="center">
  <a href="https://stminerdoc.readthedocs.io/en/latest/Introduction/Introduction.html">📖 Documents</a> | <a href="https://stminerdoc.readthedocs.io/en/latest/Tutorial/Tutorial.html">🚀 Tutorial</a> | <a href="https://x.com/Sun_python">💬 Contact me</a>
 </p>
-
 <div align=center><img src="./pic/to3D.gif" height = "200"/></div>
 <p align="center"><b>Core Concept: Discrete to Continuous</b></p>
+
+---
+
 <div align=center >
- <p> <b>Please ⭐Star STMiner on Github if you find it's useful, thank you!</b></p>
+ <p> <b>Please ⭐Star STMiner on Github if you find it's useful, thank you!😊</b></p>
 </div>
+
+---
 
 # 👩‍🏫 Introduction
 ## Why STMiner?
