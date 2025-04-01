@@ -177,15 +177,11 @@ class SPFinder:
             )
         else:
             print("Using multiprocessing, thread is {thread}.".format(thread=thread))
-            result_dict = multiprocessing.Manager().dict()
-            pool = multiprocessing.Pool(processes=thread)
-            for key in list(self.csr_dict.keys()):
-                pool.apply_async(
-                    self._mpl_worker, args=(global_matrix, key, result_dict)
-                )
-            pool.close()
-            pool.join()
-            normal_dict = dict(result_dict)
+            with multiprocessing.Pool(processes=thread) as pool:
+                results = pool.starmap(self._mpl_worker,
+                                       [(global_matrix, key, self.csr_dict) for key in self.csr_dict.keys()])
+
+            normal_dict = dict(results)
             self.global_distance = pd.DataFrame(
                 list(normal_dict.items()), columns=["Gene", "Distance"]
             ).sort_values(by="Distance", ascending=False)
@@ -193,9 +189,9 @@ class SPFinder:
                 np.log1p(self.global_distance["Distance"])
             )
 
-    def _mpl_worker(self, global_matrix, key, result_dict):
-        res = calculate_ot_distance(global_matrix, self.csr_dict[key])
-        result_dict[key] = res
+    def _mpl_worker(self, global_matrix, key, csr_dict):
+        res = calculate_ot_distance(global_matrix, csr_dict[key])
+        return key, res
 
     def fit_pattern(
             self,
