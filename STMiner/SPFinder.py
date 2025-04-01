@@ -310,7 +310,7 @@ class SPFinder:
             raise ValueError("Unknown method, method should be one of gmm, mse, cs, ot")
 
     def get_pattern_array(self, vote_rate: int = 0, mode: str = "vote"):
-        self.patterns_binary_matrix_dict = {}        
+        self.patterns_binary_matrix_dict = {}
         if mode == "vote":
             label_list = set(self.genes_labels["labels"])
             for label in label_list:
