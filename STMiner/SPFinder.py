@@ -2,11 +2,11 @@ import multiprocessing
 from collections import Counter
 from typing import Optional
 
-import numpy as np
 import scanpy as sc
 from anndata import AnnData
 from scipy.stats import zscore
 from sklearn import mixture
+
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
 from STMiner.Algorithm.distance import compare_gmm_distance

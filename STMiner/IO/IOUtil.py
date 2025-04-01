@@ -1,9 +1,8 @@
+import anndata as ad
 import numpy as np
 import pandas as pd
-import scanpy as sc
-import anndata as ad
-
 from scipy.sparse import issparse
+
 
 def merge_bin_coordinate(coordinate: np.ndarray, coordinate_min: int, bin_size: int):
     return np.floor((coordinate - coordinate_min) / bin_size).astype(int)

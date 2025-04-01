@@ -1,6 +1,6 @@
-import pandas as pd
-import scanpy as sc
 import os
+
+import scanpy as sc
 
 from STMiner.IO.IOUtil import *
 
