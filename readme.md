@@ -289,9 +289,8 @@ pypi: https://pypi.org/project/STMiner/#history
 
 # 🔖 Referance
 
-[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., ... & Ye, K. (
-2025). [STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues.](https://doi.org/10.1016/j.xgen.2025.100771 )
-Cell Genomics, 5(2).
+[1] Sun, P., Bush, S. J., Wang, S., Jia, P., Li, M., Xu, T., ... & Ye, K. (2025). [STMiner: Gene-centric spatial transcriptomics for deciphering tumor tissues.](https://doi.org/10.1016/j.xgen.2025.100771 ) Cell Genomics, 5(2).  
+[2] Sun et al. (2025). Protocol to decipher complex spatial transcriptomics data using STMiner. STAR Protocols.
 
 # ✉️ Contact
 
