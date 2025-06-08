@@ -5,7 +5,6 @@
 ![Static Badge](https://img.shields.io/badge/3.10-green?logo=python&label=Python&labelColor=yellow)
 ![Static Badge](https://img.shields.io/badge/Linux-blue?logo=Linux&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/Windows-blue?logo=Windows&logoColor=white)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14678661.svg)](https://doi.org/10.5281/zenodo.14678661)
 [![Documentation Status](https://readthedocs.org/projects/stminerdoc/badge/?version=latest)](https://stminerdoc.readthedocs.io/en/latest/?badge=latest)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/xjtu-omics/STMiner)
 ![GitHub Repo stars](https://img.shields.io/github/stars/xjtu-omics/STMiner)
