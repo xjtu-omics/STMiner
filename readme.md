@@ -311,7 +311,6 @@ free to submit your problem on the issue page or contact us through the followin
   </a> 
 </p>
 
-<br>
 <img src="./pic/footer.svg" width="100%">
 
 
