@@ -4,5 +4,5 @@ import anndata as ad
 
 def test_spfinder():
     spfinder = SPFinder()
-    spfinder.read_h5ad("tests/data/test_data.fasta")
+    spfinder.read_h5ad("tests/data/test.h5ad")
     assert isinstance(spfinder.adata, ad.AnnData)
