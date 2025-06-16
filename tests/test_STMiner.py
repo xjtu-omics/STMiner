@@ -9,7 +9,7 @@ def test_spfinder():
 
     spfinder.read_h5ad("tests/data/test.h5ad", bin_size=5, merge_bin=True)
     assert isinstance(spfinder.adata, ad.AnnData)
-    assert spfinder.adata.shape == (2677, 32268)
+    assert spfinder.adata.shape == (282, 32268)  #Test bin_size & merge_bin
 
     spfinder.get_genes_csr_array(min_cells=200)
     assert len(spfinder.csr_dict) > 0
