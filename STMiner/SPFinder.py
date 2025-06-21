@@ -28,6 +28,18 @@ def scale_array(exp_matrix, total_count):
 
 
 class SPFinder:
+    """
+    SPFinder is a class for spatial pattern discovery and analysis in spatial transcriptomics data.
+    This class provides methods for reading, preprocessing, and analyzing spatial transcriptomics data, 
+    including gene expression matrix handling, spatial binning, pattern extraction using Gaussian Mixture Models (GMMs), 
+    distance calculations (e.g., optimal transport, cosine similarity, mean squared error), clustering, 
+    and visualization of spatial gene expression patterns.
+    
+    - This class is designed for spatial transcriptomics data analysis and requires AnnData and related dependencies.
+    - Some methods rely on external utility functions and classes (e.g., Plot, fit_gmms, calculate_ot_distance).
+    - Multiprocessing is supported for some distance calculations.
+    """
+    
     def __init__(self, adata: Optional[AnnData] = None):
         self.adata = None
         self.patterns = None
@@ -52,6 +64,12 @@ class SPFinder:
             self.set_adata(adata)
 
     def set_adata(self, adata):
+        """
+        Assigns the provided AnnData object to the instance.
+
+        Args:
+            adata (AnnData): The annotated data matrix to be set for the instance.
+        """
         self.adata = adata
         # self._scope = (0, max(adata.obs["y"].max(), adata.obs["x"].max()))
 
@@ -59,7 +77,7 @@ class SPFinder:
         """
         Reads an h5ad file and sets the object's adata attribute with the loaded data.
 
-        Parameters:
+        Args:
             file (str): Path to the h5ad file to be read.
             amplification (int, optional): Amplification factor to apply to the data. Defaults to 1.
             bin_size (int, optional): Size of the bin for binning the data. Defaults to 1.
@@ -84,6 +102,22 @@ class SPFinder:
         self.set_adata(read_gem_file(file, bin_size=bin_size))
 
     def merge_bin(self, bin_width):
+        """
+        Merge spatial coordinates into bins of a specified width.
+
+        This method updates the 'x' and 'y' columns in `self.adata.obs` by grouping their values into bins of size `bin_width`.
+        The binning is performed using the `merge_bin_coordinate` function, starting from the minimum value of each coordinate.
+
+        Args:
+            bin_width (int or float): The width of each bin to merge coordinates into.
+
+        Returns:
+            None
+
+        Notes:
+            - Assumes `self.adata.obs` is a pandas DataFrame with 'x' and 'y' columns.
+            - The `merge_bin_coordinate` function should accept a coordinate array, a minimum value, and a bin size.
+        """
         self.adata.obs["x"] = merge_bin_coordinate(
             self.adata.obs["x"], self.adata.obs["x"].min(), bin_size=bin_width
         )
@@ -97,7 +131,9 @@ class SPFinder:
     def compare_image_to_genes(self):
         """
         Compares the GMM between the marked image and the gene expression matrix.
-        :return: pd.DataFrame
+        
+        Returns:
+            pd.DataFrame
         """
         return compare_gmm_distance(self.image_gmm, self.patterns)
 
@@ -129,33 +165,27 @@ class SPFinder:
         This method processes the AnnData object (`self.adata`) to extract gene expression arrays
         for each gene, optionally normalizing, excluding highly expressed genes, and applying log1p
         transformation. The resulting matrices are stored in `self.csr_dict` with gene names as keys.
-        Parameters
-        ----------
-        min_cells : int
-            Minimum number of cells a gene must be expressed in to be included.
-        min_genes : int, optional
-            Minimum number of genes a cell must express to be included (default: 1).
-        normalize : bool, optional
-            Whether to normalize the data before processing (default: True).
-        exclude_highly_expressed : bool, optional
-            Whether to exclude highly expressed genes (default: False).
-        log1p : bool, optional
-            Whether to apply log1p transformation to the data (default: False).
-        vmax : int, optional
-            Percentile value to cap gene expression values (default: 100).
-        gene_list : list, optional
-            List of gene names to process. If None, all genes in `self.adata` are used (default: None).
-        Returns
-        -------
-        None
-            The method updates `self.csr_dict` with gene names as keys and their corresponding
-            CSR matrices as values.
-        Notes
-        -----
-        - Genes with duplicate names are skipped and reported.
-        - Errors during matrix construction are caught and reported.
-        - The method relies on `self.preprocess` to filter and preprocess the data.
+        
+        Args:        
+            min_cells : int
+                Minimum number of cells a gene must be expressed in to be included.
+            min_genes : int, optional
+                Minimum number of genes a cell must express to be included (default: 1).
+            normalize : bool, optional
+                Whether to normalize the data before processing (default: True).
+            exclude_highly_expressed : bool, optional
+                Whether to exclude highly expressed genes (default: False).
+            log1p : bool, optional
+                Whether to apply log1p transformation to the data (default: False).
+            vmax : int, optional
+                Percentile value to cap gene expression values (default: 100).
+            gene_list : list, optional
+                List of gene names to process. If None, all genes in `self.adata` are used (default: None).
+        
+        Returns:
+            None
         """
+        
         error_gene_list = []
         self.csr_dict = {}
         self.preprocess(
@@ -192,21 +222,29 @@ class SPFinder:
 
     def spatial_high_variable_genes(self, vmax: int = 100, thread: int = 1):
         """
-        Compute the optimal transport (OT) distance matrix for high variable genes.
-
-        :param vmax: The percentile threshold to clip data values.
-        :type vmax: int, default 99
-        :param thread: Number of threads to use for parallel processing. If <= 1, single-threaded execution is used.
-        :type thread: int, default 1
-
-        This function first ensures that `csr_dict` is populated. It then creates a global matrix using the sum of
-        expression values across cells and computes OT distances between this matrix and each gene's CSR matrix from `csr_dict`.
-
-        The resulting OT distances are stored in a DataFrame sorted by increasing distance,
-        with genes and their corresponding distances as columns.
-
-        Note: Exceptions during calculation are logged with the gene key and error message.
+        Identifies spatially high variable genes by comparing each gene's spatial expression pattern
+        to a global expression matrix using optimal transport (OT) distance.
+        This method processes the spatial transcriptomics data to create a global sparse matrix,
+        then computes the OT distance between the global matrix and each gene-specific matrix.
+        The results are stored in a DataFrame with gene names, distances, and z-scores of the
+        log-transformed distances. Optionally, multiprocessing can be used to speed up computation.
+        
+        Args:
+            vmax: int, optional
+                The upper percentile threshold for capping expression values in the global matrix (default is 100).
+            thread: int, optional
+                The number of threads to use for multiprocessing. If thread <= 1, computation is done serially (default is 1).
+        
+        Returns:
+            None
+            
+        Notes:
+            - Requires `self.csr_dict` to be populated; otherwise, it will be generated.
+            - Uses tqdm for progress display and multiprocessing for parallel computation if `thread > 1`.
+            - Handles exceptions during OT distance calculation and prints the gene key and error.
+            - The results are stored in the `self.global_distance` attribute as a pandas DataFrame with columns: "Gene": Gene names. | "Distance": OT distance to the global matrix. | "z-score": Z-score of the log-transformed distances.            
         """
+
         if len(self.csr_dict) == 0:
             self.get_genes_csr_array(min_cells=50, vmax=vmax, normalize=True)
         # Process data and create global sparse matrix
@@ -260,7 +298,7 @@ class SPFinder:
         res = calculate_ot_distance(global_matrix, csr_dict[key])
         return key, res
 
-    def fit_pattern(
+    def fit_pattern(        
         self,
         n_top_genes: int = -1,
         n_comp: int = 20,
@@ -272,30 +310,32 @@ class SPFinder:
         remove_low_exp_spots: bool = False,
     ):
         """
-            Given a distance matrix with the distances between each pair of objects in a set, and a chosen number of
-        dimensions, N, an MDS algorithm places each object into N-dimensional space (a lower-dimensional representation)
-        such that the between-object distances are preserved as well as possible.
-        After that, run **K-Means** clustering and get the labels.
+        Fits gene expression patterns using Gaussian Mixture Models (GMMs) on selected genes.
+        This method preprocesses the data and fits GMMs to the expression profiles of specified genes,
+        allowing for the identification of spatial patterns in gene expression.
+        
+        Args:
+            n_top_genes : int, optional (default: -1)
+                Number of top highly variable genes to use. If -1, use all genes.
+            n_comp : int, optional (default: 20)
+                Number of GMM components to fit for each gene.
+            normalize : bool, optional (default: False)
+                Whether to normalize the data before fitting.
+            exclude_highly_expressed : bool, optional (default: False)
+                Whether to exclude highly expressed genes during preprocessing.
+            log1p : bool, optional (default: False)
+                Whether to apply log1p transformation to the data.
+            min_cells : int, optional (default: 20)
+                Minimum number of cells a gene must be expressed in to be included.
+            gene_list : list, optional (default: None)
+                List of gene names to fit patterns for. If None, uses top genes or all genes.
+            remove_low_exp_spots : bool, optional (default: False)
+                Whether to remove spots with low expression before fitting.
 
-        Ref:
-         - https://scikit-learn.org/stable/modules/manifold.html#multidimensional-scaling
-         - Multidimensional scaling. (2023, March 28). In Wikipedia. https://en.wikipedia.org/wiki/Multidimensional_scaling
-            :param n_top_genes: number of top high variable genes to fit pattern, if n_top_genes <= 0, fit all the genes.
-            :type n_top_genes: int
-            :param n_comp: number of components to fit GMM
-            :type n_comp: int
-            :param normalize: Run normalize or not, default: True
-            :type normalize: boolean
-            :param exclude_highly_expressed:
-            :type exclude_highly_expressed: boolean
-            :param log1p: Run log1p or not, default: False
-            :type log1p: boolean
-            :param min_cells: minimum number of cells for gene
-            :type min_cells: int
-            :param gene_list:
-            :type min_cells: list
-            :param remove_low_exp_spots:
+        Notes:        
+            The fitted patterns are stored in the `self.patterns` attribute.
         """
+        
         self.preprocess(
             normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes
         )
@@ -348,12 +388,12 @@ class SPFinder:
         "mse" (Mean Squared Error), "cs" (Cosine Similarity), and "ot" (Optimal Transport).
         If no gene list is provided, all genes are used.
 
-        Parameters:
-        - method (str): The distance calculation method to use. Default is "gmm".
-        - gene_list (list): A list of specific genes to use. If not provided, all genes are used.
+        Args:
+            method (str): The distance calculation method to use. Default is "gmm".
+            gene_list (list): A list of specific genes to use. If not provided, all genes are used.
 
         Returns:
-        No direct return value, but updates the `self.genes_distance_array` attribute with the calculated distances.
+            No direct return value, but updates the `self.genes_distance_array` attribute with the calculated distances.
         """
         # If no gene list is provided, use all genes
         if gene_list is None:
@@ -431,13 +471,16 @@ class SPFinder:
     ):
         """
         Generates a custom pattern model based on a list of genes using either a voting mechanism or a test mode.
+        
         Args:
             gene_list (list): List of gene identifiers to be used for pattern extraction.
             n_components (int, optional): Number of components for the Gaussian Mixture Model (GMM). Defaults to 20.
             vote_rate (int, optional): Threshold for voting mechanism in pattern extraction. Defaults to 0.
             mode (str, optional): Mode of operation, either "vote" for GMM-based pattern extraction or "test" for statistical testing. Defaults to "vote".
+        
         Raises:
             ValueError: If the mode is not "vote" or "test".
+        
         Notes:
             - In "vote" mode, fits a Gaussian Mixture Model to the gene pattern data.
             - In "test" mode, statistical testing is intended but not yet implemented.
@@ -484,9 +527,11 @@ class SPFinder:
     def plot_gmm(self, gene_name, cmap=None):
         """
         Plots the Gaussian Mixture Model (GMM) for a specified gene.
+        
         Args:
             gene_name (str): The name of the gene whose GMM is to be plotted.
             cmap (str or matplotlib.colors.Colormap, optional): Colormap to use for plotting. Defaults to None.
+        
         Returns:
             None
         """
