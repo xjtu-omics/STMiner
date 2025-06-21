@@ -61,7 +61,8 @@ class Plot:
     ):
         """
         Plots the spatial expression of a given gene on a scatter plot.
-        Parameters:
+        
+        Args:
             gene (str): The name of the gene to plot.
             cmap (str, optional): Colormap to use for gene expression. Default is 'Spectral_r'.
             reverse_y (bool, optional): If True, reverse the y-axis. Default is False.
@@ -218,7 +219,7 @@ class Plot:
     ):
         """
         Plots spatial patterns for each label in the dataset as either heatmaps or scatter plots.
-        Parameters:
+        Args:
             cmap (str or matplotlib colormap, optional): Colormap to use for plotting. Defaults to "viridis" if None.
             vmax (float, optional): Percentile value to use as the maximum value for color scaling. Default is 99.
             num_cols (int, optional): Number of columns in the subplot grid. Default is 4.
