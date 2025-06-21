@@ -56,7 +56,26 @@ class SPFinder:
         # self._scope = (0, max(adata.obs["y"].max(), adata.obs["x"].max()))
 
     def read_h5ad(self, file, amplification=1, bin_size=1, merge_bin=False):
-        self.set_adata(read_h5ad(file, amplification=amplification, bin_size=bin_size, merge_bin=merge_bin))
+        """
+        Reads an h5ad file and sets the object's adata attribute with the loaded data.
+
+        Parameters:
+            file (str): Path to the h5ad file to be read.
+            amplification (int, optional): Amplification factor to apply to the data. Defaults to 1.
+            bin_size (int, optional): Size of the bin for binning the data. Defaults to 1.
+            merge_bin (bool, optional): Whether to merge bins during reading. Defaults to False.
+
+        Returns:
+            None
+        """
+        self.set_adata(
+            read_h5ad(
+                file,
+                amplification=amplification,
+                bin_size=bin_size,
+                merge_bin=merge_bin,
+            )
+        )
 
     def read_bmk_dir(self, file, bin_size=1):
         self.set_adata(read_bmk(file, bin_size=bin_size))
@@ -83,22 +102,65 @@ class SPFinder:
         return compare_gmm_distance(self.image_gmm, self.patterns)
 
     def compare_gene_to_genes(self, gene_name):
+        """
+        Compares the Gaussian Mixture Model (GMM) of a specified gene to the GMMs of all genes in the current patterns.
+
+        Args:
+            gene_name (str): The name of the gene whose GMM will be compared to others.
+
+        Returns:
+            dict: A dictionary containing the distances between the specified gene's GMM and the GMMs of all genes in the patterns.
+        """
         gene_gmm = self.patterns[gene_name]
         return compare_gmm_distance(gene_gmm, self.patterns)
 
     def get_genes_csr_array(
-            self,
-            min_cells: int,
-            min_genes: int = 1,
-            normalize: bool = True,
-            exclude_highly_expressed: bool = False,
-            log1p: bool = False,
-            vmax: int = 100,
-            gene_list: list = None,
+        self,
+        min_cells: int,
+        min_genes: int = 1,
+        normalize: bool = True,
+        exclude_highly_expressed: bool = False,
+        log1p: bool = False,
+        vmax: int = 100,
+        gene_list: list = None,
     ):
+        """
+        Generates a dictionary of compressed sparse row (CSR) matrices for gene expression data.
+        This method processes the AnnData object (`self.adata`) to extract gene expression arrays
+        for each gene, optionally normalizing, excluding highly expressed genes, and applying log1p
+        transformation. The resulting matrices are stored in `self.csr_dict` with gene names as keys.
+        Parameters
+        ----------
+        min_cells : int
+            Minimum number of cells a gene must be expressed in to be included.
+        min_genes : int, optional
+            Minimum number of genes a cell must express to be included (default: 1).
+        normalize : bool, optional
+            Whether to normalize the data before processing (default: True).
+        exclude_highly_expressed : bool, optional
+            Whether to exclude highly expressed genes (default: False).
+        log1p : bool, optional
+            Whether to apply log1p transformation to the data (default: False).
+        vmax : int, optional
+            Percentile value to cap gene expression values (default: 100).
+        gene_list : list, optional
+            List of gene names to process. If None, all genes in `self.adata` are used (default: None).
+        Returns
+        -------
+        None
+            The method updates `self.csr_dict` with gene names as keys and their corresponding
+            CSR matrices as values.
+        Notes
+        -----
+        - Genes with duplicate names are skipped and reported.
+        - Errors during matrix construction are caught and reported.
+        - The method relies on `self.preprocess` to filter and preprocess the data.
+        """
         error_gene_list = []
         self.csr_dict = {}
-        self.preprocess(normalize, exclude_highly_expressed, log1p, min_cells, min_genes)
+        self.preprocess(
+            normalize, exclude_highly_expressed, log1p, min_cells, min_genes
+        )
         if gene_list is not None:
             arr_list = gene_list
         else:
@@ -157,7 +219,7 @@ class SPFinder:
         if (not isinstance(thread, int)) or (thread <= 1):
             distance_dict = {}
             for key in tqdm(
-                    list(self.csr_dict.keys()), desc="Computing ot distances..."
+                list(self.csr_dict.keys()), desc="Computing ot distances..."
             ):
                 try:
                     distance_dict[key] = calculate_ot_distance(
@@ -178,8 +240,13 @@ class SPFinder:
         else:
             print("Using multiprocessing, thread is {thread}.".format(thread=thread))
             with multiprocessing.Pool(processes=thread) as pool:
-                results = pool.starmap(self._mpl_worker,
-                                       [(global_matrix, key, self.csr_dict) for key in self.csr_dict.keys()])
+                results = pool.starmap(
+                    self._mpl_worker,
+                    [
+                        (global_matrix, key, self.csr_dict)
+                        for key in self.csr_dict.keys()
+                    ],
+                )
 
             normal_dict = dict(results)
             self.global_distance = pd.DataFrame(
@@ -194,15 +261,15 @@ class SPFinder:
         return key, res
 
     def fit_pattern(
-            self,
-            n_top_genes: int = -1,
-            n_comp: int = 20,
-            normalize: bool = False,
-            exclude_highly_expressed: bool = False,
-            log1p: bool = False,
-            min_cells: int = 20,
-            gene_list: list = None,
-            remove_low_exp_spots: bool = False,
+        self,
+        n_top_genes: int = -1,
+        n_comp: int = 20,
+        normalize: bool = False,
+        exclude_highly_expressed: bool = False,
+        log1p: bool = False,
+        min_cells: int = 20,
+        gene_list: list = None,
+        remove_low_exp_spots: bool = False,
     ):
         """
             Given a distance matrix with the distances between each pair of objects in a set, and a chosen number of
@@ -250,13 +317,13 @@ class SPFinder:
             print(e)
 
     def preprocess(
-            self,
-            normalize: bool,
-            exclude_highly_expressed: bool,
-            log1p: bool,
-            min_cells: int,
-            min_genes: int,
-            n_top_genes: int = 2000
+        self,
+        normalize: bool,
+        exclude_highly_expressed: bool,
+        log1p: bool,
+        min_cells: int,
+        min_genes: int,
+        n_top_genes: int = 2000,
     ):
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
         sc.pp.filter_cells(self.adata, min_genes=min_genes)
@@ -298,9 +365,13 @@ class SPFinder:
         elif method == "mse":
             self.genes_distance_array = build_mse_distance_array(self.adata, gene_list)
         elif method == "cs":
-            self.genes_distance_array = build_cosine_similarity_array(self.adata, gene_list)
+            self.genes_distance_array = build_cosine_similarity_array(
+                self.adata, gene_list
+            )
         elif method == "ot":
-            self.genes_distance_array = build_ot_distance_array(self.csr_dict, gene_list)
+            self.genes_distance_array = build_ot_distance_array(
+                self.csr_dict, gene_list
+            )
         else:
             # Raise an error if the method is unknown
             raise ValueError("Unknown method, method should be one of gmm, mse, cs, ot")
@@ -310,7 +381,9 @@ class SPFinder:
         if mode == "vote":
             label_list = set(self.genes_labels["labels"])
             for label in label_list:
-                gene_list = list(self.genes_labels[self.genes_labels["labels"] == label]["gene_id"])
+                gene_list = list(
+                    self.genes_labels[self.genes_labels["labels"] == label]["gene_id"]
+                )
                 binary_arr, total_count = self._genes_to_pattern(gene_list, vote_rate)
                 self.patterns_matrix_dict[label] = total_count
                 self.patterns_binary_matrix_dict[label] = binary_arr
@@ -353,7 +426,22 @@ class SPFinder:
         binary_arr = np.where(total_count != 0, 1, total_count)
         return binary_arr, total_count
 
-    def get_custom_pattern(self, gene_list, n_components=20, vote_rate: int = 0, mode: str = "vote"):
+    def get_custom_pattern(
+        self, gene_list, n_components=20, vote_rate: int = 0, mode: str = "vote"
+    ):
+        """
+        Generates a custom pattern model based on a list of genes using either a voting mechanism or a test mode.
+        Args:
+            gene_list (list): List of gene identifiers to be used for pattern extraction.
+            n_components (int, optional): Number of components for the Gaussian Mixture Model (GMM). Defaults to 20.
+            vote_rate (int, optional): Threshold for voting mechanism in pattern extraction. Defaults to 0.
+            mode (str, optional): Mode of operation, either "vote" for GMM-based pattern extraction or "test" for statistical testing. Defaults to "vote".
+        Raises:
+            ValueError: If the mode is not "vote" or "test".
+        Notes:
+            - In "vote" mode, fits a Gaussian Mixture Model to the gene pattern data.
+            - In "test" mode, statistical testing is intended but not yet implemented.
+        """
         if mode == "vote":
             _, total_count = self._genes_to_pattern(gene_list, vote_rate)
             _gmm = mixture.GaussianMixture(n_components=n_components)
@@ -367,11 +455,12 @@ class SPFinder:
             raise ValueError("mode should be vote or test")
 
     def cluster_gene(
-            self,
-            n_clusters: int,
-            mds_components=20,
-            use_highly_variable_gene=False,
-            n_top_genes=500):
+        self,
+        n_clusters: int,
+        mds_components=20,
+        use_highly_variable_gene=False,
+        n_top_genes=500,
+    ):
         # TODO: genes_labels should be int not float
         if use_highly_variable_gene:
             df = pd.DataFrame(self.genes_distance_array.mean(axis=1), columns=["mean"])
@@ -393,6 +482,15 @@ class SPFinder:
             )
 
     def plot_gmm(self, gene_name, cmap=None):
+        """
+        Plots the Gaussian Mixture Model (GMM) for a specified gene.
+        Args:
+            gene_name (str): The name of the gene whose GMM is to be plotted.
+            cmap (str or matplotlib.colors.Colormap, optional): Colormap to use for plotting. Defaults to None.
+        Returns:
+            None
+        """
+
         gmm = self.patterns[gene_name]
         view_gmm(gmm, scope=self._scope, cmap=cmap)
 
