@@ -10,7 +10,9 @@ def test_spfinder():
     # Test IO & merge_bin
     spfinder.read_h5ad("tests/data/test.h5ad", bin_size=5, merge_bin=True)
     assert isinstance(spfinder.adata, ad.AnnData)    
-    assert spfinder.adata.shape == (282, 32268)  #Test bin_size & merge_bin
+    
+    # Check bin_size & merge_bin result
+    assert spfinder.adata.shape == (282, 32268)
 
     # Test data preprocess
     spfinder.get_genes_csr_array(min_cells=200)
@@ -20,6 +22,10 @@ def test_spfinder():
     # Test SVG detection
     spfinder.spatial_high_variable_genes()
     assert len(spfinder.global_distance) > 0
+    
+    # Check SVG detection result
+    assert spfinder.global_distance.iloc[0, 0] == 'vmhcl'
+    assert spfinder.global_distance.iloc[1, 0] == 'pvalb1'
 
     # Test fitting
     spfinder.fit_pattern(
@@ -35,4 +41,6 @@ def test_spfinder():
     spfinder.cluster_gene(n_clusters=2, mds_components=20)
     assert len(spfinder.genes_labels) > 0
 
+    # Test plot
+    spfinder.plot.plot_gene('vmhcl', s=100, vmax=99)
 
