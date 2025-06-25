@@ -40,7 +40,11 @@ def test_spfinder():
     # Test gene cluster
     spfinder.cluster_gene(n_clusters=2, mds_components=20)
     assert len(spfinder.genes_labels) > 0
-
+    spfinder.cluster_gene(n_clusters=2, mds_components=10)
+    assert len(spfinder.genes_labels) > 0
+    spfinder.cluster_gene(n_clusters=3, mds_components=20)
+    assert len(spfinder.genes_labels) > 0
+    
     # Test plot
     spfinder.plot.plot_gene('vmhcl', s=100, vmax=99)
 
