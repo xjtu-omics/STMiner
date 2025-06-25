@@ -47,4 +47,5 @@ def test_spfinder():
     
     # Test plot
     spfinder.plot.plot_gene('vmhcl', s=100, vmax=99)
+    spfinder.plot.plot_gene('vmhcl', s=1, vmax=90)
 
