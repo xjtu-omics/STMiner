@@ -27,9 +27,11 @@ def test_spfinder():
     )
     assert len(spfinder.patterns) > 0
 
+    # Test GMM OT
     spfinder.build_distance_array()
     assert len(spfinder.genes_distance_array) > 0
 
+    # Test gene cluster
     spfinder.cluster_gene(n_clusters=2, mds_components=20)
     assert len(spfinder.genes_labels) > 0
 
