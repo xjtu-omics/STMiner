@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='STMiner',
-    version='1.1.0',
+    version='1.1.1',
     author='Peisen Sun',
     url='https://github.com/xjtu-omics/STMiner',
     license='GPL-3.0 license',
@@ -39,5 +39,6 @@ setup(
                       'setuptools==68.0.0',
                       'tifffile==2021.4.8',
                       'tqdm==4.65.0',
-                      'umap_learn==0.5.3']
+                      'umap_learn==0.5.3',
+                      'scikit-misc']
 )
