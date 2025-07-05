@@ -278,6 +278,7 @@ sp.plot.plot_genes(label=0, vmax=99)
 
 | Version | Date      | Description                                                  |
 |---------|-----------|--------------------------------------------------------------|
+| 1.1.1   | 2025/7/05 | fix bug, add test                                            |
 | 1.1.0   | 2025/4/01 | optimize multiple threads in *spatial_high_variable_genes()* |
 | 1.0.9   | 2025/3/16 | add merge_bin when *read_h5ad()* for large ST data           |
 | 0.0.9   | 2025/3/13 | support multiple threads in *spatial_high_variable_genes()*  |
