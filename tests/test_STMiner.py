@@ -75,7 +75,7 @@ def test_spfinder():
     assert (spfinder.custom_pattern is not None)
     
     # Test compare_gene_to_genes
-    spfinder.compare_gene_to_genes("pvalb1")
+    df = spfinder.compare_gene_to_genes("pvalb1")
     assert (df.loc['pvalb1'] is not None)
 
     
