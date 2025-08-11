@@ -7,6 +7,16 @@ def test_spfinder():
     spfinder = SPFinder()
     assert spfinder.adata is None
 
+    # Test set_adata
+    adata = ad.read_h5ad("./tests/data/test.h5ad")
+    spfinder.set_adata(adata)
+    assert isinstance(spfinder.adata, ad.AnnData)
+    assert (spfinder.adata.obs['x'].max() == 63)
+    
+    # Test merge_bin function
+    spfinder.merge_bin(bin_width=2)
+    assert (spfinder.adata.obs['x'].max() == 31)
+    
     # Test IO & merge_bin
     spfinder.read_h5ad("tests/data/test.h5ad", bin_size=5, merge_bin=True)
     assert isinstance(spfinder.adata, ad.AnnData)    
@@ -52,3 +62,20 @@ def test_spfinder():
     # Test plot pattern
     spfinder.get_pattern_array(vote_rate=0.2)
     spfinder.plot.plot_pattern(heatmap=False)
+
+    # Test plot_gmm
+    spfinder.plot_gmm("vmhcl")
+
+    # Test plot_intersection
+    spfinder.get_pattern_array()
+    spfinder.plot.plot_intersection(pattern_list=[1,2])
+
+    # Test get_custom_pattern
+    spfinder.get_custom_pattern(["pvalb1", "myhc4", "vmhcl"], n_components=10, vote_rate=0, mode="vote")
+    assert (spfinder.custom_pattern is not None)
+    
+    # Test compare_gene_to_genes
+    spfinder.compare_gene_to_genes("pvalb1")
+    assert (df.loc['pvalb1'] is not None)
+
+    
