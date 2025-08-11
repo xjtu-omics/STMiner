@@ -71,7 +71,7 @@ class SPFinder:
             adata (AnnData): The annotated data matrix to be set for the instance.
         """
         self.adata = adata
-        # self._scope = (0, max(adata.obs["y"].max(), adata.obs["x"].max()))
+        self._scope = (0, max(adata.obs["y"].max(), adata.obs["x"].max()))
         position = self.adata.obsm["spatial"]
         x_min = position[:, 0].min()
         y_min = position[:, 1].min()
