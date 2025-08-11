@@ -118,6 +118,11 @@ class SPFinder:
             - Assumes `self.adata.obs` is a pandas DataFrame with 'x' and 'y' columns.
             - The `merge_bin_coordinate` function should accept a coordinate array, a minimum value, and a bin size.
         """
+        if "x" not in adata.obs:
+            adata.obs["x"] = 0
+        if "y" not in adata.obs:
+            adata.obs["y"] = 0
+                        
         self.adata.obs["x"] = merge_bin_coordinate(
             self.adata.obs["x"], self.adata.obs["x"].min(), bin_size=bin_width
         )
@@ -298,7 +303,7 @@ class SPFinder:
         res = calculate_ot_distance(global_matrix, csr_dict[key])
         return key, res
 
-    def fit_pattern(        
+    def fit_pattern(
         self,
         n_top_genes: int = -1,
         n_comp: int = 20,
