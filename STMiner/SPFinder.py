@@ -133,14 +133,14 @@ class SPFinder:
     def load_marked_image(self, file):
         self.image_gmm = get_gmm_from_image(file, self.adata)
 
-    def compare_image_to_genes(self):
-        """
-        Compares the GMM between the marked image and the gene expression matrix.
+    # def compare_image_to_genes(self):
+    #     """
+    #     Compares the GMM between the marked image and the gene expression matrix.
 
-        Returns:
-            pd.DataFrame
-        """
-        return compare_gmm_distance(self.image_gmm, self.patterns)
+    #     Returns:
+    #         pd.DataFrame
+    #     """
+    #     return compare_gmm_distance(self.image_gmm, self.patterns)
 
     def compare_gene_to_genes(self, gene_name):
         """
