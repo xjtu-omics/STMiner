@@ -99,6 +99,7 @@ class SPFinder:
                 merge_bin=merge_bin,
             )
         )
+        self._scope = (0, max(self.adata.obs["y"].max(), self.adata.obs["x"].max()))
 
     def read_bmk_dir(self, file, bin_size=1):
         self.set_adata(read_bmk(file, bin_size=bin_size))
