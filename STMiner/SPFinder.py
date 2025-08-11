@@ -70,13 +70,13 @@ class SPFinder:
         Args:
             adata (AnnData): The annotated data matrix to be set for the instance.
         """
-        self.adata = adata
-        self._scope = (0, max(adata.obs["y"].max(), adata.obs["x"].max()))
+        self.adata = adata        
         position = self.adata.obsm["spatial"]
         x_min = position[:, 0].min()
         y_min = position[:, 1].min()
         self.adata.obs["x"] = merge_bin_coordinate(position[:, 0], x_min, bin_size=1)
         self.adata.obs["y"] = merge_bin_coordinate(position[:, 1], y_min, bin_size=1)
+        self._scope = (0, max(adata.obs["y"].max(), adata.obs["x"].max()))
 
     def read_h5ad(self, file, amplification=1, bin_size=1, merge_bin=False):
         """
