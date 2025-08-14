@@ -63,7 +63,7 @@ class SPFinder:
         if adata is not None:
             self.set_adata(adata)
 
-    def set_adata(self, adata):
+    def set_adata(self, adata) -> None:
         """
         Assigns the provided AnnData object to the instance.
 
