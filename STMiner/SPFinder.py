@@ -1,15 +1,25 @@
 import multiprocessing
 from collections import Counter
 from typing import Optional
-
+ 
+import numpy as np
+import pandas as pd
 import scanpy as sc
 from anndata import AnnData
+from scipy.sparse import csr_matrix
 from scipy.stats import zscore
 from sklearn import mixture
+from tqdm import tqdm
 
 from STMiner.Algorithm.algorithm import cluster
-from STMiner.Algorithm.distance import *
-from STMiner.Algorithm.distance import compare_gmm_distance
+from STMiner.Algorithm.distance import (
+    calculate_ot_distance,
+    build_gmm_distance_array,
+    build_mse_distance_array,
+    build_cosine_similarity_array,
+    build_ot_distance_array,
+    compare_gmm_distance,
+)
 from STMiner.Algorithm.distribution import get_gmm, array_to_list
 from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
 from STMiner.IO.IOUtil import merge_bin_coordinate
