@@ -152,7 +152,9 @@ sp.cluster_gene(n_clusters=6, mds_components=20)
 The result is stored in **genes_labels**:
 
 ```python
-sp.genes_labels
+sp.genes_labels  # check the gene label
+# If you want to save this table, run:
+sp.genes_labels.to_csv('genes_labels.csv')
 ```
 
 The output looks like the following:
