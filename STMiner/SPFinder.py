@@ -131,8 +131,8 @@ class SPFinder:
             self.adata.obs["y"], self.adata.obs["y"].min(), bin_size=bin_width
         )
 
-    def load_marked_image(self, file):
-        self.image_gmm = get_gmm_from_image(file, self.adata)
+    def load_marked_image(self, file, n_components=10):
+        self.image_gmm = get_gmm_from_image(file, self.adata, n_components=n_components)
 
     # def compare_image_to_genes(self):
     #     """

@@ -361,7 +361,7 @@ def array_to_list(matrix) -> np.array:
     return result
 
 
-def get_gmm_from_image(file, adata):
+def get_gmm_from_image(file, adata, n_components=10):
     image = Image.open(file)
     image_array = np.array(image.resize(get_exp_array(adata, adata.var.index[0]).shape))
 
@@ -371,7 +371,7 @@ def get_gmm_from_image(file, adata):
 
     arr = np.array(binary_matrix, dtype=np.int32)
     result = array_to_list(arr)
-    gmm = mixture.GaussianMixture(n_components=20, max_iter=200).fit(result)
+    gmm = mixture.GaussianMixture(n_components=n_components, max_iter=200).fit(result)
     return gmm
 
 
