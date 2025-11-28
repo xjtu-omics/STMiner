@@ -6,8 +6,8 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='STMiner',
-    version='1.1.2',
+    name='stminer',
+    version='1.1.3',
     author='Peisen Sun',
     url='https://github.com/xjtu-omics/STMiner',
     license='GPL-3.0 license',
