@@ -278,15 +278,16 @@ sp.plot.plot_genes(label=0, vmax=99)
 
 # 📜 Release history
 
-| Version | Date      | Description                                                  |
-|---------|-----------|--------------------------------------------------------------|
-| 1.1.2   | 2025/8/28 | fix bug, add test                                            |
-| 1.1.1   | 2025/7/05 | fix bug, add test                                            |
-| 1.1.0   | 2025/4/01 | optimize multiple threads in *spatial_high_variable_genes()* |
-| 1.0.9   | 2025/3/16 | add merge_bin when *read_h5ad()* for large ST data           |
-| 0.0.9   | 2025/3/13 | support multiple threads in *spatial_high_variable_genes()*  |
-| 0.0.8   | 2025/2/23 | change default value of Normalize                            |
-| 0.0.7   | 2025/2/21 | improved performance of *get_pattern_array()*                |
+| Version | Date       | Description                                                  |
+|---------|------------|--------------------------------------------------------------|
+| 1.1.3   | 2025/11/28 | update *load_marked_image()*, support n_components           |
+| 1.1.2   | 2025/08/28 | fix bug, add test                                            |
+| 1.1.1   | 2025/07/05 | fix bug, add test                                            |
+| 1.1.0   | 2025/04/01 | optimize multiple threads in *spatial_high_variable_genes()* |
+| 1.0.9   | 2025/03/16 | add merge_bin when *read_h5ad()* for large ST data           |
+| 0.0.9   | 2025/03/13 | support multiple threads in *spatial_high_variable_genes()*  |
+| 0.0.8   | 2025/02/23 | change default value of Normalize                            |
+| 0.0.7   | 2025/02/21 | improved performance of *get_pattern_array()*                |
 
 PyPI history: https://pypi.org/project/STMiner/#history
 
