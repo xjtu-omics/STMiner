@@ -703,7 +703,7 @@ class SPFinder:
                 gr.Markdown("Compute spatially variable genes following the README workflow.")
                 with gr.Row():
                     min_cells = gr.Number(label="Min cells", value=100, precision=0)
-                    min_genes = gr.Number(label="Min genes", value=1, precision=0)
+                    min_genes = gr.Number(label="Min genes", value=10, precision=0)
                     vmax = gr.Number(label="Vmax percentile", value=100, precision=0)
                     thread = gr.Number(label="Threads", value=1, precision=0)
                 hvg_btn = gr.Button("Find spatial HVGs")
