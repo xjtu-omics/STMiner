@@ -610,7 +610,7 @@ class SPFinder:
             except Exception as exc:
                 return f"Failed to load data: {exc}"
 
-        def find_spatial_hvg(min_cells, min_genes, normalize, exclude_highly_expressed, log1p, vmax, thread):
+        def find_spatial_hvg(min_cells, min_genes, vmax, thread):
             try:
                 _check_adata_loaded()
                 min_cells = int(min_cells)
@@ -620,9 +620,6 @@ class SPFinder:
                 self.get_genes_csr_array(
                     min_cells=min_cells,
                     min_genes=min_genes,
-                    normalize=normalize,
-                    exclude_highly_expressed=exclude_highly_expressed,
-                    log1p=log1p,
                     vmax=vmax,
                 )
                 self.spatial_high_variable_genes(vmax=vmax, thread=thread)
@@ -631,7 +628,7 @@ class SPFinder:
             except Exception as exc:
                 return f"Failed to compute: {exc}", None
 
-        def fit_patterns(n_top_genes, n_comp, normalize, exclude_highly_expressed, log1p, min_cells, remove_low_exp_spots, gene_list_text):
+        def fit_patterns(n_top_genes, n_comp, min_cells, gene_list_text):
             try:
                 _check_adata_loaded()
                 n_top_genes = int(n_top_genes)
@@ -643,12 +640,8 @@ class SPFinder:
                 self.fit_pattern(
                     n_top_genes=n_top_genes,
                     n_comp=n_comp,
-                    normalize=normalize,
-                    exclude_highly_expressed=exclude_highly_expressed,
-                    log1p=log1p,
                     min_cells=min_cells,
                     gene_list=genes,
-                    remove_low_exp_spots=remove_low_exp_spots,
                 )
                 return "Finished fitting GMM patterns."
             except Exception as exc:
@@ -713,30 +706,21 @@ class SPFinder:
                     min_genes = gr.Number(label="Min genes", value=1, precision=0)
                     vmax = gr.Number(label="Vmax percentile", value=100, precision=0)
                     thread = gr.Number(label="Threads", value=1, precision=0)
-                with gr.Row():
-                    normalize = gr.Checkbox(label="Normalize", value=False)
-                    exclude_high = gr.Checkbox(label="Exclude highly expressed", value=False)
-                    log1p = gr.Checkbox(label="Log1p", value=False)
                 hvg_btn = gr.Button("Find spatial HVGs")
                 hvg_status = gr.Textbox(label="Status")
                 hvg_preview = gr.DataFrame(label="Top spatially variable genes", interactive=False)
                 hvg_btn.click(
                     find_spatial_hvg,
-                    inputs=[min_cells, min_genes, normalize, exclude_high, log1p, vmax, thread],
+                    inputs=[min_cells, min_genes, vmax, thread],
                     outputs=[hvg_status, hvg_preview],
                 )
 
             with gr.Tab("Step.3-Fit patterns"):
                 gr.Markdown("Fit GMM patterns for genes.")
                 with gr.Row():
-                    n_top_genes = gr.Number(label="Top highly variable genes (-1 for all)", value=-1, precision=0)
+                    n_top_genes = gr.Number(label="Top highly variable genes (-1 for all)", value=2000, precision=0)
                     n_comp = gr.Number(label="GMM components", value=20, precision=0)
                     min_cells_fit = gr.Number(label="Min cells", value=20, precision=0)
-                with gr.Row():
-                    normalize_fit = gr.Checkbox(label="Normalize", value=False)
-                    exclude_high_fit = gr.Checkbox(label="Exclude highly expressed", value=False)
-                    log1p_fit = gr.Checkbox(label="Log1p", value=False)
-                    remove_low_exp = gr.Checkbox(label="Remove low expression spots", value=False)
                 gene_list_fit = gr.Textbox(
                     label="Optional gene list (one per line)",
                     placeholder="GeneA\nGeneB",
@@ -745,16 +729,7 @@ class SPFinder:
                 fit_status = gr.Textbox(label="Status")
                 fit_btn.click(
                     fit_patterns,
-                    inputs=[
-                        n_top_genes,
-                        n_comp,
-                        normalize_fit,
-                        exclude_high_fit,
-                        log1p_fit,
-                        min_cells_fit,
-                        remove_low_exp,
-                        gene_list_fit,
-                    ],
+                    inputs=[n_top_genes, n_comp, min_cells_fit, gene_list_fit],
                     outputs=fit_status,
                 )
 
