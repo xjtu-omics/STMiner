@@ -14,14 +14,19 @@ def get_3d_matrix(adata: anndata):
     """
     get the 3D matrix for adata
     """
+    x_min = int(adata.obs['x'].min())
     x_max = int(adata.obs['x'].max())
+    y_min = int(adata.obs['y'].min())
     y_max = int(adata.obs['y'].max())
     # the spatial coordinates should be in adata.obs
-    three_d_array = np.zeros((int(x_max), int(y_max), int(adata.var.shape[0])), dtype=np.int32)
+    three_d_array = np.zeros(
+        (int(x_max - x_min + 1), int(y_max - y_min + 1), int(adata.var.shape[0])),
+        dtype=np.int32,
+    )
     print('Transfer anndata to 3D matrix...')
     for spot in tqdm(adata, bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
-        x = int(spot.obs['x']) - 1
-        y = int(spot.obs['y']) - 1
+        x = int(spot.obs['x']) - x_min
+        y = int(spot.obs['y']) - y_min
         three_d_array[x, y] = spot.X.toarray()
     return three_d_array
 
@@ -67,15 +72,17 @@ def convolve(array, method, kernel_size=3):
 
 def update_anndata(array: np.array, adata: anndata):
     print('Update anndata...')
+    x_min = int(adata.obs['x'].min())
+    y_min = int(adata.obs['y'].min())
     if issparse(adata[0].X):
         for spot in tqdm(adata):
-            x = int(spot.obs['x']) - 1
-            y = int(spot.obs['y']) - 1
+            x = int(spot.obs['x']) - x_min
+            y = int(spot.obs['y']) - y_min
             spot.X = csr_matrix(array[x, y])
     else:
         for spot in tqdm(adata):
-            x = int(spot.obs['x']) - 1
-            y = int(spot.obs['y']) - 1
+            x = int(spot.obs['x']) - x_min
+            y = int(spot.obs['y']) - y_min
             spot.X = array[x, y]
 
 
