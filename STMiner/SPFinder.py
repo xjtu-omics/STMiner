@@ -72,12 +72,21 @@ class SPFinder:
         Args:
             adata (AnnData): The annotated data matrix to be set for the instance.
         """
-        self.adata = adata        
-        position = self.adata.obsm["spatial"]
-        x_min = position[:, 0].min()
-        y_min = position[:, 1].min()
-        self.adata.obs["x"] = merge_bin_coordinate(position[:, 0], x_min, bin_size=1)
-        self.adata.obs["y"] = merge_bin_coordinate(position[:, 1], y_min, bin_size=1)
+        self.adata = adata
+        has_obs_coordinates = "x" in self.adata.obs and "y" in self.adata.obs
+        if has_obs_coordinates:
+            if "spatial" not in self.adata.obsm:
+                self.adata.obsm["spatial"] = self.adata.obs[["x", "y"]].to_numpy()
+        elif "spatial" in self.adata.obsm:
+            position = self.adata.obsm["spatial"]
+            if len(position.shape) != 2 or position.shape[1] < 2:
+                raise ValueError('adata.obsm["spatial"] must be a 2D array with at least two columns.')
+            x_min = position[:, 0].min()
+            y_min = position[:, 1].min()
+            self.adata.obs["x"] = merge_bin_coordinate(position[:, 0], x_min, bin_size=1)
+            self.adata.obs["y"] = merge_bin_coordinate(position[:, 1], y_min, bin_size=1)
+        else:
+            raise ValueError('AnnData must contain either obs["x"] and obs["y"] or obsm["spatial"].')
         self._scope = (0, max(self.adata.obs["y"].max(), self.adata.obs["x"].max()))
 
     def read_h5ad(self, file, amplification=1, bin_size=1, merge_bin=False):
