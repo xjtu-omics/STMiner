@@ -22,10 +22,11 @@ from STMiner.Plot import Plot
 
 def scale_array(exp_matrix, total_count):
     total_sum = np.sum(exp_matrix)
+    if total_sum == 0:
+        return np.zeros_like(total_count)
     scale_factor = 100 / total_sum
     scaled_matrix = exp_matrix * scale_factor
-    total_count += scaled_matrix
-    return total_count
+    return scaled_matrix
 
 
 class SPFinder:
