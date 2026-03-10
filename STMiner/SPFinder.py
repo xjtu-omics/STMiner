@@ -132,6 +132,7 @@ class SPFinder:
         self.adata.obs["y"] = merge_bin_coordinate(
             self.adata.obs["y"], self.adata.obs["y"].min(), bin_size=bin_width
         )
+        self._scope = (0, max(self.adata.obs["y"].max(), self.adata.obs["x"].max()))
 
     def load_marked_image(self, file, n_components=10):
         self.image_gmm = get_gmm_from_image(file, self.adata, n_components=n_components)
