@@ -344,7 +344,12 @@ class SPFinder:
         """
 
         self.preprocess(
-            normalize, exclude_highly_expressed, log1p, min_cells, n_top_genes
+            normalize=normalize,
+            exclude_highly_expressed=exclude_highly_expressed,
+            log1p=log1p,
+            min_cells=min_cells,
+            min_genes=1,
+            n_top_genes=n_top_genes,
         )
         if gene_list is not None and isinstance(gene_list, list) and len(gene_list) > 0:
             gene_to_fit = gene_list
