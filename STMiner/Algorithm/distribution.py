@@ -130,7 +130,7 @@ def fit_gmm(adata: anndata,
 def preprocess_array(adata, binary, cut, gene_name, threshold, remove_low_exp_spots):
     dense_array = get_exp_array(adata, gene_name, remove_low_exp_spots)
     if binary:
-        if threshold > 100 | threshold < 0:
+        if threshold > 100 or threshold < 0:
             print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
             threshold = 100
         binary_arr = np.where(dense_array > np.percentile(dense_array, threshold), 1, 0)
@@ -274,7 +274,10 @@ def fit_gmms_multiprocessing(adata: anndata,
     shared_dict = manager.dict()
     pool = multiprocessing.Pool(processes=thread)
     for i in gene_name_list:
-        pool.apply_async(_fit_worker, args=(shared_dict, adata, i, n_comp, max_iter))
+        pool.apply_async(
+            _fit_worker,
+            args=(shared_dict, adata, i, n_comp, max_iter),
+        )
     pool.close()
     pool.join()
     normal_dict = dict(shared_dict)
@@ -351,7 +354,13 @@ def _mean_square_error(matrix1, matrix2):
 
 
 def _fit_worker(shared_dict, adata, gene_name, n_comp, max_iter):
-    shared_dict[gene_name] = fit_gmm_bic(adata, gene_name, n_comp, max_iter)
+    shared_dict[gene_name] = fit_gmm_bic(
+        adata,
+        gene_name,
+        min_n_comp=n_comp,
+        max_n_comp=n_comp + 1,
+        max_iter=max_iter,
+    )
 
 
 def array_to_list(matrix) -> np.array:
