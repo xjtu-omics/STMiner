@@ -7,16 +7,19 @@ from anndata import AnnData
 from scipy.stats import zscore
 from sklearn import mixture
 
-from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import *
 from STMiner.Algorithm.distance import compare_gmm_distance
 from STMiner.Algorithm.distribution import get_gmm, array_to_list
 from STMiner.Algorithm.distribution import view_gmm, fit_gmms, get_gmm_from_image
 from STMiner.IO.IOUtil import merge_bin_coordinate
-from STMiner.IO.read_bmk import read_bmk
-from STMiner.IO.read_h5ad import read_h5ad
-from STMiner.IO.read_stereo import read_gem_file
 from STMiner.Plot import Plot
+from STMiner.services import (
+    build_distance_array_for_spfinder,
+    cluster_gene_for_spfinder,
+    read_bmk_dir_for_spfinder,
+    read_gem_for_spfinder,
+    read_h5ad_for_spfinder,
+)
 
 
 def scale_array(exp_matrix, total_count):
@@ -101,21 +104,19 @@ class SPFinder:
         Returns:
             None
         """
-        self.set_adata(
-            read_h5ad(
-                file,
-                amplification=amplification,
-                bin_size=bin_size,
-                merge_bin=merge_bin,
-            )
+        return read_h5ad_for_spfinder(
+            self,
+            file=file,
+            amplification=amplification,
+            bin_size=bin_size,
+            merge_bin=merge_bin,
         )
-        self._scope = (0, max(self.adata.obs["y"].max(), self.adata.obs["x"].max()))
 
     def read_bmk_dir(self, file, bin_size=1):
-        self.set_adata(read_bmk(file, bin_size=bin_size))
+        return read_bmk_dir_for_spfinder(self, file=file, bin_size=bin_size)
 
     def read_gem(self, file, bin_size=40):
-        self.set_adata(read_gem_file(file, bin_size=bin_size))
+        return read_gem_for_spfinder(self, file=file, bin_size=bin_size)
 
     def merge_bin(self, bin_width):
         """
@@ -417,26 +418,7 @@ class SPFinder:
         Returns:
             No direct return value, but updates the `self.genes_distance_array` attribute with the calculated distances.
         """
-        # If no gene list is provided, use all genes
-        if gene_list is None:
-            gene_list = list(self.adata.var.index)
-
-        # Build the distance array based on the specified method
-        if method == "gmm":
-            self.genes_distance_array = build_gmm_distance_array(self.patterns)
-        elif method == "mse":
-            self.genes_distance_array = build_mse_distance_array(self.adata, gene_list)
-        elif method == "cs":
-            self.genes_distance_array = build_cosine_similarity_array(
-                self.adata, gene_list
-            )
-        elif method == "ot":
-            self.genes_distance_array = build_ot_distance_array(
-                self.csr_dict, gene_list
-            )
-        else:
-            # Raise an error if the method is unknown
-            raise ValueError("Unknown method, method should be one of gmm, mse, cs, ot")
+        return build_distance_array_for_spfinder(self, method=method, gene_list=gene_list)
 
     def get_pattern_array(self, vote_rate: int = 0, mode: str = "vote"):
         self.patterns_binary_matrix_dict = {}
@@ -526,25 +508,13 @@ class SPFinder:
         use_highly_variable_gene=False,
         n_top_genes=500,
     ):
-        # TODO: genes_labels should be int not float
-        if use_highly_variable_gene:
-            df = pd.DataFrame(self.genes_distance_array.mean(axis=1), columns=["mean"])
-            df = df.sort_values(by="mean", ascending=False)
-            hv_gene_list = list(df[:n_top_genes].index)
-            self.filtered_distance_array = self.genes_distance_array.loc[
-                hv_gene_list, hv_gene_list
-            ]
-            self.genes_labels, self.kmeans_fit_result, self.mds_features = cluster(
-                self.filtered_distance_array,
-                n_clusters=n_clusters,
-                mds_components=mds_components,
-            )
-        else:
-            self.genes_labels, self.kmeans_fit_result, self.mds_features = cluster(
-                self.genes_distance_array,
-                n_clusters=n_clusters,
-                mds_components=mds_components,
-            )
+        return cluster_gene_for_spfinder(
+            self,
+            n_clusters=n_clusters,
+            mds_components=mds_components,
+            use_highly_variable_gene=use_highly_variable_gene,
+            n_top_genes=n_top_genes,
+        )
 
     def plot_gmm(self, gene_name, cmap=None):
         """
