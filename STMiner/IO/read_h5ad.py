@@ -1,8 +1,16 @@
 import os
 
+import numpy as np
 import scanpy as sc
 
-from STMiner.IO.IOUtil import *
+from STMiner.IO.IOUtil import (
+    STMinerIOError,
+    bin_spatial_adata,
+    format_io_error,
+    merge_bin_coordinate,
+    require_positive_int,
+    validate_spatial_array,
+)
 
 
 def read_h5ad(file, bin_size=1, merge_bin=False, amplification=1):
