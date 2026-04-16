@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pandas as pd
 import anndata as ad
@@ -32,8 +34,8 @@ def format_io_error(
     return " | ".join(details)
 
 
-def require_positive_int(value, name: str, *, path: str | None = None):
-    if isinstance(value, bool) or not isinstance(value, (int, np.integer)):
+def require_positive_int(value, name: str, *, path: str | None = None) -> int:
+    if isinstance(value, bool):
         raise STMinerIOError(
             format_io_error(
                 f"Invalid parameter '{name}'",
@@ -43,7 +45,45 @@ def require_positive_int(value, name: str, *, path: str | None = None):
                 actual=f"{value} ({type(value).__name__})",
             )
         )
-    if int(value) <= 0:
+
+    if isinstance(value, (float, np.floating)):
+        if not np.isfinite(value):
+            raise STMinerIOError(
+                format_io_error(
+                    f"Invalid parameter '{name}'",
+                    operation="validate parameter",
+                    path=path,
+                    expected="finite positive integer",
+                    actual=str(value),
+                )
+            )
+        converted_value = int(value)
+        warnings.warn(
+            format_io_error(
+                f"Float parameter '{name}' converted to int",
+                operation="validate parameter",
+                path=path,
+                expected="integer input",
+                actual=f"{value} -> {converted_value}",
+                hint="Pass int explicitly to avoid implicit conversion",
+            ),
+            UserWarning,
+            stacklevel=2,
+        )
+        value = converted_value
+    elif not isinstance(value, (int, np.integer)):
+        raise STMinerIOError(
+            format_io_error(
+                f"Invalid parameter '{name}'",
+                operation="validate parameter",
+                path=path,
+                expected="> 0",
+                actual=f"{value} ({type(value).__name__})",
+            )
+        )
+
+    value = int(value)
+    if value <= 0:
         raise STMinerIOError(
             format_io_error(
                 f"Invalid parameter '{name}'",
@@ -53,6 +93,7 @@ def require_positive_int(value, name: str, *, path: str | None = None):
                 actual=str(value),
             )
         )
+    return value
 
 
 def validate_spatial_array(spatial, *, path: str | None = None, source: str = "adata.obsm['spatial']") -> np.ndarray:
@@ -93,17 +134,17 @@ def validate_spatial_array(spatial, *, path: str | None = None, source: str = "a
 
 
 def merge_bin_coordinate(coordinate: np.ndarray, coordinate_min: int, bin_size: int):
-    require_positive_int(bin_size, "bin_size")
+    bin_size = require_positive_int(bin_size, "bin_size")
     return np.floor((coordinate - coordinate_min) / bin_size).astype(int)
 
 
 def get_bin_center(bin_coordinate: np.ndarray, coordinate_min: int, bin_size: int):
-    require_positive_int(bin_size, "bin_size")
+    bin_size = require_positive_int(bin_size, "bin_size")
     return bin_coordinate * bin_size + coordinate_min + int(bin_size / 2)
 
 
 def bin_spatial_adata(adata, bin_size=50, method="sum"):
-    require_positive_int(bin_size, "bin_size")
+    bin_size = require_positive_int(bin_size, "bin_size")
     if method not in {"sum", "mean"}:
         raise STMinerIOError(
             format_io_error(

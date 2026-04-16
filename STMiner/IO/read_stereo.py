@@ -20,7 +20,7 @@ from STMiner.IO.IOUtil import (
 
 def read_gem_file(gem_file, bin_size=40):
     path = str(gem_file)
-    require_positive_int(bin_size, "bin_size", path=path)
+    bin_size = require_positive_int(bin_size, "bin_size", path=path)
 
     if not os.path.isfile(path):
         raise FileNotFoundError(
@@ -96,7 +96,7 @@ def get_surround_matrix(matrix, index, distance):
 
 def get_coordinate_matrix(df, merge_count=20):
     """Transform gene expression df to expression matrix"""
-    require_positive_int(merge_count, "merge_count")
+    merge_count = require_positive_int(merge_count, "merge_count")
     required_columns = {'x', 'y', 'UMICount'}
     missing = required_columns.difference(df.columns)
     if missing:
@@ -167,7 +167,7 @@ def find_under_sampled_pixel(arr, distance, mean_percentage=0.2):
 
 def enhance_df_info(df, bin_size=20, source_path: str | None = None):
     """Calculate the position of each merged bin."""
-    require_positive_int(bin_size, "bin_size", path=source_path)
+    bin_size = require_positive_int(bin_size, "bin_size", path=source_path)
     if df is None or df.empty:
         raise STMinerIOError(
             format_io_error(

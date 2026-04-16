@@ -32,8 +32,8 @@ def read_h5ad(file, bin_size=1, merge_bin=False, amplification=1):
         An AnnData object containing the processed spatial data.
     """
     path = str(file)
-    require_positive_int(bin_size, "bin_size", path=path)
-    require_positive_int(amplification, "amplification", path=path)
+    bin_size = require_positive_int(bin_size, "bin_size", path=path)
+    amplification = require_positive_int(amplification, "amplification", path=path)
 
     if not os.path.isfile(path):
         raise FileNotFoundError(

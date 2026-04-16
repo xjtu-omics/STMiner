@@ -13,7 +13,7 @@ from STMiner.IO.IOUtil import (
 
 def read_bmk(file_path, bin_size=1):
     path = str(file_path)
-    require_positive_int(bin_size, "bin_size", path=path)
+    bin_size = require_positive_int(bin_size, "bin_size", path=path)
 
     if not os.path.isdir(file_path):
         raise NotADirectoryError(
