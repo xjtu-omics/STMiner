@@ -280,6 +280,7 @@ sp.plot.plot_genes(label=0, vmax=99)
 
 | Version | Date       | Description                                                  |
 |---------|------------|--------------------------------------------------------------|
+| 1.1.4   | 2026/04/24 | package metadata cleanup for PyPI release                    |
 | 1.1.3   | 2025/11/28 | update *load_marked_image()*, support n_components           |
 | 1.1.2   | 2025/08/28 | fix bug, add test                                            |
 | 1.1.1   | 2025/07/05 | fix bug, add test                                            |
