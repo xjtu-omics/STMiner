@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 from collections import Counter
 from typing import Optional
@@ -20,6 +21,8 @@ from STMiner.services import (
     read_gem_for_spfinder,
     read_h5ad_for_spfinder,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def scale_array(exp_matrix, total_count):
@@ -62,7 +65,7 @@ class SPFinder:
         self.plot = Plot(self)
         self._highly_variable_genes = []
         self._gene_expression_edge = {}
-        self._scope = ()
+        self._scope = None
         # self.app = App()
         if adata is not None:
             self.set_adata(adata)
@@ -221,7 +224,9 @@ class SPFinder:
                     pass
                 else:
                     error_gene_list.append(gene)
-                    print("Gene [" + gene + "] has more than one index, skip.")
+                    logger.warning(
+                        "Gene [%s] has more than one index, skip.", gene
+                    )
                 continue
             row_indices = np.array(gene_adata.obs["x"].values).flatten()
             column_indices = np.array(gene_adata.obs["y"].values).flatten()
@@ -234,9 +239,10 @@ class SPFinder:
                     data[data > np.percentile(data, vmax)] = np.percentile(data, vmax)
                 gene_csr = csr_matrix((data, (row_indices, column_indices)))
                 self.csr_dict[gene] = gene_csr
-            except Exception as e:
-                print("Error when parse gene " + gene + "\nError: ")
-                print(e)
+            except Exception:
+                logger.error(
+                    "Error when parsing gene %s.", gene, exc_info=True
+                )
 
     def spatial_high_variable_genes(self, vmax: int = 100, thread: int = 1):
         """
@@ -281,9 +287,12 @@ class SPFinder:
                     distance_dict[key] = calculate_ot_distance(
                         global_matrix, self.csr_dict[key]
                     )
-                except Exception as e:
-                    print(key)
-                    print(e)
+                except Exception:
+                    logger.error(
+                        "Failed to compute OT distance for gene %s.",
+                        key,
+                        exc_info=True,
+                    )
             self.global_distance = pd.DataFrame(
                 list(distance_dict.items()), columns=["Gene", "Distance"]
             ).sort_values(by="Distance", ascending=False)
@@ -294,7 +303,7 @@ class SPFinder:
                 np.log1p(self.global_distance["Distance"])
             )
         else:
-            print("Using multiprocessing, thread is {thread}.".format(thread=thread))
+            logger.info("Using multiprocessing, thread is %s.", thread)
             with multiprocessing.Pool(processes=thread) as pool:
                 results = pool.starmap(
                     self._mpl_worker,
@@ -376,8 +385,8 @@ class SPFinder:
                 n_comp=n_comp,
                 remove_low_exp_spots=remove_low_exp_spots,
             )
-        except Exception as e:
-            print(e)
+        except Exception:
+            logger.error("Failed to fit patterns.", exc_info=True)
 
     def preprocess(
         self,
@@ -548,14 +557,31 @@ class SPFinder:
         self.all_labels = all_labels
 
     def get_pattern_of_given_genes(self, gene_list, n_comp=20):
+        """
+        Extract spatial expression patterns for a user-provided gene list.
+
+        Args:
+            gene_list (list): Gene names to extract patterns for.
+            n_comp (int, optional): Number of GMM components used to fit each gene pattern.
+                Defaults to 20.
+
+        Returns:
+            None
+
+        Notes:
+            - Genes not present in `self.adata.var.index` are silently ignored.
+            - The extracted patterns are stored by `get_custom_pattern`.
+        """
         _genes = []
         if self.adata is None:
             raise ValueError("Please load ST data first.")
+
+        # Keep only genes that exist in the loaded AnnData object.
         for gene in gene_list:
             if gene in list(self.adata.var.index):
                 _genes.append(gene)
 
-        # Get expression patterns of interested gene set
+        # Build GMM-based spatial patterns for the filtered gene set.
         self.get_custom_pattern(gene_list=_genes, n_components=n_comp, vote_rate=0)
 
     
