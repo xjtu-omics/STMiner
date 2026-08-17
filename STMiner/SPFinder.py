@@ -1,7 +1,7 @@
 import logging
 import multiprocessing
 from collections import Counter
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 
 import scanpy as sc
 from anndata import AnnData
@@ -25,7 +25,7 @@ from STMiner.services import (
 logger = logging.getLogger(__name__)
 
 
-def scale_array(exp_matrix, total_count):
+def scale_array(exp_matrix: np.ndarray, total_count: np.ndarray) -> np.ndarray:
     total_sum = np.sum(exp_matrix)
     if total_sum == 0:
         return np.zeros_like(total_count)
@@ -70,7 +70,7 @@ class SPFinder:
         if adata is not None:
             self.set_adata(adata)
 
-    def set_adata(self, adata) -> None:
+    def set_adata(self, adata: AnnData) -> None:
         """
         Assigns the provided AnnData object to the instance.
 
@@ -94,7 +94,7 @@ class SPFinder:
             raise ValueError('AnnData must contain either obs["x"] and obs["y"] or obsm["spatial"].')
         self._scope = (0, max(self.adata.obs["y"].max(), self.adata.obs["x"].max()))
 
-    def read_h5ad(self, file, amplification=1, bin_size=1, merge_bin=False):
+    def read_h5ad(self, file: str, amplification: int = 1, bin_size: int = 1, merge_bin: bool = False) -> None:
         """
         Reads an h5ad file and sets the object's adata attribute with the loaded data.
 
@@ -115,13 +115,13 @@ class SPFinder:
             merge_bin=merge_bin,
         )
 
-    def read_bmk_dir(self, file, bin_size=1):
+    def read_bmk_dir(self, file: str, bin_size: int = 1) -> None:
         return read_bmk_dir_for_spfinder(self, file=file, bin_size=bin_size)
 
-    def read_gem(self, file, bin_size=40):
+    def read_gem(self, file: str, bin_size: int = 40) -> None:
         return read_gem_for_spfinder(self, file=file, bin_size=bin_size)
 
-    def merge_bin(self, bin_width):
+    def merge_bin(self, bin_width: int) -> None:
         """
         Merge spatial coordinates into bins of a specified width.
 
@@ -146,7 +146,7 @@ class SPFinder:
         )
         self._scope = (0, max(self.adata.obs["y"].max(), self.adata.obs["x"].max()))
 
-    def load_marked_image(self, file, n_components=10):
+    def load_marked_image(self, file: str, n_components: int = 10) -> None:
         self.image_gmm = get_gmm_from_image(file, self.adata, n_components=n_components)
 
     # def compare_image_to_genes(self):
@@ -158,7 +158,7 @@ class SPFinder:
     #     """
     #     return compare_gmm_distance(self.image_gmm, self.patterns)
 
-    def compare_gene_to_genes(self, gene_name):
+    def compare_gene_to_genes(self, gene_name: str) -> pd.DataFrame:
         """
         Compares the Gaussian Mixture Model (GMM) of a specified gene to the GMMs of all genes in the current patterns.
 
@@ -178,9 +178,9 @@ class SPFinder:
         normalize: bool = True,
         exclude_highly_expressed: bool = False,
         log1p: bool = False,
-        vmax: int = 100,
-        gene_list: list = None,
-    ):
+        vmax: float = 100.0,
+        gene_list: Optional[List[str]] = None,
+    ) -> None:
         """
         Generates a dictionary of compressed sparse row (CSR) matrices for gene expression data.
         This method processes the AnnData object (`self.adata`) to extract gene expression arrays
@@ -198,7 +198,7 @@ class SPFinder:
                 Whether to exclude highly expressed genes (default: False).
             log1p : bool, optional
                 Whether to apply log1p transformation to the data (default: False).
-            vmax : int, optional
+            vmax : float, optional
                 Percentile value to cap gene expression values (default: 100).
             gene_list : list, optional
                 List of gene names to process. If None, all genes in `self.adata` are used (default: None).
@@ -244,7 +244,7 @@ class SPFinder:
                     "Error when parsing gene %s.", gene, exc_info=True
                 )
 
-    def spatial_high_variable_genes(self, vmax: int = 100, thread: int = 1):
+    def spatial_high_variable_genes(self, vmax: float = 100.0, thread: int = 1) -> None:
         """
         Identifies spatially high variable genes by comparing each gene's spatial expression pattern
         to a global expression matrix using optimal transport (OT) distance.
@@ -254,7 +254,7 @@ class SPFinder:
         log-transformed distances. Optionally, multiprocessing can be used to speed up computation.
 
         Args:
-            vmax: int, optional
+            vmax: float, optional
                 The upper percentile threshold for capping expression values in the global matrix (default is 100).
             thread: int, optional
                 The number of threads to use for multiprocessing. If thread <= 1, computation is done serially (default is 1).
@@ -321,7 +321,12 @@ class SPFinder:
                 np.log1p(self.global_distance["Distance"])
             )
 
-    def _mpl_worker(self, global_matrix, key, csr_dict):
+    def _mpl_worker(
+        self,
+        global_matrix: csr_matrix,
+        key: str,
+        csr_dict: Dict[str, csr_matrix],
+    ) -> Tuple[str, float]:
         res = calculate_ot_distance(global_matrix, csr_dict[key])
         return key, res
 
@@ -333,9 +338,9 @@ class SPFinder:
         exclude_highly_expressed: bool = False,
         log1p: bool = False,
         min_cells: int = 20,
-        gene_list: list = None,
+        gene_list: Optional[List[str]] = None,
         remove_low_exp_spots: bool = False,
-    ):
+    ) -> None:
         """
         Fits gene expression patterns using Gaussian Mixture Models (GMMs) on selected genes.
         This method preprocesses the data and fits GMMs to the expression profiles of specified genes,
@@ -396,7 +401,7 @@ class SPFinder:
         min_cells: int,
         min_genes: int,
         n_top_genes: int = 2000,
-    ):
+    ) -> None:
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
         sc.pp.filter_cells(self.adata, min_genes=min_genes)
         sc.pp.highly_variable_genes(
@@ -412,7 +417,7 @@ class SPFinder:
         if log1p:
             sc.pp.log1p(self.adata)
 
-    def build_distance_array(self, method="gmm", gene_list=None):
+    def build_distance_array(self, method: str = "gmm", gene_list: Optional[List[str]] = None) -> None:
         """
         Build a distance array for genes based on the specified method.
 
@@ -429,7 +434,7 @@ class SPFinder:
         """
         return build_distance_array_for_spfinder(self, method=method, gene_list=gene_list)
 
-    def get_pattern_array(self, vote_rate: int = 0, mode: str = "vote"):
+    def get_pattern_array(self, vote_rate: float = 0.0, mode: str = "vote") -> None:
         self.patterns_binary_matrix_dict = {}
         if mode == "vote":
             label_list = set(self.genes_labels["labels"])
@@ -447,7 +452,7 @@ class SPFinder:
         else:
             raise ValueError("mode should be vote or test")
 
-    def _genes_to_pattern(self, gene_list, vote_rate):
+    def _genes_to_pattern(self, gene_list: List[str], vote_rate: float) -> Tuple[np.ndarray, np.ndarray]:
         # Initialize matrices
         exp_shape = get_exp_array(self.adata, gene_list[0]).shape
         total_coo_list = []
@@ -480,15 +485,19 @@ class SPFinder:
         return binary_arr, total_count
 
     def get_custom_pattern(
-        self, gene_list, n_components=20, vote_rate: int = 0, mode: str = "vote"
-    ):
+        self,
+        gene_list: List[str],
+        n_components: int = 20,
+        vote_rate: float = 0.0,
+        mode: str = "vote",
+    ) -> None:
         """
         Generates a custom pattern model based on a list of genes using either a voting mechanism or a test mode.
 
         Args:
             gene_list (list): List of gene identifiers to be used for pattern extraction.
             n_components (int, optional): Number of components for the Gaussian Mixture Model (GMM). Defaults to 20.
-            vote_rate (int, optional): Threshold for voting mechanism in pattern extraction. Defaults to 0.
+            vote_rate (float, optional): Threshold for voting mechanism in pattern extraction. Defaults to 0.
             mode (str, optional): Mode of operation, either "vote" for GMM-based pattern extraction or "test" for statistical testing. Defaults to "vote".
 
         Raises:
@@ -513,10 +522,10 @@ class SPFinder:
     def cluster_gene(
         self,
         n_clusters: int,
-        mds_components=20,
-        use_highly_variable_gene=False,
-        n_top_genes=500,
-    ):
+        mds_components: int = 20,
+        use_highly_variable_gene: bool = False,
+        n_top_genes: int = 500,
+    ) -> None:
         return cluster_gene_for_spfinder(
             self,
             n_clusters=n_clusters,
@@ -525,7 +534,7 @@ class SPFinder:
             n_top_genes=n_top_genes,
         )
 
-    def plot_gmm(self, gene_name, cmap=None):
+    def plot_gmm(self, gene_name: str, cmap: Optional[str] = None) -> None:
         """
         Plots the Gaussian Mixture Model (GMM) for a specified gene.
 
@@ -540,7 +549,7 @@ class SPFinder:
         gmm = self.patterns[gene_name]
         view_gmm(gmm, scope=self._scope, cmap=cmap)
 
-    def get_all_labels(self):
+    def get_all_labels(self) -> None:
         df_list = []
         for i in self.patterns_binary_matrix_dict:
             gmm = get_gmm(self.patterns_binary_matrix_dict[i], n_comp=20)
@@ -556,7 +565,7 @@ class SPFinder:
         ]
         self.all_labels = all_labels
 
-    def get_pattern_of_given_genes(self, gene_list, n_comp=20):
+    def get_pattern_of_given_genes(self, gene_list: List[str], n_comp: int = 20) -> None:
         """
         Extract spatial expression patterns for a user-provided gene list.
 
@@ -585,7 +594,7 @@ class SPFinder:
         self.get_custom_pattern(gene_list=_genes, n_components=n_comp, vote_rate=0)
 
     
-    def gui(self):
+    def gui(self) -> None:
         """Launch a Gradio interface for the main SPFinder workflow."""
         from STMiner.gui import launch_spfinder_gui
 
