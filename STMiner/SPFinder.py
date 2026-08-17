@@ -581,14 +581,12 @@ class SPFinder:
             - Genes not present in `self.adata.var.index` are silently ignored.
             - The extracted patterns are stored by `get_custom_pattern`.
         """
-        _genes = []
         if self.adata is None:
             raise ValueError("Please load ST data first.")
 
         # Keep only genes that exist in the loaded AnnData object.
-        for gene in gene_list:
-            if gene in list(self.adata.var.index):
-                _genes.append(gene)
+        var_index = set(self.adata.var.index)
+        _genes = [gene for gene in gene_list if gene in var_index]
 
         # Build GMM-based spatial patterns for the filtered gene set.
         self.get_custom_pattern(gene_list=_genes, n_components=n_comp, vote_rate=0)
