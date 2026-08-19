@@ -1,3 +1,4 @@
+import logging
 import anndata
 import numpy as np
 import pandas as pd
@@ -8,6 +9,8 @@ from PIL import Image
 from scipy.signal import convolve2d
 from scipy.sparse import csr_matrix, issparse
 from tqdm import tqdm
+
+logger = logging.getLogger(__name__)
 
 
 def get_3d_matrix(adata: anndata):
@@ -23,7 +26,7 @@ def get_3d_matrix(adata: anndata):
         (int(x_max - x_min + 1), int(y_max - y_min + 1), int(adata.var.shape[0])),
         dtype=np.int32,
     )
-    print('Transfer anndata to 3D matrix...')
+    logger.info('Transfer anndata to 3D matrix...')
     for spot in tqdm(adata, bar_format='{l_bar}{bar:20}{r_bar}{percentage:3.0f}%'):
         x = int(spot.obs['x']) - x_min
         y = int(spot.obs['y']) - y_min
@@ -57,7 +60,7 @@ def convolve(array, method, kernel_size=3):
     x, y, gene_index = array.shape
     # convolve each 2D layer
     output_array = np.zeros((x, y, gene_index))
-    print('Convolve each 2D layer...')
+    logger.info('Convolve each 2D layer...')
     if method == 'gaussian':
         for i in tqdm(range(gene_index)):
             output_array[:, :, i] = convolve2d(array[:, :, i],
@@ -71,7 +74,7 @@ def convolve(array, method, kernel_size=3):
 
 
 def update_anndata(array: np.array, adata: anndata):
-    print('Update anndata...')
+    logger.info('Update anndata...')
     x_min = int(adata.obs['x'].min())
     y_min = int(adata.obs['y'].min())
     if issparse(adata[0].X):
