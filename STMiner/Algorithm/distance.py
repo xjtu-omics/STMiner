@@ -2,7 +2,6 @@ import numpy as np
 import ot
 import pandas as pd
 from numba import njit
-from scipy.sparse import csr_matrix
 from scipy.spatial.distance import cosine
 from tqdm import tqdm
 
@@ -91,13 +90,13 @@ def build_gmm_distance_array(gmm_dict):
     """
     gene_list = list(gmm_dict.keys())
     gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
+    distance_array = np.zeros((gene_counts, gene_counts), dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(i + 1, gene_counts):
             distance = distribution_distance(gmm_dict[gene_list[i]], gmm_dict[gene_list[j]])
-            distance_array.loc[gene_list[i], gene_list[j]] = distance
-            distance_array.loc[gene_list[j], gene_list[i]] = distance
-    return distance_array
+            distance_array[i, j] = distance
+            distance_array[j, i] = distance
+    return pd.DataFrame(distance_array, index=gene_list, columns=gene_list)
 
 
 def compare_gmm_distance(gmm, gmm_dict):
@@ -118,14 +117,14 @@ def build_cosine_similarity_array(adata, gene_list):
     for gene in gene_list:
         gene_arr_dict[gene] = get_exp_array(adata, gene)
     gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
+    distance_array = np.zeros((gene_counts, gene_counts), dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
                 distance = cosine(gene_arr_dict[gene_list[i]].flatten(),
                                   gene_arr_dict[gene_list[j]].flatten())
-                distance_array.loc[gene_list[i], gene_list[j]] = distance
-    return distance_array
+                distance_array[i, j] = distance
+    return pd.DataFrame(distance_array, index=gene_list, columns=gene_list)
 
 
 def build_mse_distance_array(adata, gene_list):
@@ -134,15 +133,15 @@ def build_mse_distance_array(adata, gene_list):
     for gene in gene_list:
         gene_arr_dict[gene] = get_exp_array(adata, gene)
     gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
+    distance_array = np.zeros((gene_counts, gene_counts), dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
                 arr_i = gene_arr_dict[gene_list[i]]
                 arr_j = gene_arr_dict[gene_list[j]]
                 distance = mse(arr_i, arr_j)
-                distance_array.loc[gene_list[i], gene_list[j]] = distance
-    return distance_array
+                distance_array[i, j] = distance
+    return pd.DataFrame(distance_array, index=gene_list, columns=gene_list)
 
 
 @njit()
@@ -162,7 +161,7 @@ def build_mix_distance_array(adata, gmm_dict):
     """
     gene_list = list(gmm_dict.keys())
     gene_counts = len(gene_list)
-    distance_array = pd.DataFrame(0, index=gene_list, columns=gene_list, dtype=np.float64)
+    distance_array = np.zeros((gene_counts, gene_counts), dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(gene_counts):
             if i != j:
@@ -173,20 +172,20 @@ def build_mix_distance_array(adata, gmm_dict):
                     mse_distance = np.mean(np.square(diff))
                 gmm_distance = distribution_distance(gmm_dict[gene_list[i]],
                                                      gmm_dict[gene_list[j]])
-                distance_array.loc[gene_list[i], gene_list[j]] = mse_distance + gmm_distance
-    return distance_array
+                distance_array[i, j] = mse_distance + gmm_distance
+    return pd.DataFrame(distance_array, index=gene_list, columns=gene_list)
 
 
 def build_ot_distance_array(csr_dict, gene_list=None):
     genes_to_build = gene_list if gene_list is not None else list(csr_dict.keys())
     gene_counts = len(genes_to_build)
-    distance_array = pd.DataFrame(0, index=genes_to_build, columns=genes_to_build, dtype=np.float64)
+    distance_array = np.zeros((gene_counts, gene_counts), dtype=np.float64)
     for i in tqdm(range(gene_counts), desc='Building distance array...'):
         for j in range(i + 1, gene_counts):
             distance = calculate_ot_distance(csr_dict[genes_to_build[i]], csr_dict[genes_to_build[j]])
-            distance_array.loc[genes_to_build[i], genes_to_build[j]] = distance
-            distance_array.loc[genes_to_build[j], genes_to_build[i]] = distance
-    return distance_array
+            distance_array[i, j] = distance
+            distance_array[j, i] = distance
+    return pd.DataFrame(distance_array, index=genes_to_build, columns=genes_to_build)
 
 
 def calculate_ot_distance(source, target) -> float:
@@ -201,23 +200,3 @@ def calculate_ot_distance(source, target) -> float:
     loss_matrix = ot.dist(xs, xt)
     distance = ot.emd2(a, b, loss_matrix, numItermax=200000)
     return distance
-
-
-def domain_alignment(source_domain_dict, target_domain_dict):
-    """
-    Returns the distance between two domains, index is source domain and column is target domain.
-    :param source_domain_dict: dict
-    :param target_domain_dict: dict
-    :return: pd.DataFrame
-    """
-    source_keys = list(source_domain_dict.keys())
-    target_keys = list(target_domain_dict.keys())
-    distance_array = pd.DataFrame(0, index=source_keys, columns=target_keys, dtype=np.float64)
-    for i in range(len(source_domain_dict)):
-        for j in range(len(target_domain_dict)):
-            csr_source = csr_matrix(source_domain_dict[i])
-            csr_target = csr_matrix(target_domain_dict[j])
-            ot_dist = calculate_ot_distance(csr_source, csr_target)
-            distance_array.loc[source_keys[i], target_keys[j]] = ot_dist
-            distance_array.loc[source_keys[j], target_keys[i]] = ot_dist
-    return distance_array
