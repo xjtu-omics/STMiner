@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 import warnings
 
@@ -12,6 +13,8 @@ from sklearn import mixture
 from tqdm import tqdm
 
 from STMiner.Algorithm.AlgUtils import get_exp_array
+
+logger = logging.getLogger(__name__)
 
 # Ignore the unnecessary warnings
 warnings.filterwarnings("ignore")
@@ -131,7 +134,7 @@ def preprocess_array(adata, binary, cut, gene_name, threshold, remove_low_exp_sp
     dense_array = get_exp_array(adata, gene_name, remove_low_exp_spots)
     if binary:
         if threshold > 100 or threshold < 0:
-            print('Warning: the threshold is illegal, the value in [0, 100] is accepted.')
+            logger.warning('the threshold is illegal, the value in [0, 100] is accepted.')
             threshold = 100
         binary_arr = np.where(dense_array > np.percentile(dense_array, threshold), 1, 0)
         result = array_to_list(binary_arr)
@@ -198,7 +201,7 @@ def fit_gmms(adata,
             error_msg = str(e)
             raise ValueError("Gene id: " + gene_id + "\nError: " + error_msg)
     if dropped_genes_count > 0:
-        print('Number of dropped genes: ' + str(dropped_genes_count))
+        logger.info('Number of dropped genes: ' + str(dropped_genes_count))
     return gmm_dict
 
 

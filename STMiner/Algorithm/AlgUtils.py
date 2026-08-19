@@ -1,5 +1,9 @@
+import logging
 import numpy as np
 from scipy import sparse
+
+logger = logging.getLogger(__name__)
+
 
 def get_exp_array(adata, gene_name, remove_low_exp_spots=False):
     sparse_matrix = _preprocess(adata, gene_name)
@@ -13,7 +17,7 @@ def _to_dense(remove_low_exp_spots, sparse_matrix):
             dense_array = np.maximum(dense_array - np.mean(dense_array[dense_array != 0]), 0)
         return _round(dense_array)
     else:
-        print("matrix is None")
+        logger.warning("matrix is None")
         
 def _round(array):
     return np.array(np.round(array), dtype=np.int16)
@@ -21,7 +25,7 @@ def _round(array):
 
 def _preprocess(adata, gene_name):
     if gene_name not in adata.var_names:
-        print(f"Warning: {gene_name} is not in adata gene list.")
+        logger.warning(f"{gene_name} is not in adata gene list.")
     else:
         exp_array = adata[:, adata.var_names == gene_name].X
         if sparse.issparse(exp_array):
