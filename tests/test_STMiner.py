@@ -16,6 +16,20 @@ def test_spfinder():
     print(f"[PASS] set_adata succeeded, data shape: {spfinder.adata.shape}, "
           f"max x: {spfinder.adata.obs['x'].max()}")
 
+    # Test gene list validation
+    try:
+        spfinder.get_pattern_of_given_genes([])
+        raise AssertionError("An empty gene list should raise ValueError.")
+    except ValueError as error:
+        assert str(error) == "gene_list must contain at least one gene."
+
+    try:
+        spfinder.get_pattern_of_given_genes(["missing_gene"])
+        raise AssertionError("A gene list without valid genes should raise ValueError.")
+    except ValueError as error:
+        assert str(error) == "None of the provided genes exist in adata.var_names."
+    print("[PASS] Invalid gene lists raise explicit ValueError messages")
+
     # Test merge_bin function
     spfinder.merge_bin(bin_width=2)
     assert (spfinder.adata.obs['x'].max() == 31)
