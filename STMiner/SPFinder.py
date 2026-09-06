@@ -585,7 +585,8 @@ class SPFinder:
             None
 
         Notes:
-            - Genes not present in `self.adata.var.index` are silently ignored.
+            - Genes not present in `self.adata.var.index` are ignored when at least one valid gene remains.
+            - A ValueError is raised when the input is empty or none of the provided genes exist.
             - The extracted patterns are stored by `get_custom_pattern`.
         """
         if self.adata is None:
