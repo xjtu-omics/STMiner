@@ -457,6 +457,9 @@ class SPFinder:
             raise ValueError("mode should be vote or test")
 
     def _genes_to_pattern(self, gene_list: List[str], vote_rate: float) -> Tuple[np.ndarray, np.ndarray]:
+        if not gene_list:
+            raise ValueError("gene_list must contain at least one valid gene.")
+
         # Initialize matrices
         exp_shape = get_exp_array(self.adata, gene_list[0]).shape
         total_coo_list = []
@@ -588,9 +591,14 @@ class SPFinder:
         if self.adata is None:
             raise ValueError("Please load ST data first.")
 
+        if not gene_list:
+            raise ValueError("gene_list must contain at least one gene.")
+
         # Keep only genes that exist in the loaded AnnData object.
         var_index = set(self.adata.var.index)
         _genes = [gene for gene in gene_list if gene in var_index]
+        if not _genes:
+            raise ValueError("None of the provided genes exist in adata.var_names.")
 
         # Build GMM-based spatial patterns for the filtered gene set.
         self.get_custom_pattern(gene_list=_genes, n_components=n_comp, vote_rate=0)
