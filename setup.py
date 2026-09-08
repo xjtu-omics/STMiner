@@ -11,7 +11,7 @@ long_description = readme_path.read_text(encoding='utf-8')
 
 setup(
     name='stminer',
-    version='1.1.4',
+    version='1.1.5',
     author='Peisen Sun',
     url='https://github.com/xjtu-omics/STMiner',
     license='GPL-3.0-only',
