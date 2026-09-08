@@ -26,8 +26,16 @@ def _adjust_arr(arr, rotate, reverse_x, reverse_y):
 
 
 def _get_figure(fig_count, num_cols):
+    if fig_count <= 0:
+        raise ValueError("fig_count must be a positive integer.")
+    if num_cols <= 0:
+        raise ValueError("num_cols must be a positive integer.")
     num_rows = (fig_count + num_cols - 1) // num_cols
-    fig, axes = plt.subplots(num_rows, num_cols, figsize=(12, 3 * num_rows))
+    # squeeze=False keeps axes as a 2-D array even for a single subplot,
+    # so axes.flat and axes[row, col] always work.
+    fig, axes = plt.subplots(
+        num_rows, num_cols, figsize=(12, 3 * num_rows), squeeze=False
+    )
     # Disable the axis for each subplot
     for ax in axes.flat:
         ax.axis("off")
@@ -158,19 +166,22 @@ class Plot:
         adata = self.sp.adata
         if gene_list is None:
             if label is None or result is None:
-                raise "Error: Parameter [label] and [result] should not be None."
+                raise ValueError(
+                    "Parameter [label] and [result] should not be None."
+                )
             else:
                 gene_list = list(result[result["labels"] == label]["gene_id"])[:n_gene]
         genes_count = len(gene_list)
+        if genes_count == 0:
+            raise ValueError(
+                "No genes to plot: [gene_list] is empty or [label] matched no genes."
+            )
         axes, fig = _get_figure(genes_count, num_cols)
         fig.subplots_adjust(hspace=0.5)
         for i, gene in enumerate(gene_list):
             row = i // num_cols
             col = i % num_cols
-            if len(axes.shape) == 1:
-                ax = axes[i]
-            else:
-                ax = axes[row, col]
+            ax = axes[row, col]
             arr = get_exp_array(adata, gene)
             arr = _adjust_arr(arr, rotate, reverse_x, reverse_y)
             sns.set(style="white")
@@ -246,10 +257,7 @@ class Plot:
         for i, label in enumerate(label_list):
             row = i // num_cols
             col = i % num_cols
-            if len(axes.shape) == 1:
-                ax = axes[i]
-            else:
-                ax = axes[row, col]
+            ax = axes[row, col]
             total_count = self.sp.patterns_matrix_dict[label]
             total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
             if heatmap:
@@ -359,7 +367,7 @@ class Plot:
         si_dict = {}
         for cluster_number in range(min_cluster, max_cluster + 1):
             self.sp.cluster_gene(
-                self, n_clusters=cluster_number, mds_components=mds_comp
+                n_clusters=cluster_number, mds_components=mds_comp
             )
             db_dict[cluster_number] = 1 / davies_bouldin_score(
                 self.sp.genes_distance_array, self.sp.kmeans_fit_result.labels_
