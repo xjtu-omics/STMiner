@@ -1,5 +1,6 @@
 anndata==0.10.7
 bioservices==1.11.2
+gprofiler-official==1.0.0
 matplotlib==3.7.2
 networkx==3.1
 numba==0.57.0
