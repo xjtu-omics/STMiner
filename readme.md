@@ -69,47 +69,6 @@ Additionally, you can run STMiner on your own:
 from STMiner import SPFinder
 ```
 
-## KEGG, GO, and gene-set enrichment
-
-`KEGGFinder` provides validated wrappers for KEGG entries, QuickGO annotations,
-UniProt searches and identifier mapping. Functional enrichment delegates to the
-existing `scanpy.queries.enrich()` interface backed by g:Profiler.
-
-```python
-from STMiner import KEGGFinder
-
-finder = KEGGFinder(timeout=30)
-
-# Retrieve an organism-specific KEGG pathway and its genes.
-finder.find("hsa00010")
-pathway_genes = finder.get_gene_dataframe(strict=True)
-
-# Run GO or KEGG enrichment for one gene set.
-genes = ["TP53", "BRCA1", "BRCA2", "ATM", "CHEK2"]
-go_result = finder.enrich_go(genes, organism="hsapiens")
-kegg_result = finder.enrich_kegg(genes, organism="hsapiens")
-
-# Profile several named gene clusters in one request.
-clusters = {
-    "DNA_damage": genes,
-    "stemness": ["KLF4", "PAX5", "SOX2", "NANOG"],
-}
-cluster_result = finder.cluster_gene_set(clusters, organism="hsapiens")
-
-# Create a Nature-style bubble plot and export vector artwork.
-fig, axes = finder.plot_enrichment(
-    cluster_result,
-    top_n=5,
-    save_path="gene_cluster_enrichment.pdf",
-)
-```
-
-KEGG queries use KEGG organism codes such as `hsa` or `mmu`. g:Profiler
-enrichment uses organism names such as `hsapiens` or `mmusculus`. By default,
-enrichment results contain only significant terms and retain the intersecting
-genes returned by g:Profiler. In the enrichment plot, color represents
-`-log10(adjusted P)` and point size represents the number of intersecting genes.
-
 ## Load data
 
 You can download them from [STMiner-test-data](https://github.com/PSSUN/STMiner-test-data). You can also download the
