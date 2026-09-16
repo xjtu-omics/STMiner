@@ -261,23 +261,41 @@ interest.
 
 ### To visualize the patterns:
 
-**Note**: A image path for ***image_path*** is needed if you want to show background image. In this example, you can
-download the processed image [here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png). Anyway,
-***image_path*** is **optional**, not providing background images has no impact on the calculation results.
+Layout, spot size, and colorbars are automatic. No background image is required.
 
 ```python
 sp.get_pattern_array(vote_rate=0.2)
-img_path = 'path/to/downloaded/demo_img.png'
-sp.plot.plot_pattern(heatmap=False,
-                     s=10,
-                     rotate=False,
-                     reverse_y=True,
-                     reverse_x=True,
-                     vmax=95,
-                     image_path="./demo_img.png",
-                     cmap="Spectral_r",
-                     aspect=.55)
+fig, axes = sp.plot.plot_pattern()
+
+# Select panels and export without opening an interactive window.
+fig, axes = sp.plot.plot_pattern(
+    labels=[0, 1], shared_scale=True, output_path="patterns.pdf", show=False,
+)
 ```
+
+Use `heatmap=True` for a pixel map, `plot_bg=True` for measured tissue positions,
+and `colorbar=False` for a compact image-only panel. `vmax=99` remains an upper
+**percentile**, calculated from positive intensities. By default each panel has
+its own scale; `shared_scale=True` uses a pooled scale for all selected patterns.
+The scale shows composite pattern intensity and does not normalize by gene count.
+Input matrices and their precision are preserved. All-zero patterns show "No signal".
+
+Scatter and heatmap now share the same `[x, y]` coordinates and equal aspect ratio.
+Legacy `num_cols`, `s`, `rotate`, `reverse_x`, `reverse_y`, `rotate_img`, `k`, and
+`aspect` remain supported. Under the historical matrix convention, `rotate=True`
+looks clockwise, `reverse_x` flips displayed y, and `reverse_y` flips displayed x.
+Background images now follow these transforms too. Supply an image already aligned
+to the **untransformed** grid via `image_path`; it is fitted to the grid extent,
+not registered from pixel coordinates. `rotate_img=True, k=1` optionally rotates
+the source image before the common transform. Older heatmaps used a different
+row/column orientation, and old manually compensated image orientations may need
+updating. The processed example image is available
+[here](https://github.com/xjtu-omics/STMiner/blob/main/pic/demo_img.png).
+
+`output_path` infers PDF/SVG/PNG/TIFF/EPS from the suffix (PDF when absent), with
+600 DPI for raster export. `figsize=(width, height)` accepts inches and `dpi`
+controls resolution. Returned `axes` is always two-dimensional; unused slots are
+hidden. Close figures with `plt.close(fig)` after batch export.
 
 <div  align="center">    
   <img src="./pic/scatterplot.png" width = "400" align=center />
@@ -287,7 +305,7 @@ sp.plot.plot_pattern(heatmap=False,
 
 ```python
 sp.plot.plot_intersection(pattern_list=[0, 1],
-                          image_path=img_path,
+                          image_path="path/to/downloaded/demo_img.png",
                           reverse_y=True,
                           reverse_x=True,
                           aspect=0.55,

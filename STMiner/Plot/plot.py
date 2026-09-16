@@ -13,16 +13,7 @@ from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
 from sklearn.metrics import silhouette_score
 
 from STMiner.Algorithm.AlgUtils import get_exp_array
-
-
-def _adjust_arr(arr, rotate, reverse_x, reverse_y):
-    if rotate:
-        arr = np.rot90(arr)
-    if reverse_y:
-        arr = np.flipud(arr)
-    if reverse_x:
-        arr = np.fliplr(arr)
-    return arr
+from ._pattern import _adjust_arr, plot_patterns
 
 
 def _get_figure(fig_count, num_cols):
@@ -215,95 +206,110 @@ class Plot:
         self,
         cmap=None,
         vmax=99,
-        num_cols=4,
+        num_cols=None,
         rotate=False,
         reverse_y=False,
         reverse_x=False,
         heatmap=False,
-        s=1,
+        s=None,
         image_path=None,
         rotate_img=False,
         k=1,
         aspect=1,
         output_path=None,
         plot_bg=False,
+        *,
+        labels=None,
+        colorbar=True,
+        shared_scale=False,
+        figsize=None,
+        show=True,
+        dpi=600,
     ):
         """
-        Plots spatial patterns for each label in the dataset as either heatmaps or scatter plots.
-        Args:
-            cmap (str or matplotlib colormap, optional): Colormap to use for plotting. Defaults to "viridis" if None.
-            vmax (float, optional): Percentile value to use as the maximum value for color scaling. Default is 99.
-            num_cols (int, optional): Number of columns in the subplot grid. Default is 4.
-            rotate (bool, optional): Whether to rotate the pattern matrices. Default is False.
-            reverse_y (bool, optional): Whether to reverse the y-axis of the pattern matrices. Default is False.
-            reverse_x (bool, optional): Whether to reverse the x-axis of the pattern matrices. Default is False.
-            heatmap (bool, optional): If True, plot patterns as heatmaps; otherwise, use scatter plots. Default is False.
-            s (int or float, optional): Size of scatter plot points. Default is 1.
-            image_path (str, optional): Path to a background image to display under the scatter plot. Default is None.
-            rotate_img (bool, optional): Whether to rotate the background image. Default is False.
-            k (int, optional): Number of 90-degree rotations to apply to the background image if rotate_img is True. Default is 1.
-            aspect (float, optional): Aspect ratio for the background image. Default is 1.
-            output_path (str, optional): If provided, saves the plot to this path in EPS format. Default is None.
-            plot_bg (bool, optional): Whether to plot the global background points in gray. Default is False.
-        Returns:
-            None. Displays the generated plots and optionally saves them to a file.
+        Plot spatial patterns with automatic layout and Nature-style typography.
+
+        Most calls need only ``labels`` and optionally ``output_path``. Existing
+        positional arguments and keyword names remain supported.
+
+        Parameters
+        ----------
+        labels : sequence, optional
+            Selected cluster labels, in display order. Defaults to sorted labels
+            (first-seen order for mixed types). Requires get_pattern_array().
+        heatmap : bool
+            False for spots, True for a pixel heatmap. Both use matrix[x, y],
+            x increasing right and y increasing up, with equal geometry.
+        vmax : float
+            Upper color percentile in (0, 100], computed on positive intensities.
+            This clips display colors only; the original values are unchanged.
+        shared_scale : bool
+            Use one pooled color scale across panels (default: per-panel scales).
+            Values are composite pattern intensities, not normalized gene counts.
+        colorbar : bool
+            Display numeric color scales; enabled by default.
+        num_cols, s, figsize : optional
+            Columns, spot area in points squared, and figure size in inches.
+            None selects automatically. One column is 89 mm, otherwise 183 mm.
+        cmap : str or Colormap, optional
+            Defaults to viridis.
+        image_path : str or Path, optional
+            Image already aligned to the full untransformed pattern grid. The
+            image is stretched to that grid; this is not image registration.
+            It follows all subsequent pattern rotations and flips.
+        rotate, reverse_x, reverse_y : bool
+            Legacy matrix transforms: np.rot90, np.fliplr, and np.flipud,
+            respectively (rotation is applied first). With [x, y], rotate
+            appears clockwise, reverse_x flips displayed y, reverse_y flips x.
+        rotate_img, k : bool, int
+            Optional image-only pre-rotation (k quarter-turns) for aligning a
+            source image, before applying the common pattern transforms.
+        plot_bg : bool
+            Show all measured adata.obs x/y grid positions in light gray.
+        aspect : positive float
+            Displayed y/x unit ratio, applied to every layer; default 1.
+        output_path : str or Path, optional
+            Export path; suffix selects PDF, SVG, PNG, TIFF, or EPS. A path
+            without a suffix gets .pdf. Layout is applied before saving.
+        show : bool
+            Display the figure (default True); use False in batch workflows.
+        dpi : positive number
+            Raster export resolution (default 600).
+
+        Returns
+        -------
+        fig, axes
+            Matplotlib Figure and a 2-D axes array, including hidden spare slots.
+
+        Notes
+        -----
+        Empty patterns are marked 'No signal'. Malformed, negative, or nonfinite
+        matrices raise ValueError before a figure is created. Heatmap orientation
+        is now consistent with scatter; older heatmaps used row/column axes.
         """
-        result = self.sp.genes_labels
-        label_list = set(result["labels"])
-        plot_count = len(label_list)
-        axes, fig = _get_figure(plot_count, num_cols=num_cols)
-        fig.subplots_adjust(hspace=0.5)
-        global_matrix = self.get_global_matrix(reverse_x, reverse_y, rotate)
-        for i, label in enumerate(label_list):
-            row = i // num_cols
-            col = i % num_cols
-            ax = axes[row, col]
-            total_count = self.sp.patterns_matrix_dict[label]
-            total_count = _adjust_arr(total_count, rotate, reverse_x, reverse_y)
-            if heatmap:
-                sns.heatmap(
-                    total_count,
-                    ax=ax,
-                    cbar=False,
-                    cmap=cmap if cmap is not None else "viridis",
-                    vmax=np.percentile(total_count, vmax),
-                )
-            else:
-                if is_path(image_path):
-                    bg_img = mpimg.imread(image_path)
-                    if rotate_img:
-                        bg_img = np.rot90(bg_img, k=k)
-                    ax.imshow(
-                        bg_img,
-                        extent=[0, total_count.shape[0], 0, total_count.shape[1]],
-                        aspect=aspect,
-                    )
-                if plot_bg:
-                    # plt.figure(figsize=figsize)
-                    sns.scatterplot(
-                        x=global_matrix.nonzero()[0],
-                        y=global_matrix.nonzero()[1],
-                        s=s,
-                        color="#ced4da",
-                    )
-                sparse_matrix = csr_matrix(total_count)
-                sns.scatterplot(
-                    x=sparse_matrix.nonzero()[0],
-                    y=sparse_matrix.nonzero()[1],
-                    c=sparse_matrix.data,
-                    ax=ax,
-                    cmap=cmap if cmap is not None else "viridis",
-                    s=s,
-                    vmax=np.percentile(sparse_matrix.data, vmax),
-                    edgecolor="none",
-                )
-                ax.set_xlim(0, total_count.shape[0])
-                ax.set_ylim(0, total_count.shape[1])
-            ax.set_title("Pattern " + str(label))
-        if output_path is not None:
-            plt.savefig(output_path, dpi=400, format="eps")
-        plt.tight_layout()
-        plt.show()
+        return plot_patterns(
+            self.sp,
+            cmap=cmap,
+            vmax=vmax,
+            num_cols=num_cols,
+            rotate=rotate,
+            reverse_y=reverse_y,
+            reverse_x=reverse_x,
+            heatmap=heatmap,
+            s=s,
+            image_path=image_path,
+            rotate_img=rotate_img,
+            k=k,
+            aspect=aspect,
+            output_path=output_path,
+            plot_bg=plot_bg,
+            labels=labels,
+            colorbar=colorbar,
+            shared_scale=shared_scale,
+            figsize=figsize,
+            show=show,
+            dpi=dpi,
+        )
 
     def plot_intersection(
         self,
