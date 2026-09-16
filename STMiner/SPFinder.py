@@ -438,6 +438,33 @@ class SPFinder:
         """
         return build_distance_array_for_spfinder(self, method=method, gene_list=gene_list)
 
+    def enrich_patterns(self, *, organism, labels=None, background=None, **kwargs):
+        """Enrich each pattern via g:Profiler, retaining pattern and hit identity.
+
+        ``organism`` is explicit (e.g. hsapiens, mmusculus, drerio).
+        The default background is adata.var_names; pass the genes eligible for
+        selection when that universe is narrower. Other options are forwarded to
+        KEGGFinder.enrich_gene_set(). Returns a DataFrame accepted by
+        sp.plot.plot_pathways(); get_pattern_array() is not required.
+        """
+        from STMiner.services.pathways import enrich_patterns
+
+        return enrich_patterns(
+            self, organism=organism, labels=labels, background=background, **kwargs
+        )
+
+    def score_pathways(self, enrichment, **kwargs):
+        """Return (spot_scores, terms) for the mean expression of pathway hits.
+
+        Options include labels, sources, term_ids, top_n (2), min_genes (2),
+        p_value_cutoff (0.05), layer, gene_map, and pattern_map. This is a
+        descriptive expression summary, not a calibrated pathway activity score.
+        No normalization or mutation of adata is performed.
+        """
+        from STMiner.services.pathways import score_pathways
+
+        return score_pathways(self, enrichment, **kwargs)
+
     def get_pattern_array(self, vote_rate: float = 0.0, mode: str = "vote") -> None:
         self.patterns_binary_matrix_dict = {}
         if mode == "vote":

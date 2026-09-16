@@ -311,6 +311,28 @@ class Plot:
             dpi=dpi,
         )
 
+    def plot_pathways(self, enrichment, **kwargs):
+        """Map enriched pattern-specific gene intersections back into space.
+
+        Use sp.enrich_patterns() to obtain enrichment with pattern identities.
+        For an existing g:Profiler table, pass pattern_map={query: pattern_label}.
+        Select sources, labels, term_ids, top_n (2), p_value_cutoff (0.05), and
+        min_genes (2). layer selects expression input; gene_map explicitly maps
+        unmatched hit identifiers to var_names. The default display='density'
+        renders Gaussian-smoothed spatial densities (bandwidth=1.5 grid units)
+        with three relative-peak contours and no spot markers. shared_scale=True
+        by default; display='expression' retains the original mean-expression view.
+        tissue_mask and support_radius restrict density support. Returned spot
+        scores remain unsmoothed, irrespective of the chosen display mode.
+
+        Returns (fig, axes, spot_scores, terms). Scores are mean expression of
+        mapped hit genes, not spatial P values or a calibrated activity score.
+        Terms record genes used, missing hits, source, pattern, and adjusted P.
+        """
+        from .pathways import plot_pathways
+
+        return plot_pathways(self.sp, enrichment, **kwargs)
+
     def plot_intersection(
         self,
         pattern_list,

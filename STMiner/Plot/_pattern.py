@@ -126,6 +126,10 @@ def plot_patterns(
     figsize,
     show,
     dpi,
+    panel_titles=None,
+    colorbar_label="Pattern intensity",
+    interpolation="nearest",
+    contours=0,
 ):
     for name, value in {
         "rotate": rotate,
@@ -226,7 +230,13 @@ def plot_patterns(
     if figsize is None:
         width = 3.5 if ncols == 1 else 7.2
         panel_height = np.clip((width / ncols) * ny / nx * aspect, 1.6, 4.0)
-        figsize = (width, nrows * (panel_height + 0.6))
+        title_height = (
+            0.6
+            if panel_titles is None
+            else 0.35
+            + 0.15 * max(str(title).count("\n") + 1 for title in panel_titles.values())
+        )
+        figsize = (width, nrows * (panel_height + title_height))
     extent = (-0.5, nx - 0.5, -0.5, ny - 0.5)
 
     with mpl.rc_context(_NATURE_STYLE):
@@ -260,7 +270,7 @@ def plot_patterns(
                     np.ma.masked_equal(array.T, 0),
                     origin="lower",
                     extent=extent,
-                    interpolation="nearest",
+                    interpolation=interpolation,
                     cmap=colormap,
                     norm=norm,
                     zorder=2,
@@ -278,10 +288,30 @@ def plot_patterns(
                     zorder=2,
                 )
             artists.append(artist)
+            if contours and min(array.shape) > 1 and positive_values[index].size:
+                surface = np.ma.masked_less_equal(array.T, 0)
+                levels = np.linspace(0, surface.max(), contours + 2)[1:-1]
+                levels = levels[(levels > surface.min()) & (levels < surface.max())]
+                if levels.size:
+                    ax.contour(
+                        np.arange(nx),
+                        np.arange(ny),
+                        surface,
+                        levels=levels,
+                        colors="#365167",
+                        linewidths=0.4,
+                        alpha=0.45,
+                        zorder=3,
+                    )
             ax.set(xlim=extent[:2], ylim=extent[2:], aspect=aspect)
             ax.set_axis_off()
             noun = "gene" if counts[label] == 1 else "genes"
-            ax.set_title(f"Pattern {label} · {counts[label]} {noun}", loc="left", pad=6)
+            title = (
+                f"Pattern {label} · {counts[label]} {noun}"
+                if panel_titles is None
+                else panel_titles[label]
+            )
+            ax.set_title(title, loc="left", pad=6)
             if not positive_values[index].size:
                 ax.text(
                     0.5,
@@ -296,7 +326,7 @@ def plot_patterns(
                 bar = fig.colorbar(
                     artist, ax=ax, shrink=0.75, pad=0.025, fraction=0.045
                 )
-                bar.set_label("Pattern intensity", fontsize=7)
+                bar.set_label(colorbar_label, fontsize=7)
                 bar.outline.set_visible(False)
                 bar.ax.tick_params(labelsize=6, length=2, width=0.5)
         for ax in list(axes.flat)[len(arrays) :]:
@@ -305,7 +335,7 @@ def plot_patterns(
             bar = fig.colorbar(
                 artists[0], ax=used_axes, shrink=0.8, pad=0.025, fraction=0.035
             )
-            bar.set_label("Pattern intensity (shared scale)", fontsize=7)
+            bar.set_label(f"{colorbar_label} (shared scale)", fontsize=7)
             bar.outline.set_visible(False)
             bar.ax.tick_params(labelsize=6, length=2, width=0.5)
         if output is not None:
