@@ -9,10 +9,9 @@ import umap
 from matplotlib.colors import ListedColormap
 from scipy.sparse import csr_matrix
 from sklearn.manifold import TSNE
-from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
-from sklearn.metrics import silhouette_score
 
 from STMiner.Algorithm.AlgUtils import get_exp_array
+from STMiner.services.spfinder_analysis import evaluate_cluster_scores
 from ._pattern import _adjust_arr, plot_patterns
 
 
@@ -390,26 +389,13 @@ class Plot:
         plt.axis("off")
 
     def plot_cluster_score(self, mds_comp, min_cluster, max_cluster):
-        db_dict = {}
-        ch_dict = {}
-        si_dict = {}
-        for cluster_number in range(min_cluster, max_cluster + 1):
-            self.sp.cluster_gene(
-                n_clusters=cluster_number, mds_components=mds_comp
-            )
-            db_dict[cluster_number] = 1 / davies_bouldin_score(
-                self.sp.genes_distance_array, self.sp.kmeans_fit_result.labels_
-            )
-            ch_dict[cluster_number] = calinski_harabasz_score(
-                self.sp.genes_distance_array, self.sp.kmeans_fit_result.labels_
-            )
-            si_dict[cluster_number] = silhouette_score(
-                self.sp.genes_distance_array, self.sp.kmeans_fit_result.labels_
-            )
-        score_df = pd.DataFrame(
-            [db_dict, si_dict, ch_dict],
-            index=["1/Davies-Bouldin", "Silhouette", "Calinski-Harabasz"],
-        ).T
+        """Plot candidate clustering scores without changing analysis results."""
+        score_df = evaluate_cluster_scores(
+            self.sp.genes_distance_array,
+            mds_components=mds_comp,
+            min_cluster=min_cluster,
+            max_cluster=max_cluster,
+        )
         norm_score_df = (score_df - score_df.min()) / (score_df.max() - score_df.min())
         sns.lineplot(norm_score_df, markers=True)
         plt.xticks(list(range(min_cluster, max_cluster + 1, 1)))

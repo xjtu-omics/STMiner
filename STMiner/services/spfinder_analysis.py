@@ -1,6 +1,11 @@
 from typing import TYPE_CHECKING
 
 import pandas as pd
+from sklearn.metrics import (
+    calinski_harabasz_score,
+    davies_bouldin_score,
+    silhouette_score,
+)
 
 from STMiner.Algorithm.algorithm import cluster
 from STMiner.Algorithm.distance import (
@@ -13,6 +18,36 @@ from STMiner.Algorithm.distance import (
 
 if TYPE_CHECKING:
     from STMiner.SPFinder import SPFinder
+
+
+def evaluate_cluster_scores(distance_array, mds_components, min_cluster, max_cluster):
+    """Evaluate candidate clusters without reading or updating SPFinder state.
+
+    Preserve the existing metrics on distance-matrix rows and refit MDS for
+    each candidate. Return raw scores; normalization belongs to presentation.
+    """
+    db_dict = {}
+    ch_dict = {}
+    si_dict = {}
+    for cluster_number in range(min_cluster, max_cluster + 1):
+        _, fit_result, _ = cluster(
+            distance_array,
+            n_clusters=cluster_number,
+            mds_components=mds_components,
+        )
+        db_dict[cluster_number] = 1 / davies_bouldin_score(
+            distance_array, fit_result.labels_
+        )
+        ch_dict[cluster_number] = calinski_harabasz_score(
+            distance_array, fit_result.labels_
+        )
+        si_dict[cluster_number] = silhouette_score(
+            distance_array, fit_result.labels_
+        )
+    return pd.DataFrame(
+        [db_dict, si_dict, ch_dict],
+        index=["1/Davies-Bouldin", "Silhouette", "Calinski-Harabasz"],
+    ).T
 
 
 def build_distance_array_for_spfinder(spfinder: "SPFinder", method="gmm", gene_list=None):
