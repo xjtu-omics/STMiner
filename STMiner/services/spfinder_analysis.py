@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 
 def build_distance_array_for_spfinder(spfinder: "SPFinder", method="gmm", gene_list=None):
+    spfinder._invalidate_distance_results()
     if gene_list is None:
         gene_list = list(spfinder.adata.var.index)
 
@@ -42,6 +43,7 @@ def cluster_gene_for_spfinder(
     use_highly_variable_gene=False,
     n_top_genes=500,
 ):
+    spfinder._invalidate_cluster_results()
     if use_highly_variable_gene:
         df = pd.DataFrame(spfinder.genes_distance_array.mean(axis=1), columns=["mean"])
         df = df.sort_values(by="mean", ascending=False)

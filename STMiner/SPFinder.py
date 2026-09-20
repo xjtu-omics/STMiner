@@ -53,34 +53,57 @@ class SPFinder:
 
     def __init__(self, adata: Optional[AnnData] = None):
         self.adata = None
+        self._invalidate_data_results()
+        self.plot = Plot(self)
+        if adata is not None:
+            self.set_adata(adata)
+
+    def _invalidate_data_results(self) -> None:
+        """Discard results before changing expression data or spatial coordinates.
+
+        Direct external mutations of adata are not tracked. Call set_adata()
+        again after such edits to invalidate derived results.
+        """
         self.patterns = None
+        self.image_gmm = None
+        self.global_distance = None
+        self.custom_pattern = None
+        self.csr_dict = {}
+        self._highly_variable_genes = []
+        self._gene_expression_edge = {}
+        self._scope = None
+        self._invalidate_distance_results()
+
+    def _invalidate_distance_results(self) -> None:
+        """Discard the distance matrix and everything derived from it."""
         self.genes_distance_array = None
+        self._invalidate_cluster_results()
+
+    def _invalidate_cluster_results(self) -> None:
+        """Discard clustering results while retaining their upstream inputs."""
         self.filtered_distance_array = None
         self.genes_labels = None
         self.kmeans_fit_result = None
         self.mds_features = None
-        self.image_gmm = None
-        self.global_distance = None
-        self.all_labels = None
-        self.custom_pattern = None
-        self.csr_dict = {}
+        self._invalidate_pattern_arrays()
+
+    def _invalidate_pattern_arrays(self) -> None:
+        """Discard both pattern representations and their derived labels."""
         self.patterns_matrix_dict = {}
         self.patterns_binary_matrix_dict = {}
-        self.plot = Plot(self)
-        self._highly_variable_genes = []
-        self._gene_expression_edge = {}
-        self._scope = None
-        # self.app = App()
-        if adata is not None:
-            self.set_adata(adata)
+        self.all_labels = None
 
     def set_adata(self, adata: AnnData) -> None:
         """
-        Assigns the provided AnnData object to the instance.
+        Assigns the provided AnnData object and invalidates all derived results.
+
+        The object is retained by reference. Call this method again after editing
+        its expression data or coordinates externally, even for the same object.
 
         Args:
             adata (AnnData): The annotated data matrix to be set for the instance.
         """
+        self._invalidate_data_results()
         self.adata = adata
         has_obs_coordinates = "x" in self.adata.obs and "y" in self.adata.obs
         if has_obs_coordinates:
@@ -142,6 +165,7 @@ class SPFinder:
             - Assumes `self.adata.obs` is a pandas DataFrame with 'x' and 'y' columns.
             - The `merge_bin_coordinate` function should accept a coordinate array, a minimum value, and a bin size.
         """
+        self._invalidate_data_results()
         self.adata.obs["x"] = merge_bin_coordinate(
             self.adata.obs["x"], self.adata.obs["x"].min(), bin_size=bin_width
         )
@@ -212,7 +236,6 @@ class SPFinder:
         """
 
         error_gene_list = []
-        self.csr_dict = {}
         self.preprocess(
             normalize, exclude_highly_expressed, log1p, min_cells, min_genes
         )
@@ -406,8 +429,11 @@ class SPFinder:
         min_genes: int,
         n_top_genes: int = 2000,
     ) -> None:
+        # Invalidate first: preprocessing can mutate data before raising an error.
+        self._invalidate_data_results()
         sc.pp.filter_genes(self.adata, min_cells=min_cells)
         sc.pp.filter_cells(self.adata, min_genes=min_genes)
+        self._scope = (0, max(self.adata.obs["y"].max(), self.adata.obs["x"].max()))
         sc.pp.highly_variable_genes(
             self.adata, flavor="seurat_v3", n_top_genes=n_top_genes
         )
@@ -466,16 +492,21 @@ class SPFinder:
         return score_pathways(self, enrichment, **kwargs)
 
     def get_pattern_array(self, vote_rate: float = 0.0, mode: str = "vote") -> None:
-        self.patterns_binary_matrix_dict = {}
+        self._invalidate_pattern_arrays()
         if mode == "vote":
+            matrices = {}
+            binary_matrices = {}
             label_list = set(self.genes_labels["labels"])
             for label in label_list:
                 gene_list = list(
                     self.genes_labels[self.genes_labels["labels"] == label]["gene_id"]
                 )
                 binary_arr, total_count = self._genes_to_pattern(gene_list, vote_rate)
-                self.patterns_matrix_dict[label] = total_count
-                self.patterns_binary_matrix_dict[label] = binary_arr
+                matrices[label] = total_count
+                binary_matrices[label] = binary_arr
+            # Publish only a complete pair of representations.
+            self.patterns_matrix_dict = matrices
+            self.patterns_binary_matrix_dict = binary_matrices
         elif mode == "test":
             p_value_threshold = 0.05
             # TODO: rewrite test mode, improve run time.
